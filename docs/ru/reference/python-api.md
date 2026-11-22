@@ -123,7 +123,7 @@ class ItemsByIdApiController:
 | `Action` | превратить функцию в конечную точку `POST`, см. [действия](../guides/actions.md) |
 | `revalidate` | сообщить браузеру, на каких страницах действие стало устаревшим |
 | `Module`, `Controller` | объявить модуль и контроллер в [модульном маршрутизаторе](../routing/modular/README.md) |
-| `Injectable`, `Container`, `Scope` | [внедрение зависимостей](../routing/modular/dependency-injection.md) и время его существования |
+| `Injectable`, `Container`, `Scope` | [внедрение зависимостей](../routing/modular/dependency-injection.md) и время его жизни |
 | `UseGuard`, `Middleware` | защитить или обернуть один обработчик, см. [гарды](../routing/modular/guards-and-metadata.md) |
 | `UseRoute`, `useRoute`, `RouteMeta` | назовите маршрут и опишите его для OpenAPI |
 | `UseResponse`, `ResponseMeta` | описать ответ на маршрут |
@@ -144,7 +144,7 @@ async def publish(post_id: int) -> bool:
 
 | Имя | Что это такое |
 |---|---|
-| `render` | HTML компонента `.nexy` для заданных реквизитов без сервера, см. [тестирование](../guides/testing.md) |
+| `render` | HTML компонента `.nexy` для данного props без сервера, см. [тестирование](../guides/testing.md) |
 
 ```python filename="тесты/test_button.py"
 from nexy.testing import render

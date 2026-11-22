@@ -63,6 +63,6 @@ Un `layout.*` en un directorio envuelve las páginas debajo de él. Ver [diseño
 
 ## Próximos pasos
 
-- [Archivos .nexy](nexy/README.md): Python + Jinja2 + accesorios
+- [Archivos .nexy](nexy/README.md): Python + Jinja2 + props
 - [Markdown y MDX](nexy/markdown.md): páginas de contenido
 - [Componentes](nexy/components.md): ayudantes HTML integrados

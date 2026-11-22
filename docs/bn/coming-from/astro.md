@@ -47,7 +47,7 @@ users = [{"name": "Ada", "admin": True}, {"name": "Alan", "admin": False}]
 ```
 
 > [!WARNING]
-> Astro প্রতি `{value}` থেকে পালিয়ে যায়। `.nexy` টেমপ্লেটগুলি করে না: একজন দর্শক `{{ value | e }}` দিয়ে যা টাইপ করেছেন তা এড়িয়ে যান।
+> Astro প্রতি `{value}` থেকে পালিয়ে যায়। `.nexy` টেমপ্লেটগুলি করে না: একজন দর্শনার্থী `{{ value | e }}` দিয়ে যা টাইপ করেছেন তা এড়িয়ে যান।
 
 ## উপাদান এবং `Astro.props`
 
@@ -61,7 +61,7 @@ const { title, tone = "neutral" } = Astro.props;
 </article>
 ```
 
-প্রপস `prop[...]` দিয়ে ঘোষণা করা হয়, একটি ডিফল্ট একটি Python ডিফল্ট, এবং `<slot />` হল `<Slot />`:
+Props কে `prop[...]` দিয়ে ঘোষণা করা হয়েছে, একটি ডিফল্ট একটি Python ডিফল্ট, এবং `<slot />` হল `<Slot />`:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -121,7 +121,7 @@ children: prop[NexyElement]
 
 ## শিরোনাম এবং মেটা ট্যাগ
 
-লেআউটের `title` প্রপটি পৃষ্ঠায় `metadata` হয়ে যায়, যা `useMetadata().html()` উপরের লেআউটের `<head>`-এ লিখেছেন:
+লেআউটের `title` prop পৃষ্ঠায় `metadata` হয়ে যায়, যা `useMetadata().html()` উপরের লেআউটের `<head>` এ লিখেছে:
 
 ```nexy filename="src/routes/blog.nexy"
 ---
@@ -145,7 +145,7 @@ const { title } = Astro.props;
 <h1>{title}</h1>
 ```
 
-একটি গতিশীল `.nexy` পৃষ্ঠা অনুরোধে রেন্ডার হয়, তাই পাথের কোনো তালিকা নেই: সেগমেন্টটি একটি প্রপ, এবং একটি অজানা একটি `404`।
+একটি গতিশীল `.nexy` পৃষ্ঠা অনুরোধে রেন্ডার করে, তাই পাথের কোনো তালিকা নেই: সেগমেন্টটি হল একটি prop, এবং একটি অজানা একটি `404`।
 
 ```nexy filename="src/routes/posts/[slug].nexy"
 ---
@@ -189,9 +189,9 @@ from "@/components/Counter.tsx" import Counter
 | `client:idle` | `directive="client:idle"` |
 | `client:visible` | `directive="client:visible"` |
 | `client:media="(min-width: 768px)"` | `directive="client:media" media="(min-width: 768px)"` |
-| `client:only="react"` | গৃহীত, কিন্তু কখনই হাইড্রেট হয় না: ব্যবহার `client:load` |
+| `client:only="react"` | গৃহীত, কিন্তু কখনই হাইড্রেট করে না: ব্যবহার `client:load` |
 
-কাঠামো `nexyconfig.py`-এ একবার সেট করা হয়, এবং একটি প্রকল্প একটি ব্যবহার করে:
+কাঠামোটি `nexyconfig.py`-এ একবার সেট করা হয়, এবং একটি প্রকল্প একটি ব্যবহার করে:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -212,7 +212,7 @@ layout: ../layouts/Base.astro
 # Changelog
 ```
 
-`src/routes/` এর অধীনে একটি `.md` ফাইল হল একটি পৃষ্ঠা, যা `layout:` কী ছাড়াই নিকটতম লেআউটে মোড়ানো হয়:
+`src/routes/` এর অধীনে একটি `.md` ফাইল হল একটি পৃষ্ঠা, যা কোন `layout:` কী ছাড়াই নিকটতম লেআউটে মোড়ানো:
 
 ```md filename="src/routes/changelog.md"
 # Changelog
@@ -220,7 +220,7 @@ layout: ../layouts/Base.astro
 Version 2.2 is out.
 ```
 
-`.mdx` পৃষ্ঠাগুলিও কাজ করে, React বা Preact কাঠামো হিসাবে। [Markdown এবং MDX](../views/nexy/markdown.md) দেখুন।
+`.mdx` পৃষ্ঠাগুলিও কাজ করে, React বা Preact ফ্রেমওয়ার্ক হিসাবে। [Markdown এবং MDX](../views/nexy/markdown.md) দেখুন।
 
 ## এপিআই শেষ পয়েন্ট
 

@@ -57,7 +57,7 @@ notes = NOTES.items()
 ## أضف صفحة لكل ملاحظة
 
 <!-- router:fbr,custom -->
-اسم المجلد أو الملف الموجود بين قوسين هو جزء من عنوان URL: `[id].nexy` يجيب على `/notes/1`، `/notes/2`، ويمرر المقطع إلى الصفحة كدعم. `id: prop[int]` يحولها إلى رقم، فيجيب `/notes/abc` على `404` قبل تشغيل الصفحة.
+اسم المجلد أو الملف الموجود بين قوسين هو جزء من عنوان URL: `[id].nexy` يجيب على `/notes/1`، `/notes/2`، ويمرر المقطع إلى الصفحة كـ prop. `id: prop[int]` يحولها إلى رقم، فيقوم `/notes/abc` بالإجابة على `404` قبل تشغيل الصفحة.
 
 ```nexy filename="src/routes/notes/[id].nexy"
 ---
@@ -77,7 +77,7 @@ if text is None:
 <!-- /router -->
 
 <!-- router:modular -->
-`{id}` في مسار وحدة التحكم هو جزء من عنوان URL، تم تمريره إلى الطريقة تحت هذا الاسم. `id: int` يحوله إلى رقم، لذلك يجيب `/notes/abc` على `404` قبل تشغيل الطريقة.
+`{id}` في مسار وحدة التحكم هو جزء من عنوان URL، تم تمريره إلى الطريقة تحت هذا الاسم. `id: int` يحولها إلى رقم، لذلك يجيب `/notes/abc` على `404` قبل تشغيل الطريقة.
 
 ```nexy filename="src/apps/notes/note_view.nexy"
 ---
@@ -159,7 +159,7 @@ class AppModule:
 تحقق من عناوين URL الثلاثة:
 
 - <http://localhost:3000/notes/1> يظهر *شراء الحليب*؛
-- <http://localhost:3000/notes/9> الإجابات *لم يتم العثور على الصفحة*;
+- <http://localhost:3000/notes/9> الإجابات *لم يتم العثور على الصفحة*؛
 - `curl http://localhost:3000/api/notes` المطبوعات `[{"id":1,"text":"Buy milk"},{"id":2,"text":"Ship Nexy"}]`.
 
 تم إدراج واجهة برمجة التطبيقات (API) مع مخططها في <http://localhost:3000/docs>.

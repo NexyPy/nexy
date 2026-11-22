@@ -4,7 +4,7 @@ Un projet réalisé avec `nx new` comporte les règles dont un agent de codage a
 
 ## Ce que `nx new` ajoute
 
-| Fichier | Lu par | Contient |
+| Fichier | Lu par | Détient |
 |---|---|---|
 | `AGENTS.md` | Codex, OpenCode | la pile du projet, l'ordre des travaux, les règles, la liste des compétences |
 | `CLAUDE.md` | Claude Code | une ligne, `@AGENTS.md`, donc les deux lisent le même texte |
@@ -17,19 +17,19 @@ Pour tout ignorer, créez le projet avec `nx new --no-agents`.
 
 ## Les compétences
 
-| Compétence | Couvre |
+| Compétence | Couvertures |
 |---|---|
-| `nexy-principles` | ordre de travail, règles de code, règles d'écriture |
-| `nexy-ux-audit` | l'audit d'expérience et d'architecture d'information à exécuter avant toute vue |
+| `nexy-principles` | ordre des travaux, règles de code, règles d'écriture |
+| `nexy-ux-audit` | l'audit d'expérience et d'architecture de l'information à exécuter avant toute vue |
 | `nexy-project` | modes, dossiers, conventions de fichiers, configuration, commandes |
-| `nexy-file` | `.nexy` pages, accessoires, crochets, îles |
-| `nexy-markdown` | `.md` et `.mdx` contenu |
+| `nexy-file` | `.nexy` pages, props, crochets, îlots |
+| `nexy-markdown` | Contenu `.md` et `.mdx` |
 | `nexy-react`, `nexy-preact`, `nexy-solid`, `nexy-vue`, `nexy-svelte` | code idiomatique pour le framework client |
 | `nexy-styling` | Tailwind, UnoCSS ou CSS simple, et les jetons de conception |
 | `nexy-backend` | Gestionnaires d'API, actions, WebSocket, ISR, middleware |
 | `nexy-modular` | contrôleurs, modules, injection et gardes du routeur modulaire |
 | `nexy-security` | dépendances, entrées, sessions, autorisations, secrets |
-| `nexy-testing` | la boucle de test en premier et les portes |
+| `nexy-testing` | la première boucle de test et les portes |
 | `nexy-framework-dev` | changer Nexy lui-même, plutôt qu'un projet construit avec Nexy |
 
 Les règles qu'ils appliquent : auditer l'expérience avant de créer une vue, écrire d'abord le test qui a échoué, une fonction effectue un traitement, une classe porte une intention, un dossier contient un ensemble d'intentions associées, pas d'emoji, de véritables icônes SVG, du texte brut écrit pour les personnes et aucun script DOM écrit à la main dans React, Vue, Svelte, Solid ou Preact.
@@ -67,26 +67,26 @@ Les exemples dans les compétences sont vérifiés par les propres tests de Nexy
 
 Un agent répond plus rapidement lorsqu’il sait quelle page contient la réponse.
 
-| Vous avez besoin de | Lire |
+| Vous avez besoin | Lire |
 |---|---|
-| le produit, sur une seule page | [README](../README.md) |
-| exécuter un projet | [démarrage](../getting-started/quick-start.md) |
+| le produit, en une seule page | [LISEZMOI](../README.md) |
+| mener un projet | [pour commencer](../getting-started/quick-start.md) |
 | l'URL d'un fichier | [routage](../routing/README.md) |
 | segments dynamiques, mises en page, pages d'erreur | [pages](../routing/fbr/pages/README.md) |
-| le chemin actuel, la requête, les cookies, la session | [hooks](../routing/fbr/navigation/hooks.md) |
-| pour éditer une page | [fichiers .nexy](../views/nexy/README.md) ou [vues](../views/README.md) |
-| Markdown ou MDX | [markdown](../views/nexy/markdown.md) |
+| le chemin actuel, la requête, les cookies, la session | [crochets](../routing/fbr/navigation/hooks.md) |
+| pour modifier une page | [Fichiers .nexy](../views/nexy/README.md) ou [vues](../views/README.md) |
+| Markdown ou MDX | [démarque](../views/nexy/markdown.md) |
 | assistants HTML intégrés | [composants](../views/nexy/components.md) |
-| mode de rendu | [SSR](../rendering/ssr.md), [CSR](../rendering/csr.md), [ISR](../rendering/isr.md) |
+| mode de rendu | [RSS](../rendering/ssr.md), [RSE](../rendering/csr.md), [ISR](../rendering/isr.md) |
 | un WebSocket | [websocket](../routing/fbr/realtime/websocket.md) |
 | contrôleurs et modules | [modulaire](../routing/modular/README.md) |
 | pour ajouter un point de terminaison | [API](../routing/fbr/handlers/README.md) |
-| un formulaire posté à partir d'une page | [actions](actions.md) |
-| pourquoi une requête a échoué et quelle page y répond | [exceptions](../reference/exceptions.md) |
+| un formulaire publié à partir d'une page | [actions](actions.md) |
+| pourquoi une demande a échoué et quelle page y répond | [exceptions](../reference/exceptions.md) |
 | traductions | [i18n](i18n.md) |
 | un champ de configuration | [configuration](../reference/config.md) |
 | pour tester l'application | [tests](testing.md) |
-| la build du client | [frontend](frontend.md) |
+| la construction du client | [interface](frontend.md) |
 
 ## Invariants du projet
 
@@ -110,6 +110,6 @@ Lorsque la documentation et le code ne sont pas d'accord, faites confiance au co
 ## Prochaines étapes
 
 - [CLI](../reference/cli.md) : `nx new` et `nx skills`
-- [Conventions de fichiers](../reference/file-conventions.md) : noms réservés et règles de routage
+- [Conventions de fichiers](../reference/file-conventions.md) : noms réservés et règles de routage
 - [Glossaire](../reference/glossary.md) : les mots sur lesquels s'appuient ces règles
-- [Sécurité](../reference/security.md) : la version planchers sur laquelle pointe la compétence de sécurité
+- [Sécurité](../reference/security.md) : la version indique la compétence de sécurité vers laquelle pointe

@@ -151,7 +151,7 @@ children: prop[NexyElement]
 {% include "card.html" with title="Latest" body="This week" %}
 ```
 
-Um componente é um arquivo `.nexy` com adereços digitados e um slot para seus filhos:
+Um componente é um arquivo `.nexy` com o tipo props e um slot para seus filhos:
 
 ```nexy filename="src/componentes/Card.nexy"
 ---
@@ -460,7 +460,7 @@ Um projeto Django é dividido em aplicativos. No Nexy, uma pasta de `src/routes/
 
 ## O administrador
 
-Nexy não tem site de administração. Monte um dos FastAPI pacotes de administração, como SQLAdmin, ou crie as páginas necessárias a partir de `.nexy` arquivos e ações.
+Nexy não tem site de administração. Monte um dos pacotes de administração FastAPI, como SQLAdmin, ou crie as páginas necessárias a partir de `.nexy` arquivos e ações.
 
 ## Testes
 

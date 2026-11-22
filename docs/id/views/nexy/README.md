@@ -57,7 +57,7 @@ class PostController:
 
 ## Masalah depan
 
-Segala sesuatu di antara dua garis `---` adalah Python. Impor diselesaikan saat komponen dikompilasi; sisanya berjalan untuk setiap permintaan, sehingga dapat membaca status permintaan.
+Segala sesuatu di antara dua garis `---` adalah Python. Impor diselesaikan ketika komponen dikompilasi; sisanya berjalan untuk setiap permintaan, sehingga dapat membaca status permintaan.
 
 | Apa | Contoh |
 |---|---|
@@ -88,7 +88,7 @@ Di bawah frontmatter adalah HTML dengan Jinja2. Variabel dari frontmatter dan pr
 {% endif %}
 ```
 
-Pelarian otomatis **nonaktif**: templat adalah HTML milik proyek, jadi `{{ value }}` dimasukkan seperti yang tertulis. Hilangkan nilai-nilai yang tidak dipercaya dengan `{{ value | e }}`. `| safe` oleh karena itu tidak mengubah apa pun.
+Pelarian otomatis **tidak aktif**: templat adalah HTML milik proyek, jadi `{{ value }}` dimasukkan seperti yang tertulis. Hilangkan nilai-nilai yang tidak dipercaya dengan `{{ value | e }}`. `| safe` oleh karena itu tidak mengubah apa pun.
 
 > [!NOTE]
 > bungkus JavaScript yang berisi `{{` atau `{%` di `{% raw %}...{% endraw %}`. Kerangka kerja seperti Vue dan Svelte menggunakan tanda kurung kurawal yang sama.
@@ -129,7 +129,7 @@ Baris terakhir tepatnya `{{ Audio("/theme.mp3", controls=True) }}`. Kedua sintak
 
 Anak-anak dirender melalui `<Slot />` (huruf kapital S) di dalam komponen anak, dan melalui `{{ children }}` di dalam tata letak.
 
-Berikan nilai yang dihitung dengan Jinja di dalam atribut: `<Icon path="{{ icon }}" size="{{ size }}" />`. Nama kosong seperti `path=icon` adalah teks `icon`, bukan variabelnya. Untuk memberikan komponen kelas CSS, deklarasikan prop `class_name`: `class` adalah kata kunci Python.
+Berikan nilai yang dihitung dengan Jinja di dalam atribut: `<Icon path="{{ icon }}" size="{{ size }}" />`. Nama kosong seperti `path=icon` adalah teks `icon`, bukan variabelnya. Untuk memberikan komponen kelas CSS, deklarasikan `class_name` prop: `class` adalah kata kunci Python.
 
 > [!NOTE]
 > tag pembantu selalu menutup sendiri. Meneruskan konten ke `Link` melewati argumen `children` (`<Link href="/about" children="About" />`), bukan melalui konten elemen.
@@ -141,7 +141,7 @@ Berikan nilai yang dihitung dengan Jinja di dalam atribut: `<Icon path="{{ icon 
 ## Aturan yang menghemat waktu
 
 - Satu komponen per file. Nama file adalah nama komponen, dalam PascalCase (`CopyChip.nexy`). Komponen `.nexy` diimpor sebagai modul Python: tanda hubung pada nama (`copy-chip.nexy`) tidak dapat dikompilasi.
-- Deklarasikan props sebelum menggunakannya: variabel yang tidak dideklarasikan dirender sebagai string kosong, karena undefinisi Jinja2 tidak bersuara di sini.
+- Deklarasikan props sebelum menggunakannya: variabel yang tidak dideklarasikan dirender sebagai string kosong, karena undefinisi Jinja2 tidak ada di sini.
 - Pertahankan efek samping di dalam fungsi - materi depan berjalan kembali pada setiap permintaan.
 
 ## Langkah selanjutnya

@@ -90,7 +90,7 @@ Die Seite ist die Komponente, die durch den Skriptblock der Datei `.svelte` defi
 
 ### Dynamische Segmente
 
-URL-Parameter gelangen als Requisiten über die Rune `$props()` auf die Seite:
+URL-Parameter erreichen die Seite als props über die Rune `$props()`:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -151,7 +151,7 @@ from "@/components/Counter.svelte" import Counter
 
 ### Trinkrichtlinien
 
-Verwenden Sie die Requisite `directive`, um zu steuern, wann die Insel hydratisiert:
+Verwenden Sie `directive` prop, um zu steuern, wann die Insel hydratisiert:
 
 - `client:load` (Standard): sofort
 - `client:idle`: wenn der Browser inaktiv ist
@@ -191,7 +191,7 @@ Verwenden Sie die Komponente `Link` für clientseitige Übergänge:
 <Link href="/about" activeClass="active">About</Link>
 ```
 
-Verwenden Sie für die programmatische Navigation das `router`-Objekt von `@nexy/client`:
+Für die programmatische Navigation verwenden Sie das `router`-Objekt von `@nexy/client`:
 
 ```ts
 import { router } from "@nexy/client";

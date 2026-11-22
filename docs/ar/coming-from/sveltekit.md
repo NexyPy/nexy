@@ -48,7 +48,7 @@ class NexyConfig(NexyConfigModel):
 <h1>{page.params.slug}</h1>
 ```
 
-تصل المقاطع إلى الصفحة كدعائم:
+تصل المقاطع إلى الصفحة كـ props:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -291,7 +291,7 @@ export async function handle({ event, resolve }) {
 }
 ```
 
-اختبار المسار هو المجلد. الجذر `middleware.py` يغطي كل شيء، `dashboard/middleware.py` فقط المسارات الموجودة تحته:
+اختبار المسار هو المجلد. الجذر `middleware.py` يغطي كل شيء، `dashboard/middleware.py` فقط المسارات الموجودة أسفله:
 
 ```python filename="src/routes/middleware.py"
 from nexy.http import Request
@@ -381,7 +381,7 @@ metadata = {"title": "Blog", "description": "Posts about Nexy"}
 <button onclick={() => count++}>{count}</button>
 ```
 
-في وضع الخادم، يكون المكون عبارة عن جزيرة من صفحة `.nexy`:
+في وضع الخادم، يكون المكون عبارة عن جزيرة من `.nexy` صفحة:
 
 ```nexy filename="src/routes/home.nexy"
 ---
@@ -413,7 +413,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///dev.db")
 |---|---|
 | `npx sv create` | `nx new`، القالب `web-fbr-svelte` |
 | `vite dev` | `nx dev` |
-| `vite build` مع محول، ثم `node build` | `nx build`، ثم `nx start` |
+| `vite build` بالمحول ثم `node build` | `nx build`، ثم `nx start` |
 | `static/` | `public/`، خدم في `/` |
 | `src/lib/` و `$lib` | `src/components/` و `@` |
 

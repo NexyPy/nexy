@@ -42,7 +42,7 @@ class NexyConfig(NexyConfigModel):
 - `useTrustedHost` 设置为您的域，以阻止主机标头攻击。
 - `useCORS` 具有明确的来源，绝不 `["*"]` 与凭证一起。
 - 一个真正的会话 `secret_key`，从环境中读取。
-- 传递给客户端组件的属性由 Nexy 进行 HTML 转义。不要在模板中标记用户输入 `| safe`。
+- 传递给客户端组件的 Props 由 Nexy 进行 HTML 转义。不要在模板中标记用户输入 `| safe`。
 
 ## 守卫和依赖
 

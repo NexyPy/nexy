@@ -151,7 +151,7 @@ from "@/components/Counter.svelte" import Counter
 
 ### Arahan hidrasi
 
-Gunakan prop `directive` untuk mengontrol kapan pulau terhidrasi:
+Gunakan `directive` prop untuk mengontrol kapan pulau terhidrasi:
 
 - `client:load` (default): segera
 - `client:idle`: saat browser dalam keadaan idle

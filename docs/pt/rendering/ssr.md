@@ -120,7 +120,7 @@ Um erro gerado durante a renderização é respondido com a página de erro padr
 ## Quando usar
 
 - A página mostra algo que o leitor possui: uma sessão, uma conta, um carrinho.
-- Os dados devem ser atualizados em cada carga.
+- Os dados devem ser atualizados em cada carregamento.
 - O conteúdo deve estar no HTML para crawlers que não rodam JavaScript.
 - A página é barata para renderizar: uma consulta, um modelo.
 
@@ -193,7 +193,7 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello` executa este modelo uma vez, com `slug` definido como `hello`. Uma segunda solicitação o executa novamente: nada é mantido entre os dois. A string de consulta não é uma propriedade - leia-a com os ganchos em [navegação](../routing/fbr/navigation/hooks.md).
+`GET /blog/hello` executa este modelo uma vez, com `slug` definido como `hello`. Uma segunda solicitação o executa novamente: nada é mantido entre os dois. A string de consulta não é prop - leia-a com os ganchos em [navegação](../routing/fbr/navigation/hooks.md).
 <!-- /router -->
 
 <!-- router:modular -->
@@ -215,7 +215,7 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello/` executa esta visualização uma vez, com `slug` definido como `hello`. Uma segunda solicitação o executa novamente: nada é mantido entre os dois. A string de consulta não é uma propriedade - leia-a com `useSearchParams`.
+`GET /blog/hello/` executa esta visualização uma vez, com `slug` definido como `hello`. Uma segunda solicitação o executa novamente: nada é mantido entre os dois. A string de consulta não é prop - leia-a com `useSearchParams`.
 <!-- /router -->
 
 ## Limitações

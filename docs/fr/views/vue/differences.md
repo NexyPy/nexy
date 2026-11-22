@@ -88,7 +88,7 @@ La page est le composant défini par le bloc `<script setup>`.
 
 ### Segments dynamiques
 
-Les paramètres d'URL atteignent la page en tant qu'accessoires. Vous pouvez les déclarer en utilisant `defineProps` :
+Les paramètres d'URL atteignent la page sous la forme props. Vous pouvez les déclarer en utilisant `defineProps` :
 
 ```vue filename="src/routes/blog/[slug].vue"
 <script setup lang="ts">
@@ -148,7 +148,7 @@ from "@/components/Counter.vue" import Counter
 
 ### Directives d'hydratation
 
-Utilisez l'accessoire `directive` pour contrôler le moment où l'île s'hydrate :
+Utilisez les `directive` prop pour contrôler quand l'île s'hydrate :
 
 - `client:load` (par défaut) : immédiatement
 - `client:idle` : lorsque le navigateur est inactif
@@ -212,4 +212,4 @@ Tous les hooks de localisation renvoient des références calculées :
 ## Prochaines étapes
 
 - [Vues](../README.md) : comparez les formats qu'une page peut utiliser
-- [Frontend](../../guides/frontend.md) : Vite et la build client
+- [Frontend](../../guides/frontend.md) : Vite et la version client

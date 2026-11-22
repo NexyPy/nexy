@@ -1,6 +1,6 @@
 # Vue
 
-Nexy rendert Vue 3 Einzeldateikomponenten auf dem Server und übernimmt sie dann Vue im Browser. Seiten, Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile, die sich von den [gemeinsamen Verträgen](../frontend/pages.md) unterscheiden.
+Nexy rendert Vue 3 einzelne Dateikomponenten auf dem Server und übernimmt sie dann Vue im Browser. Seiten, Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile, die sich von den [gemeinsamen Verträgen](../frontend/pages.md) unterscheiden.
 
 <!-- router:fbr,custom -->
 | Modus | `nexyconfig.py` | Seiten sind | Vue ist |
@@ -88,7 +88,7 @@ Die Seite ist die durch den Block `<script setup>` definierte Komponente.
 
 ### Dynamische Segmente
 
-URL-Parameter gelangen als Requisiten auf die Seite. Sie können sie mit `defineProps` deklarieren:
+URL-Parameter erreichen die Seite als props. Sie können sie mit `defineProps` deklarieren:
 
 ```vue filename="src/routes/blog/[slug].vue"
 <script setup lang="ts">
@@ -106,7 +106,7 @@ Alternativ können Sie den Hook `useParams` von `@nexy/client` in einer beliebig
 
 ### Umsetzung
 
-Das Root-Layout definiert die Dokumenthülle. Verschachtelte Layouts umschließen den Inhalt in seinem Standard-Slot.
+Das Root-Layout definiert die Dokumenthülle. Verschachtelte Layouts umschließen den Inhalt in ihrem Standard-Slot.
 
 ```vue filename="src/routes/layout.vue"
 <template>
@@ -126,7 +126,7 @@ Im Servermodus ist eine in eine `.nexy`-Datei importierte Vue-Komponente eine In
 
 ### Importieren
 
-Importieren Sie Komponenten im Frontmatter der Datei `.nexy`:
+Importieren Sie Komponenten in die Frontmatter der Datei `.nexy`:
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
@@ -148,7 +148,7 @@ from "@/components/Counter.vue" import Counter
 
 ### Trinkrichtlinien
 
-Verwenden Sie die Requisite `directive`, um zu steuern, wann die Insel hydratisiert:
+Verwenden Sie `directive` prop, um zu steuern, wann die Insel hydratisiert:
 
 - `client:load` (Standard): sofort
 - `client:idle`: wenn der Browser inaktiv ist

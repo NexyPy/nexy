@@ -13,7 +13,7 @@ nx test --no-server --client  # vitest only
 
 | Bagian | Perintah | Kondisi |
 |---|---|---|
-| Server | `pytest` | berjalan pada `tests/` jika ada, sebaliknya pada root proyek; dilewati dengan peringatan ketika pytest tidak diinstal |
+| pelayan | `pytest` | berjalan di `tests/` jika ada, jika tidak di root proyek; dilewati dengan peringatan ketika pytest tidak diinstal |
 | Klien | `npx vitest run` | hanya dengan `--client`, dan hanya jika `vitest.config.ts` ada atau `vitest` muncul di `package.json` |
 
 Tidak ada pelari end-to-end bawaan. Jalankan server dengan `TestClient` dan tambahkan Playwright atau Cypress sendiri untuk perilaku browser.
@@ -93,7 +93,7 @@ Panggilan dengan JSON menjawab dengan hasilnya, dan `422` dengan bidang yang tid
 
 ## Uji komponen `.nexy`
 
-`nexy.testing.render` mengkompilasi sebuah komponen, dengan komponen yang diimpornya, dan mengembalikan HTML-nya. Props adalah argumen kata kunci dan `children=` mengisi slotnya:
+`nexy.testing.render` mengkompilasi sebuah komponen, dengan komponen yang diimpornya, dan mengembalikan HTML-nya. Props adalah argumen kata kunci dan `children=` mengisi slot:
 
 ```python filename="tes/test_button.py"
 from nexy.testing import render
@@ -103,7 +103,7 @@ def test_button_shows_its_label():
     assert "Save" in render("src/components/button.nexy", label="Save")
 ```
 
-Jalankan pytest dari root proyek: file yang dikompilasi menuju ke `__nexy__/`, seperti halnya `nx dev`. Komponen yang membaca permintaan (`usePathname`, `useSession`) memerlukan pengujian halaman dengan `TestClient` sebagai gantinya.
+Jalankan pytest dari root proyek: file yang dikompilasi masuk ke `__nexy__/`, seperti `nx dev`. Komponen yang membaca permintaan (`usePathname`, `useSession`) memerlukan pengujian halaman dengan `TestClient` sebagai gantinya.
 
 ## Uji klien
 

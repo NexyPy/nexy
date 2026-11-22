@@ -42,7 +42,7 @@ Servez HTTPS directement avec `useSslKeyfile` et `useSslCertfile`, ou terminez T
 - `useTrustedHost` défini sur vos domaines, pour bloquer les attaques d'en-tête d'hôte.
 - `useCORS` avec des origines explicites, jamais `["*"]` avec des informations d'identification.
 - Un vrai `secret_key` pour les sessions, lu depuis l'environnement.
-- Les accessoires transmis aux composants clients sont échappés en HTML par Nexy. Ne marquez pas les entrées utilisateur `| safe` dans les modèles.
+- Props transmis aux composants client sont échappés en HTML par Nexy. Ne marquez pas les entrées utilisateur `| safe` dans les modèles.
 
 ## Gardes et dépendances
 

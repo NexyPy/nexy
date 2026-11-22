@@ -38,7 +38,7 @@ export default function Nav() {
 }
 ```
 
-| 道具 | 含义 |
+| Prop | 含义 |
 |---|---|
 | `href` | 项目的路径（拼写错误是类型错误），可以选择使用 `?query` 或 `#fragment`，或外部 URL。 |
 | `replace` | 替换历史条目而不是添加历史条目。 |
@@ -103,14 +103,14 @@ export default function Breadcrumb() {
 }
 ```
 
-## 捕获失败并显示 `ErrorBoundary` 的页面
+## 捕获失败的页面 `ErrorBoundary`
 
-`ErrorBoundary` 当其中一个在浏览器中呈现时抛出异常时，将显示后备而不是其子级。后备接收错误和 `reset`，这会再次渲染子级。
+`ErrorBoundary` 当其中一个在浏览器中呈现时抛出异常时，会显示后备而不是其子级。后备接收错误和 `reset`，这会再次渲染子级。
 
 | 框架 | 进口 | 回退 |
 |---|---|---|
 | React，Preact，Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
-| Vue | `import { ErrorBoundary } from "@nexy/client"` | 一个 `fallback` 函数道具；孩子们进入默认插槽 |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | 一个 `fallback` 函数 prop；孩子们进入默认插槽 |
 | Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | 一个 `fallback` 片段 |
 
 ```tsx
@@ -137,7 +137,7 @@ import { ErrorBoundary } from "@nexy/client";
 
 ## 在离开未保存更改的页面之前询问
 
-`useBlocker(dirty, message?)` 在访问者离开前询问，而 `dirty` 为 true：链接、`router.push`、后退和前进按钮、重新加载和关闭选项卡。客户端导航在 `confirm()` 中显示 `message`：yes 继续，no 停留在页面上。重新加载或关闭选项卡会显示浏览器自己的问题，没有页面可以说出该问题。如果没有消息，问题是“您有未保存的更改。离开此页面吗？”。
+`useBlocker(dirty, message?)` 在访客离开前询问，而 `dirty` 为 true：链接、`router.push`、后退和前进按钮、重新加载和关闭选项卡。客户端导航在 `confirm()` 中显示 `message`：yes 继续，no 停留在页面上。重新加载或关闭选项卡会显示浏览器自己的问题，没有页面可以说出该问题。如果没有消息，问题是“您有未保存的更改。离开此页面吗？”。
 
 ```tsx
 import { useState } from "react";

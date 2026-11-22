@@ -106,7 +106,7 @@ import Base from "../layouts/Base.astro";
 
 Sebuah halaman tidak mengimpor tata letaknya: `layout.nexy` terdekat di atasnya membungkusnya, dan halaman root memiliki dokumen tersebut.
 
-```nexy filename="src/routes/layout.nexy"
+```nexy filename="src/route/layout.nexy"
 ---
 from nexy import useMetadata
 
@@ -121,7 +121,7 @@ children: prop[NexyElement]
 
 ## Judul dan meta tag
 
-Prop `title` tata letak menjadi `metadata` di halaman, yang `useMetadata().html()` tulis di `<head>` tata letak di atas:
+`title` prop tata letak menjadi `metadata` di halaman, yang `useMetadata().html()` tulis di `<head>` tata letak di atas:
 
 ```nexy filename="src/rute/blog.nexy"
 ---
@@ -145,7 +145,7 @@ const { title } = Astro.props;
 <h1>{title}</h1>
 ```
 
-Halaman dinamis `.nexy` dirender berdasarkan permintaan, jadi tidak ada daftar jalur: segmen adalah prop, dan yang tidak diketahui adalah `404`.
+Halaman dinamis `.nexy` dirender berdasarkan permintaan, sehingga tidak ada daftar jalur: segmennya adalah prop, dan yang tidak diketahui adalah `404`.
 
 ```nexy filename="src/rute/postingan/[siput].nexy"
 ---
@@ -235,7 +235,7 @@ async def GET(id: int):
     return {"id": id}
 ```
 
-Badan adalah model Pydantic, yang divalidasi sebelum fungsi dijalankan:
+Tubuh adalah model Pydantic, divalidasi sebelum fungsi berjalan:
 
 ```python filename="src/routes/api/items/index.py"
 from pydantic import BaseModel
@@ -327,7 +327,7 @@ import { actions } from "astro:actions";
 
 Suatu tindakan adalah fungsi Python di `src/actions/`; formulir memposting ke jalurnya:
 
-```python filename="src/aksi/catatan.py"
+```python filename="src/tindakan/catatan.py"
 from nexy.decorators import Action
 
 NOTES: list[str] = []

@@ -96,7 +96,7 @@ def post_list(request):
     return render(request, "blog/post_list.html", {"posts": posts})
 ```
 
-```html filename="blog/templat/blog/post_list.html"
+```html filename="blog/template/blog/post_list.html"
 {% extends "base.html" %}
 {% block content %}
 <ul>
@@ -131,7 +131,7 @@ posts = [{"title": "Hello"}, {"title": "Second"}]
 
 `layout.nexy` membungkus setiap halaman foldernya dan di bawahnya, tanpa `{% extends %}` di halaman:
 
-```nexy filename="src/routes/layout.nexy"
+```nexy filename="src/route/layout.nexy"
 ---
 children: prop[NexyElement]
 ---
@@ -151,7 +151,7 @@ children: prop[NexyElement]
 {% include "card.html" with title="Latest" body="This week" %}
 ```
 
-Komponen adalah file `.nexy` dengan props yang diketik dan slot untuk turunannya:
+Komponen adalah file `.nexy` dengan tipe props dan slot untuk turunannya:
 
 ```nexy filename="src/components/Card.nexy"
 ---

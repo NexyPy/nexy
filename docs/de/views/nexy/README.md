@@ -41,7 +41,7 @@ pathname = usePathname()
 </style>
 ```
 
-Der Controller übergibt `slug` von seinem Pfad:
+The controller passes `slug` from its path:
 
 ```python filename="src/apps/blog/post_controller.py"
 from nexy.decorators import Controller
@@ -76,7 +76,7 @@ Importe, die mit einem Alias ​​beginnen, werden über `useAliases` aufgelös
 
 ## Vorlage
 
-Unterhalb der Vorderseite befindet sich HTML mit Jinja2. Variablen aus der Frontmatter und den Eigenschaften liegen im Gültigkeitsbereich.
+Below the frontmatter is HTML with Jinja2. Variablen aus der Frontmatter und den Eigenschaften liegen im Gültigkeitsbereich.
 
 ```html
 {% for item in items %}
@@ -88,7 +88,7 @@ Unterhalb der Vorderseite befindet sich HTML mit Jinja2. Variablen aus der Front
 {% endif %}
 ```
 
-Autoescaping ist **aus**: Vorlagen sind der eigene HTML-Code des Projekts, daher wird `{{ value }}` wie geschrieben eingefügt. Entfliehen Sie selbst unsicheren Werten mit `{{ value | e }}`. `| safe` ändert also nichts.
+Autoescaping ist **aus**: Vorlagen sind der eigene HTML-Code des Projekts, daher wird `{{ value }}` wie geschrieben eingefügt. Escape untrusted values yourself with `{{ value | e }}`. `| safe` therefore changes nothing.
 
 > [!NOTE]
 > Wickeln Sie JavaScript ein, das `{{` oder `{%` in `{% raw %}...{% endraw %}` enthält. Frameworks wie Vue und Svelte verwenden dieselben geschweiften Klammern.
@@ -129,19 +129,19 @@ Die letzte Zeile ist genau `{{ Audio("/theme.mp3", controls=True) }}`. Beide Syn
 
 Untergeordnete Elemente werden durch `<Slot />` (Großbuchstabe S) innerhalb der untergeordneten Komponente und durch `{{ children }}` innerhalb eines Layouts gerendert.
 
-Übergeben Sie einen berechneten Wert mit Jinja innerhalb des Attributs: `<Icon path="{{ icon }}" size="{{ size }}" />`. Ein bloßer Name wie `path=icon` ist der Text `icon`, nicht die Variable. Um einer Komponente eine CSS-Klasse zu geben, deklarieren Sie eine `class_name`-Requisite: `class` ist ein Python-Schlüsselwort.
+Übergeben Sie einen berechneten Wert mit Jinja innerhalb des Attributs: `<Icon path="{{ icon }}" size="{{ size }}" />`. Ein bloßer Name wie `path=icon` ist der Text `icon`, nicht die Variable. Um einer Komponente eine CSS-Klasse zu geben, deklarieren Sie ein `class_name` prop: `class` ist ein Python-Schlüsselwort.
 
 > [!NOTE]
 > Ein Hilfstag ist immer selbstschließend. Die Übergabe von Inhalten an `Link` erfolgt über dessen `children`-Argument (`<Link href="/about" children="About" />`), nicht über den Elementinhalt.
 
 ## Stile
 
-`<style>` Blöcke werden mit der Seite ausgegeben, die sie deklariert. Sie haben keinen Gültigkeitsbereich: Ein Klassenname, der in zwei Komponenten verwendet wird, ist eine Klasse. Setzen Sie Ihren Klassen ein Präfix oder einen Namensraum.
+`<style>` Blöcke werden mit der Seite ausgegeben, die sie deklariert. Sie haben keinen Gültigkeitsbereich: Ein Klassenname, der in zwei Komponenten verwendet wird, ist eine Klasse. Prefix or namespace your classes.
 
 ## Regeln, die Zeit sparen
 
 - Eine Komponente pro Datei. Der Dateiname ist der Komponentenname in PascalCase (`CopyChip.nexy`). Eine `.nexy`-Komponente wird als Python-Modul importiert: Ein Bindestrich im Namen (`copy-chip.nexy`) wird nicht kompiliert.
-- Deklarieren Sie Requisiten, bevor Sie sie verwenden: Eine nicht deklarierte Variable wird als leere Zeichenfolge gerendert, da die undefinierte Variable von Jinja2 hier stumm ist.
+- Deklarieren Sie props, bevor Sie sie verwenden: Eine nicht deklarierte Variable wird als leere Zeichenfolge gerendert, da die undefinierte Variable von Jinja2 hier stumm ist.
 - Behalten Sie Nebenwirkungen innerhalb der Funktionen bei – der Frontmatter wird bei jeder Anfrage erneut ausgeführt.
 
 ## Nächste Schritte

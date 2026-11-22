@@ -98,7 +98,7 @@ En mode serveur, le serveur restitue chaque page, `revalidate` met en cache une 
 
 **Vite ne remplace pas Nexy.** Vite regroupe et sert le code client. Il n'achemine pas une requête, n'affiche pas de page `.nexy`, n'exécute pas d'action et ne possède pas l'origine. Le navigateur communique avec une seule origine - celle de Nexy - et en cours de développement avec les proxys Nexy Les points de terminaison de Vite le traversent, il n'y a donc pas de CORS à configurer.
 
-**Nexy ne remplace pas React.** Nexy décide quel composant est rendu, quand et avec quels accessoires ; le framework possède le modèle de composants, la réactivité et l'écosystème. Une page `.nexy` importe un composant sous forme d'îlot ; en mode client, une route *est* un composant.
+**Nexy ne remplace pas React.** Nexy décide quel composant rend, quand et avec quoi props ; le framework possède le modèle de composants, la réactivité et l'écosystème. Une page `.nexy` importe un composant sous forme d'îlot ; en mode client, une route *est* un composant.
 
 Pour une route de composant, Python écrit uniquement un module wrapper léger qui pointe vers le fichier. La compilation et le rendu côté serveur sont le travail de Vite.
 

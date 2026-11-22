@@ -104,7 +104,7 @@ uv add --dev debugpy
 python -m debugpy --listen 127.0.0.1:5678 --wait-for-client -m nexy.modules.cli dev
 ```
 
-`--wait-for-client` يبقي على البداية حتى يتم إرفاق مصحح الأخطاء؛ اتركه ليبدأ على الفور. في VS Code، قم بإرفاق تكوين `"request": "attach"` و `"connect": { "host": "127.0.0.1", "port": 5678 }`.
+`--wait-for-client` يحفظ البداية حتى يتم إرفاق مصحح الأخطاء؛ اتركه ليبدأ على الفور. في VS Code، قم بإرفاق تكوين `"request": "attach"` و `"connect": { "host": "127.0.0.1", "port": 5678 }`.
 
 قد يحذر debugpy من أنه "يتم استخدام الوحدات النمطية المجمدة". ابدأ Python بـ `-Xfrozen_modules=off` (`python -Xfrozen_modules=off -m debugpy ...`) في حالة فقدان نقطة توقف في المكتبة القياسية؛ لا تتأثر نقاط التوقف في التعليمات البرمجية الخاصة بك.
 
@@ -112,4 +112,4 @@ python -m debugpy --listen 127.0.0.1:5678 --wait-for-client -m nexy.modules.cli 
 
 - [استكشاف الأخطاء وإصلاحها](troubleshooting.md): أول المشاكل التي يتعرض لها الناس
 - [الاختبار ](testing.md): قم بإعادة إنتاج الخطأ في الاختبار بمجرد العثور عليه
-- [ملفات .nexy](../views/nexy/README.md): المادة الأمامية والدعائم والقوالب
+- [ملفات .nexy](../views/nexy/README.md): المادة الأمامية، props والقوالب

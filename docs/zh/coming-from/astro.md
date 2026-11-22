@@ -61,7 +61,7 @@ const { title, tone = "neutral" } = Astro.props;
 </article>
 ```
 
-props 使用 `prop[...]` 声明，默认值是 Python 默认值，`<slot />` 是 `<Slot />`：
+Props 用 `prop[...]` 声明，默认值是 Python 默认值，`<slot />` 是 `<Slot />`：
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -83,7 +83,7 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`@` 是 `src/`：`nx new` 在 `nexyconfig.py` 中写入 `useAliases = {"@": "src"}`。
+`@` 是 `src/`：`nx new` 将 `useAliases = {"@": "src"}` 写入 `nexyconfig.py`。
 
 ## 布局
 
@@ -121,7 +121,7 @@ children: prop[NexyElement]
 
 ## 标题和元标签
 
-布局的 `title` 属性在页面中变为 `metadata`，`useMetadata().html()` 写入上面布局的 `<head>` 中：
+布局的 `title`prop 在页面中变成 `metadata`，`useMetadata().html()` 写入上面布局的 `<head>` 中：
 
 ```nexy filename="src/routes/blog.nexy"
 ---
@@ -145,7 +145,7 @@ const { title } = Astro.props;
 <h1>{title}</h1>
 ```
 
-动态 `.nexy` 页面根据请求呈现，因此没有路径列表：该段是一个 prop，未知的一个是 `404`。
+动态 `.nexy` 页面根据请求呈现，因此没有路径列表：该段是 prop，未知的段是 `404`。
 
 ```nexy filename="src/routes/posts/[slug].nexy"
 ---
@@ -279,7 +279,7 @@ page = useSearchParams().get("page", "1")
 
 ## 中间件
 
-```ts filename=""
+```ts filename="src/中间件.ts"
 export function onRequest(context, next) {
   return next().then((response) => {
     response.headers.set("x-app", "demo");
@@ -338,7 +338,7 @@ async def add_note(title: str) -> None:
     NOTES.append(title)
 ```
 
-```nexy filename="src/routes/notes.nexy"
+```nexy filename=""
 ---
 from src.actions.notes import NOTES
 ---

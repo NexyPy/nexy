@@ -63,6 +63,6 @@ class NexyConfig(NexyConfigModel):
 
 ## अगले चरण
 
-- [.nexy फ़ाइलें](nexy/README.md): Python + Jinja2 + प्रॉप्स
+- [.nexy फ़ाइलें](nexy/README.md): Python + Jinja2 + props
 - [Markdown और MDX](nexy/markdown.md): सामग्री पृष्ठ
 - [घटक](nexy/components.md): अंतर्निहित HTML सहायक

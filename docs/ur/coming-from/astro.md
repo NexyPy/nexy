@@ -2,7 +2,7 @@
 
 ایک Nexy `.nexy` صفحہ ایک Astro صفحہ ہوتا ہے جس کے Python کے `---` فرنٹ میٹر میں TypeScript کی بجائے: وہی سرور-پہلا ایچ ٹی ایم ایل، وہی جزیرے اور `client:*` ہدایات، ہر درخواست پر پیش کی جاتی ہیں۔
 
-ذیل میں ہر سیکشن ایک Astro عادت دکھاتا ہے، پھر Nexy میں وہی چیز۔
+نیچے کا ہر حصہ ایک Astro عادت دکھاتا ہے، پھر Nexy میں وہی چیز۔
 
 ## ایک صفحہ
 
@@ -61,7 +61,7 @@ const { title, tone = "neutral" } = Astro.props;
 </article>
 ```
 
-پرپس کا اعلان `prop[...]` کے ساتھ کیا جاتا ہے، ڈیفالٹ ایک Python ڈیفالٹ ہوتا ہے، اور `<slot />` ہوتا ہے `<Slot />`:
+Props کو `prop[...]` کے ساتھ قرار دیا جاتا ہے، ڈیفالٹ ایک Python ڈیفالٹ ہوتا ہے، اور `<slot />` `<Slot />` ہوتا ہے:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -121,7 +121,7 @@ children: prop[NexyElement]
 
 ## عنوان اور میٹا ٹیگز
 
-صفحہ میں ترتیب کا `title` پروپ `metadata` بن جاتا ہے، جسے `useMetadata().html()` اوپر کی ترتیب کے `<head>` میں لکھتا ہے:
+صفحہ میں ترتیب کا `title` prop `metadata` بن جاتا ہے، جسے `useMetadata().html()` اوپر کی ترتیب کے `<head>` میں لکھتا ہے:
 
 ```nexy filename="src/routes/blog.nexy"
 ---
@@ -145,7 +145,7 @@ const { title } = Astro.props;
 <h1>{title}</h1>
 ```
 
-ایک متحرک `.nexy` صفحہ درخواست پر پیش کرتا ہے، اس لیے راستوں کی کوئی فہرست نہیں ہے: سیگمنٹ ایک سہارا ہے، اور ایک نامعلوم ایک `404` ہے۔
+ایک متحرک `.nexy` صفحہ درخواست پر پیش کرتا ہے، لہذا راستوں کی کوئی فہرست نہیں ہے: سیگمنٹ ایک prop ہے، اور ایک نامعلوم ایک `404` ہے۔
 
 ```nexy filename="src/routes/posts/[slug].nexy"
 ---
@@ -222,7 +222,7 @@ Version 2.2 is out.
 
 `.mdx` صفحات بھی کام کرتے ہیں، فریم ورک کے طور پر React یا Preact کے ساتھ۔ دیکھیں [Markdown اور MDX](../views/nexy/markdown.md)۔
 
-## API اختتامی پوائنٹس
+## API کے اختتامی پوائنٹس
 
 ```ts filename="src/pages/api/items/[id].ts"
 export function GET({ params }) {
@@ -298,7 +298,7 @@ async def middleware(request: Request, call_next):
     return response
 ```
 
-ذیلی فولڈر میں ایک `middleware.py` صرف اس کے نیچے کے راستوں کو لپیٹتا ہے، جو `onRequest` کے اندر راستے کی جانچ پڑتال کی جگہ لے لیتا ہے۔
+ذیلی فولڈر میں ایک `middleware.py` صرف اس کے نیچے راستوں کو لپیٹتا ہے، جو `onRequest` کے اندر راستے کی جانچ پڑتال کی جگہ لے لیتا ہے۔
 
 ## Astro اعمال
 
@@ -353,7 +353,7 @@ from src.actions.notes import NOTES
 </ul>
 ```
 
-ایک جزیرے سے، `useAction(add_note)` میں `@nexy/client` ٹائپ شدہ ان پٹ کے ساتھ ایک ہی فنکشن کو کال کرتا ہے۔
+ایک جزیرے سے، `useAction(add_note)` in `@nexy/client` میں ٹائپ شدہ ان پٹ کے ساتھ ایک ہی فنکشن کو کال کرتا ہے۔
 
 ## `<Image />`
 
@@ -386,7 +386,7 @@ API کلائنٹس کو اب بھی `{"detail": "Not Found"}` ملتا ہے۔
 
 ## جامد آؤٹ پٹ اور آن ڈیمانڈ رینڈرنگ
 
-Astro پہلے سے طے شدہ طور پر جامد HTML بناتا ہے اور `output: "server"` یا `export const prerender = false` کے ساتھ ڈیمانڈ پر پیش کرتا ہے۔ Nexy درخواست پر ہر صفحہ کو رینڈر کرتا ہے، اور آپ کے فی یو آر ایل کے منتخب کردہ کو کیش کرتا ہے:
+Astro ڈیفالٹ کے طور پر جامد HTML بناتا ہے اور `output: "server"` یا `export const prerender = false` کے ساتھ ڈیمانڈ پر پیش کرتا ہے۔ Nexy درخواست پر ہر صفحہ کو رینڈر کرتا ہے، اور آپ کے فی یو آر ایل کے منتخب کردہ کو کیش کرتا ہے:
 
 ```nexy filename="src/routes/news.nexy"
 ---

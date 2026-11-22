@@ -20,7 +20,7 @@ Nexy 教程从一个空文件夹构建一个笔记应用程序到生产版本，
 | [1.创建项目](../tutorial/create-the-project.md) | 一个运行的项目 | `nexy new`，`nexy dev` |
 | [2. 页面和布局](../tutorial/pages-and-layouts.md) | 注释页 | 页面、视图、布局 |
 | [3.动态路由和API](../tutorial/dynamic-routes.md) | `/notes/1` 和 `/api/notes` | URL 段、JSON 路由、`notFound` |
-| [4. 组件](../tutorial/components.md) | 每张笔记一张卡 | `.nexy` 组件及其道具 |
+| [4. 组件](../tutorial/components.md) | 每张笔记一张卡 | `.nexy` 组件及其 props |
 
 ### 第二单元：数据
 
@@ -37,14 +37,14 @@ Nexy 教程从一个空文件夹构建一个笔记应用程序到生产版本，
 | 部分 | 您添加的内容 | 你学到了什么 |
 |---|---|---|
 | [10. 创建帐户并登录](../tutorial/accounts.md) | 注册、登录、退出 | 会话、密码散列 |
-| [11.给每个用户自己的注释](../tutorial/own-notes.md) | 属于用户的注释 | 外键，`redirect`，`401` |
+| [11. 给每个用户自己的注释](../tutorial/own-notes.md) | 属于用户的注释 | 外键，`redirect`，`401` |
 | [12. 通过电子邮件重置忘记的密码](../tutorial/password-reset.md) | 通过电子邮件发送的重置链接 | `smtplib`，过期的签名令牌 |
 
 ### 第四单元：互动性
 
 | 部分 | 您添加的内容 | 你学到了什么 |
 |---|---|---|
-| [13. 键入时搜索笔记](../tutorial/search-the-notes.md) | 当您键入内容时会进行过滤的搜索框 | React 岛屿，来自 Python 的道具 |
+| [13. 键入时搜索笔记](../tutorial/search-the-notes.md) | 当您键入内容时会进行过滤的搜索框 | React 岛屿，props 来自 Python |
 | [14. 勾选注释而不重新加载页面](../tutorial/tick-a-note.md) | 每个笔记上都有一个“完成”按钮 | 渐进增强，针对表单和 `fetch` 的一个操作 |
 
 ### 接下来

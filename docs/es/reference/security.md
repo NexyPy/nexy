@@ -12,7 +12,7 @@ Nexy depende de FastAPI, Starlette, Jinja2, Vite y React. Un piso es la versión
 | `python-dotenv` | 1.2.2 | CVE-2026-28684, en el lector del `.env` se carga el archivo `nx migrate` |
 | `fastapi` | 0.133.0 | la primera versión que acepta un Starlette fijo |
 | `jinja2` | 3.1.6 | escape del sandbox a través del filtro `attr` (CVE-2025-27516) |
-| `vite` (proyectos estructurados) | 6.4.5 | `server.fs.deny` omisiones (CVE-2026-53571 en rutas alternativas de Windows; GHSA-rq7h-c2jc-7f22, corregido en 6.4.4; GHSA-8g5g-mxqh-grgj, una omisión de consultas incorporada en 6.4.4, corregida en 6.4.5), y los avisos `launch-editor` corregidos en 6.4.4 |
+| `vite` (proyectos estructurados) | 6.4.5 | `server.fs.deny` omisiones (CVE-2026-53571 en rutas alternativas de Windows; GHSA-rq7h-c2jc-7f22, corregido en 6.4.4; GHSA-8g5g-mxqh-grgj, una omisión de consulta incorporada en 6.4.4, corregida en 6.4.5), y los avisos `launch-editor` corregidos en 6.4.4 |
 | `svelte` (proyectos estructurados) | 5.55.7 | seis avisos XSS de procesamiento de servidor a través de atributos de extensión, nombres de etiquetas dinámicas y `bind:innerText` |
 | `esbuild` (proyectos estructurados) | 0.28.1 | archivo arbitrario leído a través del servidor de desarrollo (GHSA-g7r4-m6w7-qqqr) |
 | `react`, `react-dom` | 19.2.5 | los avisos de 2026 React se refieren a los paquetes `react-server-dom-*`, que Nexy no utiliza; el piso mantiene la línea parchada |
@@ -29,7 +29,7 @@ npm ls vite
 ## Reglas que sigue Nexy
 
 - **Nunca confíes en el encabezado del Host para las rutas.** Nexy lee `scope["path"]`, no `request.url.path`, en su propio middleware (middleware de directorio). Haz lo mismo en el tuyo.
-- **Escape de lo que llega a HTML.** Los accesorios pasados ​​a los componentes del cliente, `Link` atributos, `Image`, `Audio` y `Video` atributos, anclajes de tabla de contenido y `HTTPException` detalles se escapan de HTML. Una plantilla `.nexy` no escapa por sí sola: escriba `{{ value | e }}` para cualquier valor que provenga de un visitante o de la base de datos, y nunca `| safe` en la entrada del usuario.
+- **Escape de lo que llega a HTML.** Props pasados ​​a los componentes del cliente, `Link` atributos, `Image`, `Audio` y `Video` atributos, anclajes de tabla de contenido y `HTTPException` detalles están todos escapados de HTML. Una plantilla `.nexy` no escapa por sí sola: escriba `{{ value | e }}` para cualquier valor que provenga de un visitante o de la base de datos, y nunca `| safe` en la entrada del usuario.
 - **Los puntos finales de desarrollador son de bucle invertido y estrechos.** El punto final de procesamiento de desarrollo (`/__nexy__/render`) solo acepta archivos bajo `src/routes/` con una extensión `.tsx` o `.jsx`, y solo se puede acceder a él a través del servidor de desarrollo, que rechaza encabezados `Host` externos.
 - **Los detalles del error no se filtran.** Una página de error que falla muestra solo el código de estado.
 - **Las respuestas de producción llevan encabezados seguros.** `X-Content-Type-Options: nosniff` y `Referrer-Policy: strict-origin-when-cross-origin`, a menos que su código establezca el suyo propio. El encabezado `Server` no se envía. Agrega `Strict-Transport-Security` y un `Content-Security-Policy` en tu proxy o un middleware: dependen de tu dominio.

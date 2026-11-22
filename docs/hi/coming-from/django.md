@@ -151,7 +151,7 @@ children: prop[NexyElement]
 {% include "card.html" with title="Latest" body="This week" %}
 ```
 
-एक घटक एक `.nexy` फ़ाइल है जिसमें टाइप किए गए प्रॉप्स और उसके बच्चों के लिए एक स्लॉट है:
+एक घटक एक `.nexy` फ़ाइल है जिसमें props टाइप किया गया है और उसके बच्चों के लिए एक स्लॉट है:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -238,7 +238,7 @@ async def GET():
 | `python manage.py makemigrations` | `nx migrate -m "add posts"` |
 | `python manage.py migrate` | `nx migrate --upgrade` |
 
-`nx migrate` SQLModel और SQLAlchemy के लिए Alembic, और टोर्टोइज़-ओआरएम के लिए Aerich ड्राइव करता है।
+`nx migrate` ड्राइव Alembic के लिए SQLModel और SQLAlchemy, और Aerich टोर्टोइज़-ओआरएम के लिए।
 
 ## फॉर्म और सीएसआरएफ
 

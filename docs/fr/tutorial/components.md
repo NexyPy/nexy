@@ -6,7 +6,7 @@ La partie 4 transforme chaque note en un composant réutilisable, un fichier `.n
 
 ## Écrire le composant
 
-Un composant est un fichier `.nexy` en dehors des routes. Ses accessoires sont déclarés avec `prop[...]`, et l'appelant les transmet comme attributs :
+Un composant est un fichier `.nexy` en dehors des routes. Ses props sont déclarés avec `prop[...]`, et l'appelant les passe en attributs :
 
 ```nexy filename="src/components/NoteCard.nexy"
 ---
@@ -22,7 +22,7 @@ text: prop[str]
 </style>
 ```
 
-Le bloc `<style>` est envoyé avec chaque page qui utilise la carte. Sa portée n'est pas étendue : `.note` est une classe pour la page entière, donnez donc les noms des classes d'un composant que lui seul utilise.
+Le bloc `<style>` est envoyé avec chaque page qui utilise la carte. Sa portée n'est pas étendue : `.note` est une classe pour toute la page, donnez donc les noms des classes d'un composant que lui seul utilise.
 
 ## Utilisez-le dans la liste
 

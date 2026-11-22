@@ -144,7 +144,7 @@ async def publish(post_id: int) -> bool:
 
 | 名称 | 它是什么 |
 |---|---|
-| `render` | 给定 props 的 `.nexy` 组件的 HTML，没有服务器，请参阅 [测试](../guides/testing.md) |
+| `render` | 给定 props 的 `.nexy` 组件的 HTML，没有服务器，请参阅 [测试 ](../guides/testing.md) |
 
 ```python filename="测试/test_button.py"
 from nexy.testing import render

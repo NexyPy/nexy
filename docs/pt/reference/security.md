@@ -17,7 +17,7 @@ Nexy depende de FastAPI, Starlette, Jinja2, Vite e React. Um piso é a versão m
 | `esbuild` (projetos de andaimes) | 0.28.1 | arquivo arbitrário lido através do servidor de desenvolvimento (GHSA-g7r4-m6w7-qqqr) |
 | `react`, `react-dom` | 19.2.5 | os avisos de 2026 React dizem respeito aos pacotes `react-server-dom-*`, que Nexy não usa; o chão mantém a linha remendada |
 
-`python scripts/audit_dependencies.py` verifica cada andar em relação ao OSV após o bloqueio, também no CI: um novo aviso em um andar falha na auditoria.
+`python scripts/audit_dependencies.py` verifica todos os andares em relação ao OSV após o bloqueio, também no CI: um novo aviso em um andar falha na auditoria.
 
 Verifique suas versões resolvidas:
 
@@ -29,8 +29,8 @@ npm ls vite
 ## Regras que Nexy segue
 
 - **Nunca confie no cabeçalho Host para caminhos.** Nexy lê `scope["path"]`, não `request.url.path`, em seu próprio middleware (middleware de diretório). Faça o mesmo no seu.
-- **Escape do que chega ao HTML.** Props passados ​​para componentes do cliente, `Link` atributos, `Image`, `Audio` e `Video` atributos, âncoras de índice e `HTTPException` detalhes são todos escapados de HTML. Um modelo `.nexy` não escapa por si só: escreva `{{ value | e }}` para qualquer valor que venha de um visitante ou do banco de dados, e nunca `| safe` na entrada do usuário.
-- **Os endpoints do desenvolvedor são somente loopback e estreitos.** O endpoint de renderização de desenvolvimento (`/__nexy__/render`) aceita apenas arquivos em `src/routes/` com uma extensão `.tsx` ou `.jsx` e é acessível apenas através do servidor de desenvolvimento, que recusa cabeçalhos `Host` estrangeiros.
+- **Escape do que chega ao HTML.** Props passado para componentes do cliente, `Link` atributos, `Image`, `Audio` e `Video` atributos, âncoras de índice e `HTTPException` detalhes são todos escapados de HTML. Um modelo `.nexy` não escapa por si só: escreva `{{ value | e }}` para qualquer valor que venha de um visitante ou do banco de dados, e nunca `| safe` na entrada do usuário.
+- **Os endpoints do desenvolvedor são somente loopback e estreitos.** O endpoint de renderização de desenvolvimento (`/__nexy__/render`) aceita apenas arquivos em `src/routes/` com uma extensão `.tsx` ou `.jsx` e é acessível apenas por meio do servidor de desenvolvimento, que recusa cabeçalhos `Host` estrangeiros.
 - **Os detalhes do erro não vazam.** Uma página de erro que falha mostra apenas o código de status.
 - **As respostas de produção carregam cabeçalhos seguros.** `X-Content-Type-Options: nosniff` e `Referrer-Policy: strict-origin-when-cross-origin`, a menos que seu código defina os seus próprios. O cabeçalho `Server` não é enviado. Adicione `Strict-Transport-Security` e um `Content-Security-Policy` em seu proxy ou middleware: eles dependem do seu domínio.
 - **Uma falha mostra uma referência, não o erro.** Consulte [Páginas de erro](../routing/fbr/errors/README.md#unhandled-exceptions).

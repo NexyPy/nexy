@@ -12,7 +12,7 @@
 | 组件 | 用于组成视图的可重用 UI 构建块 ([视图](../views/README.md)) |
 | 企业社会责任 | 客户端渲染：浏览器在第一个文档之后渲染页面（[CSR](../rendering/csr.md)） |
 | 依赖性 | 函数 FastAPI 在处理程序之前运行，每个路由或每个文件夹（[依赖关系](../routing/fbr/dependencies/README.md)） |
-| 文件壳 | 页面周围的 `<html>`、`<head>` 和 `<body>`，由最近的布局或 Nexy ([布局](../routing/fbr/layouts/README.md)) 拥有 |
+| 文件外壳 | 页面周围的 `<html>`、`<head>` 和 `<body>`，由最近的布局或 Nexy ([布局](../routing/fbr/layouts/README.md)) 拥有 |
 | 端点 | URL 和 HTTP 方法的唯一组合 ([视图](../views/README.md)) |
 | 流化床反应器 | 基于文件的路由：`src/routes/` 下的文件是一个路由（[路由](../routing/fbr/README.md)） |
 | 前题 | `.nexy` 或 `.md` 文件（[.nexy 文件](../views/nexy/README.md)）的两个 `---` 行之间的 Python 块 |
@@ -26,7 +26,7 @@
 | 模块化路由器 | 在 `src/apps/` ([模块化](../routing/modular/README.md)) 下使用 `@Module` 和 `@Controller` 声明的路由 |
 | 页面 | 由 `src/routes/` ([视图](../views/README.md)) 下的文件定义的 URL 可寻址资源 |
 | 预取 | 在读者点击链接之前加载链接后面的页面 ([链接](../routing/fbr/navigation/linking-and-navigating.md)) |
-| 道具 | 父级传递给组件的值 ([.nexy 文件](../views/nexy/README.md)) |
+| Props | 父级传递给组件的值 ([.nexy 文件](../views/nexy/README.md)) |
 | 重新验证 | 在后台重建 ISR 页面之前的秒数 ([ISR](../rendering/isr.md)) |
 | 路线 | 由路由文件的路径生成的 URL 模式 ([路由](../routing/README.md)) |
 | 航线组 | 括号中的文件夹，用于对路由进行分组而不添加段（[动态路由](../routing/fbr/pages/dynamic-routes.md)） |

@@ -48,7 +48,7 @@ Une page est le fichier lui-même, nommé d'après son URL :
 <h1>{page.params.slug}</h1>
 ```
 
-Les segments atteignent la page en tant qu'accessoires :
+Les segments atteignent la page sous la forme props :
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">

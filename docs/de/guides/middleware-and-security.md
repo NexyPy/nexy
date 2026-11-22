@@ -42,7 +42,7 @@ Stellen Sie HTTPS direkt mit `useSslKeyfile` und `useSslCertfile` bereit oder be
 - `useTrustedHost` auf Ihre Domains eingestellt, um Host-Header-Angriffe zu blockieren.
 - `useCORS` mit expliziter Herkunft, niemals `["*"]` zusammen mit Anmeldeinformationen.
 - Ein echtes `secret_key` für Sitzungen, gelesen aus der Umgebung.
-- An Client-Komponenten übergebene Requisiten werden von Nexy mit HTML-Escapezeichen versehen. Markieren Sie Benutzereingaben nicht als `| safe` in Vorlagen.
+- Props an Client-Komponenten übergeben werden, werden von Nexy mit HTML-Escapezeichen versehen. Markieren Sie Benutzereingaben nicht als `| safe` in Vorlagen.
 
 ## Wachen und Abhängigkeiten
 

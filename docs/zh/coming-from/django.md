@@ -129,7 +129,7 @@ posts = [{"title": "Hello"}, {"title": "Second"}]
 </html>
 ```
 
-`layout.nexy` 包含其文件夹及其下面的每一页，页面中没有 `{% extends %}`：
+`layout.nexy` 包裹其文件夹及其下面的每一页，页面中没有 `{% extends %}`：
 
 ```nexy filename="src/routes/layout.nexy"
 ---
@@ -151,7 +151,7 @@ children: prop[NexyElement]
 {% include "card.html" with title="Latest" body="This week" %}
 ```
 
-组件是一个 `.nexy` 文件，带有类型化的 props 和一个用于其子组件的槽：
+组件是一个 `.nexy` 文件，其类型为 props 及其子组件的插槽：
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -172,7 +172,7 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`@` 是 `src/`：`nx new` 将 `useAliases = {"@": "src"}` 写入 `nexyconfig.py`。
+`@` 是 `src/`：`nx new` 在 `nexyconfig.py` 中写入 `useAliases = {"@": "src"}`。
 
 ## 模板过滤器
 
@@ -456,7 +456,7 @@ revalidate = 60
 
 ## 应用程序
 
-Django 项目被分成多个应用程序。在 Nexy 中，`src/routes/` 的文件夹是 URL 的单位，`src/models/` 和 `src/services/` 保存它们共享的代码。对于具有依赖注入的控制器和模块，[模块化路由器](../routing/modular/README.md) 是最接近的匹配。
+Django 项目被分成应用程序。在 Nexy 中，`src/routes/` 的文件夹是 URL 的单位，`src/models/` 和 `src/services/` 保存它们共享的代码。对于具有依赖注入的控制器和模块，[模块化路由器](../routing/modular/README.md) 是最接近的匹配。
 
 ## 管理员
 

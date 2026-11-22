@@ -38,7 +38,7 @@ export default function Nav() {
 }
 ```
 
-| Suporte | Significado |
+| Prop | Significado |
 |---|---|
 | `href` | Uma rota do projeto (um erro de digitação é um erro de tipo), opcionalmente com `?query` ou `#fragment`, ou uma URL externa. |
 | `replace` | Substitua a entrada do histórico em vez de adicionar uma. |
@@ -110,7 +110,7 @@ export default function Breadcrumb() {
 | Estrutura | Importar | Alternativa |
 |---|---|---|
 | React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
-| Vue | `import { ErrorBoundary } from "@nexy/client"` | um suporte de função `fallback`; as crianças vão para o slot padrão |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | uma função `fallback` prop; as crianças vão para o slot padrão |
 | Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | um trecho `fallback` |
 
 ```tsx

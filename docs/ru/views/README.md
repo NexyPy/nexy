@@ -63,6 +63,6 @@ class NexyConfig(NexyConfigModel):
 
 ## Следующие шаги
 
-- [Файлы .nexy](nexy/README.md): Python + Jinja2 + реквизит
+- [Файлы .nexy](nexy/README.md): Python + Jinja2 + props
 - [Markdown и MDX](nexy/markdown.md): страницы с контентом
 - [Компоненты](nexy/components.md): встроенные помощники HTML.

@@ -73,8 +73,8 @@ export default function Counter(props: { start?: number }) {
 ```
 
 - সিগন্যালকে কল করুন, `count()`, JSX এর ভিতরে, এটির উপরে একটি পরিবর্তনশীল নয়।
-- `props.start` হিসাবে প্রপ্স পড়ুন। Destructuring `{ start }` মান একবার পড়ে এবং আপডেট হারায়।
-- Solid HTML গুণাবলী লেখেন: `class`, `for`, `charset`, `className` নয়।
+- পড়ুন props `props.start` হিসেবে। Destructuring `{ start }` মান একবার পড়ে এবং আপডেট হারায়।
+- Solid HTML গুণাবলী লেখে: `class`, `for`, `charset`, `className` নয়।
 
 ## নিয়ম
 
@@ -85,7 +85,7 @@ export default function Counter(props: { start?: number }) {
 - **একটি সার্ভার-মোড প্রকল্পের কোনো `.tsx` পৃষ্ঠা** নেই, এবং একটি ক্লায়েন্ট-মোড প্রকল্পের কোনো `.nexy` পৃষ্ঠা নেই: Nexy শুরু করতে অস্বীকার করে এবং ফাইলটির নাম দেয়। [মোডস](../../routing/fbr/modes.md) দেখুন।
 <!-- /router -->
 <!-- router:modular -->
-- **উপাদানগুলি `src/components/`**-এ বাস করে এবং একটি দৃশ্য তাদের দ্বীপ হিসাবে আমদানি করে।
+- **উপাদানগুলি বাস করে `src/components/`**, এবং একটি দৃশ্য তাদের দ্বীপ হিসাবে আমদানি করে।
 <!-- /router -->
 - **না `.mdx` Solid সহ** MDX কম্পাইল করে React বা Preact; `.md` পৃষ্ঠাগুলি কাজ করে।
 
@@ -106,7 +106,7 @@ export default function Home() {
 
 ### গতিশীল সেগমেন্ট
 
-URL প্যারামিটারগুলি `useParams` হুকের মাধ্যমে পাওয়া যায়, যা একটি অ্যাক্সেসর প্রদান করে:
+URL প্যারামিটারগুলি `useParams` হুকের মাধ্যমে উপলব্ধ, যা একটি অ্যাক্সেসর প্রদান করে:
 
 ```tsx filename="src/routes/blog/[slug].tsx"
 import { useParams } from "@nexy/client";
@@ -138,16 +138,16 @@ export default function RootLayout(props: { children: JSX.Element }) {
 }
 ```
 
-ধ্বংস করবেন না `props.children`, যেহেতু Solid এটি অলসভাবে পড়ে।
+ধ্বংস করবেন না `props.children`, যেমন Solid এটি অলসভাবে পড়ে।
 <!-- /router -->
 
 ## দ্বীপপুঞ্জ
 
-সার্ভার মোডে, একটি `.nexy` ফাইলে আমদানি করা একটি Solid উপাদান হল একটি দ্বীপ।
+সার্ভার মোডে, একটি `.nexy` ফাইলে আমদানি করা একটি Solid উপাদান একটি দ্বীপ।
 
 ### আমদানি করা হচ্ছে
 
-`.nexy` ফাইলের ফ্রন্ট ম্যাটারে উপাদান আমদানি করুন:
+`.nexy` ফাইলের ফ্রন্টম্যাটারে উপাদান আমদানি করুন:
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
@@ -169,7 +169,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### হাইড্রেশন নির্দেশাবলী
 
-দ্বীপ হাইড্রেট করার সময় নিয়ন্ত্রণ করতে `directive` প্রপ ব্যবহার করুন:
+দ্বীপ হাইড্রেট করার সময় নিয়ন্ত্রণ করতে `directive` prop ব্যবহার করুন:
 
 - `client:load` (ডিফল্ট): অবিলম্বে
 - `client:idle`: যখন ব্রাউজার নিষ্ক্রিয় থাকে

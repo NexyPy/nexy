@@ -52,7 +52,7 @@ const route = useRoute();
 </template>
 ```
 
-Os segmentos chegam à página como adereços:
+Os segmentos chegam à página como props:
 
 ```vue filename="src/rotas/blog/[slug].vue"
 <script setup lang="ts">
@@ -235,7 +235,7 @@ users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
 </ul>
 ```
 
-## Mutações: `$fetch` para uma rota de servidor
+## Mutações: `$fetch` para uma rota do servidor
 
 ```vue filename="componentes/AddTodo.vue"
 <script setup lang="ts">
@@ -334,7 +334,7 @@ useSeoMeta({ title: "Blog", description: "Posts about Nexy" });
 </script>
 ```
 
-Uma página `.vue` não possui API de metadados no Nexy: coloque as tags no layout raiz. No modo servidor, uma página `.nexy` os define, e seu layout os grava com `{{ useMetadata().html() }}`:
+Uma página `.vue` não possui API de metadados no Nexy: coloque as tags no layout raiz. No modo servidor, uma página `.nexy` os define e seu layout os grava com `{{ useMetadata().html() }}`:
 
 ```nexy filename="src/routes/blog.nexy"
 ---

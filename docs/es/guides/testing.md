@@ -11,12 +11,12 @@ nx test --no-server --client  # vitest only
 
 ## que corre
 
-| Parte | Comando | Condición |
+| parte | Comando | Condición |
 |---|---|---|
-| El servidor | `pytest` | se ejecuta en `tests/` cuando existe; de lo contrario, en la raíz del proyecto; omitido con una advertencia cuando pytest no está instalado |
-| Cliente | `npx vitest run` | solo con `--client`, y solo cuando `vitest.config.ts` existe o `vitest` aparece en `package.json` |
+| Servidor | `pytest` | se ejecuta en `tests/` cuando existe; de lo contrario, en la raíz del proyecto; omitido con una advertencia cuando pytest no está instalado |
+| Cliente | `npx vitest run` | sólo con `--client`, y sólo cuando `vitest.config.ts` existe o `vitest` aparece en `package.json` |
 
-No hay un corredor integrado de un extremo a otro. Maneja el servidor con `TestClient` y agrega Playwright o Cypress tú mismo para el comportamiento del navegador.
+No hay un corredor integrado de un extremo a otro. Maneje el servidor con `TestClient` y agregue Playwright o Cypress usted mismo para el comportamiento del navegador.
 
 ## Probar el servidor
 
@@ -93,7 +93,7 @@ Una llamada con JSON responde con el resultado, y `422` con los campos no válid
 
 ## Probar un componente `.nexy`
 
-`nexy.testing.render` compila un componente, con los componentes que importa y devuelve su HTML. Los accesorios son argumentos de palabras clave y `children=` llena el espacio:
+`nexy.testing.render` compila un componente, con los componentes que importa y devuelve su HTML. Props son argumentos de palabras clave y `children=` llena el espacio:
 
 ```python filename="pruebas/test_button.py"
 from nexy.testing import render
@@ -107,7 +107,7 @@ Ejecute pytest desde la raíz del proyecto: los archivos compilados van a `__nex
 
 ## Probar al cliente
 
-`nx test --client` espera su propia configuración de vitest. Una prueba de componentes mínimos:
+`nx test --client` espera tu propia configuración de vitest. Una prueba de componentes mínimos:
 
 ```tsx filename="src/components/counter.test.tsx"
 import { render } from "@testing-library/react";
@@ -142,4 +142,4 @@ Trabajar en Nexy utiliza diferentes comandos: consulte [CONTRIBUCIÓN](https://g
 
 - [CLI](../reference/cli.md): cada bandera de `nx test`
 - [API](../routing/fbr/handlers/README.md): qué devuelve un punto final
-- [Implementar](../deployment/README.md): compila antes de probar en CI
+- [Implementar](../deployment/README.md): compilar antes de probar en CI

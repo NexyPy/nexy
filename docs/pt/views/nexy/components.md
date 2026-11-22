@@ -130,11 +130,11 @@ from "@/components/Card.nexy" import Card
 ```
 <!-- /router -->
 
-`title` não tem padrão, então a página deve passá-lo; `tone` volta para `"neutral"`. A marcação entre as tags chega dentro de `<Slot />` (S maiúsculo). Veja [arquivos .nexy](README.md#components) para adereços, slots e as regras do formulário de tag.
+`title` não tem padrão, então a página deve passá-lo; `tone` volta para `"neutral"`. A marcação entre as tags chega dentro de `<Slot />` (S maiúsculo). Consulte [arquivos .nexy](README.md#components) para props, slots e as regras do formulário de tag.
 
 ## Importando um componente cliente
 
-De um arquivo `.nexy`, importe um componente da estrutura por caminho; o compilador monta-o no cliente e passa os atributos como adereços:
+De um arquivo `.nexy`, importe um componente da estrutura por caminho; o compilador monta-o no cliente e passa os atributos como props:
 
 ```nexy
 ---

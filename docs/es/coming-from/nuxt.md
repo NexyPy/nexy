@@ -52,7 +52,7 @@ const route = useRoute();
 </template>
 ```
 
-Los segmentos llegan a la página como accesorios:
+Los segmentos llegan a la página como props:
 
 ```vue filename="src/rutas/blog/[slug].vue"
 <script setup lang="ts">
@@ -75,7 +75,7 @@ En cualquier otro componente, `useParams()` de `@nexy/client` los devuelve como 
 </template>
 ```
 
-No hay `<NuxtLayout>` ni `app.vue`: la raíz `layout.vue` posee el documento y envuelve cada página, y un `layout.vue` en una subcarpeta se anida dentro de él.
+No hay `<NuxtLayout>` ni `app.vue`: la raíz `layout.vue` es propietaria del documento y envuelve cada página, y un `layout.vue` en una subcarpeta se anida dentro de él.
 
 ```vue filename="src/rutas/layout.vue"
 <template>

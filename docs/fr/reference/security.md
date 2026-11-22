@@ -29,12 +29,12 @@ npm ls vite
 ## Règles que Nexy suit
 
 - **Ne faites jamais confiance à l'en-tête Host pour les chemins.** Nexy lit `scope["path"]`, et non `request.url.path`, dans son propre middleware (middleware d'annuaire). Faites de même dans le vôtre.
-- **Échappez ce qui atteint HTML.** Les accessoires transmis aux composants clients, les attributs `Link`, les attributs `Image`, `Audio` et `Video`, les ancres de table des matières et les détails `HTTPException` sont tous échappés en HTML. Un modèle `.nexy` ne s'échappe pas tout seul : écrivez `{{ value | e }}` pour toute valeur provenant d'un visiteur ou de la base de données, et jamais `| safe` lors d'une saisie utilisateur.
+- **Échappez ce qui atteint HTML.** Props transmis aux composants clients, les attributs `Link`, `Image`, `Audio` et `Video`, les ancres de table des matières et les détails `HTTPException` sont tous échappés en HTML. Un modèle `.nexy` ne s'échappe pas tout seul : écrivez `{{ value | e }}` pour toute valeur provenant d'un visiteur ou de la base de données, et jamais `| safe` lors d'une saisie utilisateur.
 - **Les points de terminaison du développeur sont uniquement en boucle et étroits.** Le point de terminaison de rendu de développement (`/__nexy__/render`) n'accepte que les fichiers sous `src/routes/` avec une extension `.tsx` ou `.jsx`, et n'est accessible que via le serveur de développement, qui refuse les en-têtes `Host` étrangers.
 - **Les détails de l'erreur ne sont pas divulgués.** Une page d'erreur qui échoue elle-même affiche uniquement le code d'état.
 - **Les réponses de production comportent des en-têtes sécurisés.** `X-Content-Type-Options: nosniff` et `Referrer-Policy: strict-origin-when-cross-origin`, à moins que votre code ne définisse les siens. L'en-tête `Server` n'est pas envoyé. Ajoutez un `Strict-Transport-Security` et un `Content-Security-Policy` dans votre proxy ou middleware : ils dépendent de votre domaine.
 - **Un crash affiche une référence, pas l'erreur.** Voir [Pages d'erreur](../routing/fbr/errors/README.md#unhandled-exceptions).
-- **Pas de `eval` ni de `shell=True` dans le code Python de Nexy.** Les programmes externes s'exécutent avec une liste d'arguments.
+- **Pas de `eval` et pas de `shell=True` dans le code Python de Nexy.** Les programmes externes s'exécutent avec une liste d'arguments.
 
 ## Réaliser les audits
 
@@ -44,7 +44,7 @@ npm audit                                    # in a scaffolded project
 uv run bandit -r nexy -c .bandit             # static analysis of Nexy itself
 ```
 
-Le propre référentiel de Nexy exécute le premier et le troisième lors de ses vérifications. Un nouvel avis sur un étage supérieur est traité en surélevant l'étage dans `pyproject.toml` ou dans l'échafaudage `package.json`, puis en régénérant le verrou.
+Le propre référentiel de Nexy exécute le premier et le troisième lors de ses vérifications. Un nouvel avis sur un étage supérieur est traité en surélevant l'étage dans `pyproject.toml` ou dans l'échafaudage `package.json`, puis en régénérant la serrure.
 
 ## Déployer en toute sécurité
 

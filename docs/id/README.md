@@ -112,7 +112,7 @@ Pengontrol dan modul.
 ### Tampilan Nexy
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
-| [file .nexy](views/nexy/README.md) | Tulis halaman dengan Python, Jinja2 dan alat peraga |
+| [file .nexy](views/nexy/README.md) | Tulis halaman dengan Python, Jinja2 dan props |
 | [Komponen](views/nexy/components.md) | Gunakan `Image`, `Link`, `Audio`, `Video` dan `Import` |
 
 ### Halaman dan tata letak dalam file {fbr,custom}
@@ -137,7 +137,7 @@ Pengontrol dan modul.
 ### Mode
 | Halaman | Apa yang akan Anda putuskan |
 |---|---|
-| [Perenderan](rendering/README.md) | Mode rendering mana yang sesuai dengan halaman |
+| [Merender](rendering/README.md) | Mode rendering mana yang sesuai dengan halaman |
 | [RSK](rendering/ssr.md) | Render server, default |
 | [Kepulauan](rendering/islands.md) | Hidrasi saat idle, terlihat, atau permintaan media |
 
@@ -208,7 +208,7 @@ Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 |---|---|
 | [Dari Ekspres](coming-from/express.md) | Terjemahkan rute, middleware dan `req`/`res` ke dalam Python penangan |
 | [Dari Fastify](coming-from/fastify.md) | Ubah skema, plugin, dan kait menjadi model, folder, dan file |
-| [Dari Elysia](coming-from/elysia.md) | Memetakan `t` skema, penjaga, dan Eden ke Pydantic dan mengetikkan tindakan |
+| [Dari Elysia](coming-from/elysia.md) | Petakan `t` skema, penjaga, dan Eden ke Pydantic dan ketikkan tindakan |
 | [Dari Hono](coming-from/hono.md) | Petakan rute, middleware, dan klien `hc` ke Nexy |
 
 ### Kerangka kerja fullstack {fbr}
@@ -222,7 +222,7 @@ Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 | [Dari Laravel](coming-from/laravel.md) | Petakan rute, pengontrol, Blade, Eloquent, dan antrian ke Nexy |
 | [Dari Ruby on Rails](coming-from/rails.md) | Memetakan rute, pengontrol, ERB, Rekaman Aktif, dan pekerjaan ke Nexy |
 
-### Kerangka pengontrol {modular}
+### Kerangka kerja pengontrol {modular}
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
 | [Dari NestJS](coming-from/nestjs.md) | Pindahkan pengontrol, modul, penyedia, dan penjaga ke router modular |

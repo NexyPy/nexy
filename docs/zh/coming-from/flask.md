@@ -222,7 +222,7 @@ def require_admin():
 
 `dependencies.py` 在其文件夹的每条路径之前运行：
 
-```python filename="src/routes/admin/dependency.py"
+```python filename="src/routes/admin/dependencies.py"
 from nexy.http import Header, HTTPException
 
 
@@ -437,4 +437,4 @@ def test_hello():
 - [从 FastAPI 到 Nexy](fastapi.md)：Nexy 处理程序是 FastAPI 处理程序
 - [行动](../guides/actions.md)
 - [.nexy 文件](../views/nexy/README.md)
-- [Recipes](../guides/recipes.md)：登录、CRUD 和上传
+- [菜谱](../guides/recipes.md)：登录、CRUD 和上传

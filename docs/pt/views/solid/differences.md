@@ -73,7 +73,7 @@ export default function Counter(props: { start?: number }) {
 ```
 
 - Chame o sinal, `count()`, dentro do JSX, não em uma variável acima dele.
-- Leia adereços como `props.start`. A desestruturação `{ start }` lê o valor uma vez e perde as atualizações.
+- Leia props como `props.start`. A desestruturação `{ start }` lê o valor uma vez e perde as atualizações.
 - Solid escreve atributos HTML: `class`, `for`, `charset`, não `className`.
 
 ## Regras
@@ -82,7 +82,7 @@ export default function Counter(props: { start?: number }) {
 <!-- router:fbr,custom -->
 - **As páginas são `.tsx`.** Somente um arquivo `.tsx` em `src/routes/` se torna uma página; `.jsx` é adequado para um componente.
 - **Os componentes ficam fora de `src/routes/`**, geralmente em `src/components/`, portanto não são páginas.
-- **Um projeto em modo servidor não tem página `.tsx`** e um projeto em modo cliente não tem página `.nexy`: Nexy se recusa a iniciar e nomeia o arquivo. Consulte [modos](../../routing/fbr/modes.md).
+- **Um projeto em modo servidor não tem página `.tsx`**, e um projeto em modo cliente não tem página `.nexy`: Nexy se recusa a iniciar e nomeia o arquivo. Consulte [modos](../../routing/fbr/modes.md).
 <!-- /router -->
 <!-- router:modular -->
 - **Os componentes residem em `src/components/`**, e uma visualização os importa como ilhas.
@@ -169,7 +169,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### Diretrizes de hidratação
 
-Use a propriedade `directive` para controlar quando a ilha hidrata:
+Use o `directive` prop para controlar quando a ilha hidrata:
 
 - `client:load` (padrão): imediatamente
 - `client:idle`: quando o navegador está ocioso

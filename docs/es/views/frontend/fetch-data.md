@@ -158,7 +158,7 @@ Un componente Vue, Svelte o Solid se monta de la misma manera, con la sintaxis d
 - Un estado por URL: dos componentes que leen `/api/users` envían una solicitud y muestran los mismos datos.
 - `refresh()` mantiene el `data` actual hasta que llega la nueva respuesta, y dos actualizaciones a la vez envían una solicitud.
 - Una respuesta `204` da `data` como `undefined`.
-- La solicitud se envía en el navegador, después de que se monta el componente. Los datos que debe contener el primer HTML pertenecen a los accesorios de la página, representados en el servidor.
+- La solicitud se envía en el navegador, después de que se monta el componente. Los datos que debe contener el primer HTML pertenecen a la página props, representada en el servidor.
 
 ## Errores de la ruta.
 
@@ -237,7 +237,7 @@ export function AddUser() {
 }
 ```
 
-La lista de `src/components/Users.tsx` muestra a Grace sin una llamada a `refresh()`.
+La lista de `src/components/Users.tsx` muestra a Grace sin llamar a `refresh()`.
 
 ## Próximos pasos
 

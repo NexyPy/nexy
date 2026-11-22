@@ -1,6 +1,6 @@
 # Tutorial Nexy: membuat aplikasi catatan langkah demi langkah
 
-Tutorial Nexy membuat satu aplikasi catatan dari folder kosong ke build produksi, satu bagian dalam satu waktu, dan setiap bagian diakhiri dengan aplikasi yang berjalan.
+Tutorial Nexy membuat satu aplikasi catatan dari folder kosong ke build produksi, satu bagian pada satu waktu, dan setiap bagian diakhiri dengan aplikasi yang berjalan.
 
 Baru mengenal Nexy? [Mulai cepat](quick-start.md) menunjukkannya berjalan dalam tiga menit; kembali ke sini untuk mempelajari cara kerjanya.
 
@@ -20,7 +20,7 @@ Baru mengenal Nexy? [Mulai cepat](quick-start.md) menunjukkannya berjalan dalam 
 | [1. Buat proyek](../tutorial/create-the-project.md) | sebuah proyek yang berjalan | `nexy new`, `nexy dev` |
 | [2. Halaman dan tata letak](../tutorial/pages-and-layouts.md) | halaman catatan | halaman, tampilan, tata letak |
 | [3. Rute dinamis dan API](../tutorial/dynamic-routes.md) | `/notes/1` dan `/api/notes` | Segmen URL, rute JSON, `notFound` |
-| [4. Komponen](../tutorial/components.md) | satu kartu per catatan | `.nexy` komponen dan alat peraganya |
+| [4. Komponen](../tutorial/components.md) | satu kartu per catatan | `.nexy` komponen dan props |
 
 ### Satuan 2: data
 
@@ -37,15 +37,15 @@ Baru mengenal Nexy? [Mulai cepat](quick-start.md) menunjukkannya berjalan dalam 
 | Bagian | Apa yang Anda tambahkan | Apa yang Anda pelajari |
 |---|---|---|
 | [10. Buat akun dan masuk](../tutorial/accounts.md) | daftar, masuk, keluar | sesi, hashing kata sandi |
-| [11. Berikan catatannya masing-masing kepada pengguna](../tutorial/own-notes.md) | catatan milik pengguna | kunci asing, `redirect`, `401` |
+| [11. Berikan catatan masing-masing pengguna](../tutorial/own-notes.md) | catatan milik pengguna | kunci asing, `redirect`, `401` |
 | [12. Reset password yang terlupa melalui email](../tutorial/password-reset.md) | tautan reset dikirim melalui email | `smtplib`, token bertanda tangan yang masa berlakunya habis |
 
 ### Unit 4: interaktivitas
 
 | Bagian | Apa yang Anda tambahkan | Apa yang Anda pelajari |
 |---|---|---|
-| [13. Cari catatan saat Anda mengetik](../tutorial/search-the-notes.md) | kotak pencarian yang memfilter saat Anda mengetik | React pulau, alat peraga dari Python |
-| [14. Centang catatan tanpa memuat ulang halaman](../tutorial/tick-a-note.md) | tombol Selesai di setiap not | peningkatan progresif, satu Tindakan untuk bentuk dan untuk `fetch` |
+| [13. Cari catatan saat Anda mengetik](../tutorial/search-the-notes.md) | kotak pencarian yang memfilter saat Anda mengetik | React pulau, props dari Python |
+| [14. Centang catatan tanpa memuat ulang halaman](../tutorial/tick-a-note.md) | tombol Selesai di setiap not | peningkatan progresif, satu Tindakan untuk formulir dan untuk `fetch` |
 
 ### Berikutnya
 

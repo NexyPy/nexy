@@ -57,7 +57,7 @@ notes = NOTES.items()
 ## Agregar una página por nota
 
 <!-- router:fbr,custom -->
-Un nombre de carpeta o archivo entre paréntesis es un segmento de la URL: `[id].nexy` responde a `/notes/1`, `/notes/2` y pasa el segmento a la página como accesorio. `id: prop[int]` lo convierte en un número, por lo que `/notes/abc` responde a `404` antes de que se ejecute la página.
+Un nombre de carpeta o archivo entre paréntesis es un segmento de la URL: `[id].nexy` responde a `/notes/1`, `/notes/2` y pasa el segmento a la página como prop. `id: prop[int]` lo convierte en un número, por lo que `/notes/abc` responde a `404` antes de que se ejecute la página.
 
 ```nexy filename="src/rutas/notas/[id].nexy"
 ---
@@ -168,7 +168,7 @@ La API aparece, con su esquema, en <http://localhost:3000/docs>.
 
 <!-- router:fbr,custom -->
 - `[id].nexy` es un segmento dinámico; `id: prop[int]` lo lee y lo convierte.
-- Un archivo `.py` en `src/routes/` responde JSON, una función por método HTTP.
+- Un archivo `.py` en `src/routes/` responde a JSON, una función por método HTTP.
 <!-- /router -->
 <!-- router:modular -->
 - `{id}` en la ruta de un controlador es un segmento dinámico; `id: int` lo convierte.

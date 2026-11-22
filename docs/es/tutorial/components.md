@@ -6,7 +6,7 @@ La parte 4 convierte cada nota en un componente reutilizable, un archivo `.nexy`
 
 ## Escribe el componente
 
-Un componente es un archivo `.nexy` fuera de las rutas. Sus accesorios se declaran con `prop[...]` y la persona que llama los pasa como atributos:
+Un componente es un archivo `.nexy` fuera de las rutas. Sus props se declaran con `prop[...]` y la persona que llama los pasa como atributos:
 
 ```nexy filename="src/components/NoteCard.nexy"
 ---

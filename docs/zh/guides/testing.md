@@ -36,7 +36,7 @@ def test_home_renders():
 
 `nexy.app.app` 是组装的应用程序，在第一次读取时构建。它从工作目录读取 `nexyconfig.py`，因此从项目根目录运行 pytest。
 
-当测试更改配置或路由时，构建一个新的应用程序，而不是重用模块级应用程序：
+当测试更改配置或路由时，构建一个新的应用程序而不是重用模块级应用程序：
 
 ```python
 from fastapi.testclient import TestClient
@@ -93,7 +93,7 @@ def test_form_posts_to_action(client):
 
 ## 测试 `.nexy` 组件
 
-`nexy.testing.render` 使用它导入的组件编译一个组件，并返回其 HTML。 props 是关键字参数， `children=` 填充该槽：
+`nexy.testing.render` 使用它导入的组件编译一个组件，并返回其 HTML。 Props 是关键字参数，`children=` 填充该槽：
 
 ```python filename="测试/test_button.py"
 from nexy.testing import render
@@ -123,7 +123,7 @@ describe("Counter", () => {
 });
 ```
 
-`vitest` 和测试库是项目依赖项：`nexy new` 不安装测试堆栈。添加 `vitest.config.ts` 和您需要的环境（组件的 jsdom 或 happy-dom）。
+`vitest` 和测试库是项目依赖项：`nexy new` 不安装测试堆栈。将 `vitest.config.ts` 添加到您需要的环境（组件的 jsdom 或 happy-dom）。
 
 ## 持续集成
 
@@ -134,7 +134,7 @@ nx build
 nx test
 ```
 
-`nx build` 因编译错误而失败； `nx test` 在断言失败时失败并以非零值退出。 `nx check` 将 mypy 和 `tsc` 添加到运行中。
+`nx build` 因编译错误而失败； `nx test` 因断言失败而失败并以非零值退出。 `nx check` 将 mypy 和 `tsc` 添加到运行中。
 
 Nexy 本身的工作使用不同的命令：请参阅 [CONTRIBUTING](https://github.com/NexyPy/nexy/blob/main/CONTRIBUTING.md)。
 

@@ -44,13 +44,13 @@ export default function NoteSearch({ notes }: { notes: Note[] }) {
 
 React escribe `{note.text}` como texto: una nota `<b>x</b>` muestra sus corchetes, sin `| e` para agregar.
 
-`found` solo se calcula una vez que se escribe algo, y eso es importante para la compilación: `nx build` representa cada isla una vez en HTML, con marcadores de posición en lugar de sus accesorios. Un componente que lee una propiedad de lista durante ese primer renderizado obtiene un marcador de posición en lugar de una lista y no incluye HTML. Este lee `notes` solo después de presionar una tecla, por lo que la compilación muestra su cuadro de búsqueda y la página lo muestra antes de que se ejecute cualquier JavaScript.
+`found` solo se calcula una vez que se escribe algo, y eso es importante para la compilación: `nx build` representa cada isla una vez en HTML, con marcadores de posición en lugar de su props. Un componente que lee una lista prop durante ese primer renderizado obtiene un marcador de posición en lugar de una lista y no incluye HTML. Este lee `notes` solo después de presionar una tecla, por lo que la compilación muestra su cuadro de búsqueda y la página lo muestra antes de que se ejecute cualquier JavaScript.
 
 `aria-live="polite"` hace que un lector de pantalla lea los resultados cuando cambian, sin interrumpir.
 
 ## Pon la isla en la página.
 
-La página pasa las notas como accesorio: una lista de diccionarios, que Nexy convierte en JSON para el navegador. Cada nota entra, no sólo las cinco de la página actual, por lo que la búsqueda las cubre todas:
+La página pasa las notas como prop: una lista de diccionarios, que Nexy convierte en JSON para el navegador. Cada nota entra, no sólo las cinco de la página actual, por lo que la búsqueda las cubre todas:
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/rutas/notas/index.nexy"
@@ -154,20 +154,20 @@ searchable = [{"id": note.id, "text": note.text} for note in all_notes(user_id)]
 ```
 <!-- /router -->
 
-`from "@/components/NoteSearch.tsx" import NoteSearch` importa un componente React en una página `.nexy`; la etiqueta pasa sus atributos como accesorios. `notes="{{ searchable }}"` pasa la lista Python en sí, no una cadena. `directive="client:idle"` hace que la isla sea interactiva una vez que el navegador no tiene nada más urgente que hacer.
+`from "@/components/NoteSearch.tsx" import NoteSearch` importa un componente React en una página `.nexy`; la etiqueta pasa sus atributos como props. `notes="{{ searchable }}"` pasa la lista Python en sí, no una cadena. `directive="client:idle"` hace que la isla sea interactiva una vez que el navegador no tiene nada más urgente que hacer.
 
 Abra <http://localhost:3000/notes> y escriba algunas letras de una nota: las notas coincidentes se muestran debajo del cuadro cada vez que presiona una tecla. Borre la casilla y los resultados desaparecerán.
 
 > [!NOTE]
-> Los accesorios de una isla viajan en la página, como JSON. Enviar cada nota conviene a unos cientos de ellos; para miles, busque en el servidor, con una consulta y un filtro `LIKE`.
+> Los props de una isla viajan en la página, como JSON. Enviar cada nota conviene a unos cientos de ellos; para miles, busque en el servidor, con una consulta y un filtro `LIKE`.
 
 ## lo que aprendiste
 
 - Una isla es un componente de cliente dentro de una página de servidor: aquí, React solo para el cuadro de búsqueda.
-- Una página `.nexy` la importa por ruta y pasa valores Python como accesorios, serializados en JSON.
-- La construcción representa una isla una vez, con marcadores de posición para sus accesorios: lea la lista de accesorios después del primer renderizado y la isla envía HTML.
+- Una página `.nexy` la importa por ruta y pasa valores Python como props, serializados a JSON.
+- La construcción representa una isla una vez, con marcadores de posición para su props: lista de lectura props después del primer renderizado, y la isla incluye HTML.
 
 ## Próximos pasos
 
 - [Parte 14: marca una nota sin recargar la página](tick-a-note.md)
-- [Islas e hidratación](../rendering/islands.md): directivas, puntales y limitaciones
+- [Islas e hidratación](../rendering/islands.md): directivas, props y limitaciones

@@ -48,7 +48,7 @@ class NexyConfig(NexyConfigModel):
 <h1>{page.params.slug}</h1>
 ```
 
-طبقات صفحہ پر بطور پروپس پہنچتے ہیں:
+طبقات صفحہ پر اس طرح پہنچتے ہیں props:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -140,7 +140,7 @@ async def GET(id: int, currency: str = "EUR"):
     return {"id": id, "currency": currency}
 ```
 
-## `load` `+page.server.ts` میں
+## `load` میں `+page.server.ts`
 
 ```ts filename="src/routes/users/+page.server.ts"
 export async function load() {
@@ -218,7 +218,7 @@ export const actions = {
 </form>
 ```
 
-ایک ایکشن ایک Python فنکشن ہے جس میں تیار کردہ، ٹائپ شدہ کلائنٹ ہے:
+ایک ایکشن ایک Python فنکشن ہے جس میں تیار کردہ، ٹائپ شدہ کلائنٹ:
 
 ```python filename="src/actions/todos.py"
 from pydantic import BaseModel
@@ -420,6 +420,6 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///dev.db")
 ## اگلے اقدامات
 
 - [سرور موڈ اور کلائنٹ موڈ](../routing/fbr/modes.md)
-- [Svelte Nexy میں](../views/svelte/differences.md)
+- Nexy میں [Svelte ](../views/svelte/differences.md)
 - [اعمال](../guides/actions.md)
 - [Nuxt سے Nexy تک](nuxt.md)

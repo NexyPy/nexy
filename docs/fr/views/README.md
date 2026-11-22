@@ -63,6 +63,6 @@ Un `layout.*` dans un répertoire enveloppe les pages en dessous. Voir [mises en
 
 ## Prochaines étapes
 
-- [Fichiers .nexy](nexy/README.md) : Python + Jinja2 + accessoires
+- [Fichiers .nexy](nexy/README.md) : Python + Jinja2 + props
 - [Markdown et MDX](nexy/markdown.md) : pages de contenu
 - [Composants](nexy/components.md) : assistants HTML intégrés

@@ -88,7 +88,7 @@ export default defineConfig({
 
 ### القطاعات الديناميكية
 
-تصل معلمات URL إلى الصفحة كدعائم. يمكنك إعلانها باستخدام `defineProps`:
+تصل معلمات URL إلى الصفحة كـ props. يمكنك إعلانها باستخدام `defineProps`:
 
 ```vue filename="src/routes/blog/[slug].vue"
 <script setup lang="ts">
@@ -126,7 +126,7 @@ defineProps<{ slug: string }>();
 
 ### استيراد
 
-قم باستيراد المكونات الموجودة في الجزء الأمامي من الملف `.nexy`:
+استيراد المكونات في الجزء الأمامي من الملف `.nexy`:
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
@@ -148,7 +148,7 @@ from "@/components/Counter.vue" import Counter
 
 ### توجيهات الترطيب
 
-استخدم الدعامة `directive` للتحكم في وقت ترطيب الجزيرة:
+استخدم `directive` prop للتحكم في وقت ترطيب الجزيرة:
 
 - `client:load` (افتراضي): فورًا
 - `client:idle`: عندما يكون المتصفح خاملاً

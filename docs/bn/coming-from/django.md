@@ -151,7 +151,7 @@ children: prop[NexyElement]
 {% include "card.html" with title="Latest" body="This week" %}
 ```
 
-একটি উপাদান হল একটি `.nexy` ফাইল যাতে টাইপ করা প্রপস এবং একটি স্লট থাকে তার বাচ্চাদের জন্য:
+একটি উপাদান হল একটি `.nexy` টাইপ করা props ফাইল এবং এর শিশুদের জন্য একটি স্লট:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -204,7 +204,7 @@ def published(request):
     return JsonResponse({"titles": [p.title for p in posts]})
 ```
 
-Nexy এর নিজস্ব কোন ORM নেই। `nx new` ভারা হতে পারে SQLModel, SQLAlchemy বা কচ্ছপ-ORM; SQLModel মডেল এবং ক্যোয়ারী এই মত পড়া:
+Nexy এর নিজস্ব কোন ORM নেই। `nx new` ভারা পারে SQLModel, SQLAlchemy বা কচ্ছপ-ORM; সঙ্গে SQLModel মডেল এবং প্রশ্ন এই মত পড়া:
 
 ```python filename="src/models/post_model.py"
 from sqlmodel import Field, SQLModel
@@ -261,7 +261,7 @@ def add_note(request):
 </form>
 ```
 
-একটি কর্ম হল ফর্ম পোস্ট করার ফাংশন। এর প্যারামিটারগুলি হল ফর্ম ক্ষেত্র, এবং ভিজিটরকে একটি `303` সহ পৃষ্ঠায় ফেরত পাঠানো হয়:
+একটি কর্ম হল ফর্ম পোস্ট করার ফাংশন। এর পরামিতিগুলি হল ফর্ম ক্ষেত্র, এবং ভিজিটরকে একটি `303` সহ পৃষ্ঠায় ফেরত পাঠানো হয়:
 
 ```python filename="src/actions/notes.py"
 from nexy.decorators import Action
@@ -289,7 +289,7 @@ from src.actions.notes import NOTES
 </ul>
 ```
 
-এখানে কোন `{% csrf_token %}` নেই: দেখুন [ক্রিয়াগুলি](../guides/actions.md#security) যা কর্ম পথকে রক্ষা করে, এবং আপনি এখনও নিজেকে কী পরীক্ষা করেন।
+এখানে কোন `{% csrf_token %}` নেই: দেখুন [ক্রিয়াগুলি](../guides/actions.md#security) যা কর্মের পথকে রক্ষা করে, এবং আপনি এখনও নিজেকে কী পরীক্ষা করেন।
 
 ## Django ফর্ম এবং ডিআরএফ সিরিয়ালাইজার
 
@@ -403,7 +403,7 @@ def post_detail(request, slug):
     return render(request, "post.html", {"post": post})
 ```
 
-`notFound()` পৃষ্ঠাটিকে থামায়, এবং `notfound.nexy` রুটে রুট `404.html` এর ভূমিকা পালন করে:
+`notFound()` পৃষ্ঠা বন্ধ করে, এবং `notfound.nexy` রুট রুটে `404.html` ভূমিকা পালন করে:
 
 ```nexy filename="src/routes/posts/[slug].nexy"
 ---
@@ -433,7 +433,7 @@ from django.views.decorators.cache import cache_page
 def post_list(request): ...
 ```
 
-ফ্রন্টম্যাটারে একটি লাইন প্রতি ইউআরএল পৃষ্ঠাটিকে ক্যাশ করে এবং এটিকে আবার পটভূমিতে রেন্ডার করে:
+ফ্রন্টম্যাটারের একটি লাইন প্রতি ইউআরএল পৃষ্ঠাটিকে ক্যাশ করে এবং পটভূমিতে আবার রেন্ডার করে:
 
 ```nexy filename="src/routes/blog/archive.nexy"
 ---

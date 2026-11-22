@@ -20,7 +20,7 @@ Nouveau sur Nexy ? Le [Démarrage rapide](quick-start.md) montre qu'il fonctionn
 | [1. Créez le projet](../tutorial/create-the-project.md) | un projet qui se déroule | `nexy new`, `nexy dev` |
 | [2. Pages et mises en page](../tutorial/pages-and-layouts.md) | la page des notes | les pages, les vues, la mise en page |
 | [3. Des routes dynamiques et une API](../tutorial/dynamic-routes.md) | `/notes/1` et `/api/notes` | Segments d'URL, routes JSON, `notFound` |
-| [4. Composants](../tutorial/components.md) | une carte par note | `.nexy` composants et leurs accessoires |
+| [4. Composants](../tutorial/components.md) | une carte par note | `.nexy` composants et leurs props |
 
 ### Unité 2 : données
 
@@ -44,7 +44,7 @@ Nouveau sur Nexy ? Le [Démarrage rapide](quick-start.md) montre qu'il fonctionn
 
 | Partie | Ce que tu ajoutes | Ce que tu apprends |
 |---|---|---|
-| [13. Recherchez les notes pendant que vous tapez](../tutorial/search-the-notes.md) | un champ de recherche qui filtre au fur et à mesure que vous tapez | React îles, accessoires de Python |
+| [13. Recherchez les notes pendant que vous tapez](../tutorial/search-the-notes.md) | un champ de recherche qui filtre au fur et à mesure que vous tapez | React îles, props de Python |
 | [14. Cochez une note sans recharger la page](../tutorial/tick-a-note.md) | un bouton Terminé sur chaque note | enrichissement progressif, une Action pour une forme et pour `fetch` |
 
 ### À venir ensuite

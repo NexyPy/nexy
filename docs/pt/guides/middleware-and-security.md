@@ -42,7 +42,7 @@ Sirva HTTPS diretamente com `useSslKeyfile` e `useSslCertfile` ou encerre o TLS 
 - `useTrustedHost` definido para seus domínios, para bloquear ataques de cabeçalho de host.
 - `useCORS` com origens explícitas, nunca `["*"]` junto com credenciais.
 - Um verdadeiro `secret_key` para sessões, lido no ambiente.
-- Os acessórios passados ​​para os componentes do cliente são escapados por HTML pelo Nexy. Não marque a entrada do usuário `| safe` nos modelos.
+- Props passados ​​para os componentes do cliente são escapados por HTML pelo Nexy. Não marque a entrada do usuário `| safe` nos modelos.
 
 ## Guardas e dependências
 

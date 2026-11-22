@@ -163,4 +163,4 @@ Tailwind, yang digunakan oleh starter, menghilangkan batas bidang formulir: atur
 ## Langkah selanjutnya
 
 - [Bagian 3: rute dinamis dan API](dynamic-routes.md)
-- [File .nexy](../views/nexy/README.md): props, komponen, dan gaya
+- [File .nexy](../views/nexy/README.md): props, komponen dan gaya
