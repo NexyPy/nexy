@@ -23,6 +23,10 @@ Client line.
 Web line.
 <!-- /nexy:web -->
 
+<!-- nexy:api -->
+Api line.
+<!-- /nexy:api -->
+
 Last line.
 """
 SERVER = {"web", "server"}
@@ -45,8 +49,12 @@ def test_the_markers_never_reach_the_project():
     assert "nexy:" not in fit(SKILL, CLIENT)
 
 
-def test_an_api_project_keeps_only_untagged_text():
-    assert fit(SKILL, set()) == "# Title\n\nShared line.\n\nLast line.\n"
+def test_an_api_project_keeps_the_untagged_and_api_text():
+    assert fit(SKILL, {"api"}) == "# Title\n\nShared line.\n\nApi line.\n\nLast line.\n"
+
+
+def test_an_api_section_never_reaches_a_project_with_views():
+    assert "Api line." not in fit(SKILL, SERVER)
 
 
 def test_a_web_section_reaches_a_client_routed_project():
@@ -61,8 +69,8 @@ def test_a_client_routed_project_has_the_client_and_web_modes():
     assert modes_of(Profile("demo", "react", True, "tailwind")) == CLIENT
 
 
-def test_an_api_project_has_no_mode():
-    assert modes_of(Profile("demo", "none", False, "vanilla", kind="api")) == set()
+def test_an_api_project_has_the_api_mode():
+    assert modes_of(Profile("demo", "none", False, "vanilla", kind="api")) == {"api"}
 
 
 def test_every_markdown_file_of_a_skill_is_fitted(tmp_path: Path):
