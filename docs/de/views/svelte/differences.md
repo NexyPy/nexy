@@ -56,7 +56,7 @@ export default defineConfig({
 
 | Paket | Version `nx new` schreibt |
 |---|---|
-| `svelte` | `^5.20.2` |
+| `svelte` | `^5.55.7` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
 
 ## Regeln

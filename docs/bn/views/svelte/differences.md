@@ -56,7 +56,7 @@ export default defineConfig({
 
 | প্যাকেজ | সংস্করণ `nx new` লিখেছেন |
 |---|---|
-| `svelte` | `^5.20.2` |
+| `svelte` | `^5.55.7` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
 
 ## নিয়ম
@@ -162,7 +162,7 @@ from "@/components/Counter.svelte" import Counter
 
 ### কলিং কর্ম
 
-একটি অ্যাকশন কলের অবস্থা পরিচালনা করতে `useAction` হুক ব্যবহার করুন। Svelte-এ, এটি একটি দোকান ফেরত দেয় (`$` দিয়ে পড়ুন)।
+একটি অ্যাকশন কলের অবস্থা পরিচালনা করতে `useAction` হুক ব্যবহার করুন। Svelte-এ, এটি একটি দোকান প্রদান করে (`$`] দিয়ে পড়ুন)।
 
 ```svelte
 <script lang="ts">

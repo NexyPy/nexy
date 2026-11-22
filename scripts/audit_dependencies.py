@@ -1,4 +1,4 @@
-"""Run the dependency audit locally against the frozen lock envelope.
+"""Run the dependency audit locally against the frozen lock envelope, then the version floors.
 
 CI remains authoritative; this script exists so the same gate can be replayed
 on a workstation. It retries transient PyPI failures only: an actual advisory
@@ -8,6 +8,8 @@ is never retried and never hidden.
 import re
 import subprocess
 import sys
+
+import audit_floors
 
 EXPORT = [
     "uv",
@@ -53,7 +55,7 @@ def main() -> int:
         sys.stdout.write(result.stdout)
         sys.stderr.write(result.stderr)
         if result.returncode == 0:
-            return 0
+            return audit_floors.main()
         combined = f"{result.stdout}\n{result.stderr}"
         if attempt == ATTEMPTS or not NETWORK_ERROR.search(combined):
             return result.returncode

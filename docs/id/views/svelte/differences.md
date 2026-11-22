@@ -10,7 +10,7 @@ Nexy merender Svelte 5 komponen di server, lalu Svelte mengambilnya di browser. 
 <!-- /router -->
 
 <!-- router:modular -->
-Dengan router modular, komponen Svelte adalah [pulau](../../rendering/islands.md) di dalam tampilan `.nexy` yang dikembalikan oleh pengontrol: tidak ada file halaman dan tidak ada router klien.
+Dengan router modular, komponen Svelte adalah [pulau](../../rendering/islands.md) di dalam tampilan `.nexy` yang dikembalikan pengontrol: tidak ada file halaman dan tidak ada router klien.
 <!-- /router -->
 
 ## Mulai sebuah proyek
@@ -56,7 +56,7 @@ export default defineConfig({
 
 | Paket | Versi `nx new` menulis |
 |---|---|
-| `svelte` | `^5.20.2` |
+| `svelte` | `^5.55.7` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
 
 ## Aturan
