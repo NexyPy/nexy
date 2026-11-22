@@ -63,9 +63,9 @@ By hand: copy the folders you need into `.claude/skills/` or `.agents/skills/`, 
 A shared skill marks a part that holds for one kind of project between two lines of its own:
 
 ```markdown
-<!-- nexy:server -->
+<!-- nexy:nexy -->
 `notfound.nexy` renders 404 and `errors.nexy` renders 500.
-<!-- /nexy:server -->
+<!-- /nexy:nexy -->
 <!-- nexy:client -->
 `notfound.tsx` renders 404 and `errors.tsx` renders 500.
 <!-- /nexy:client -->
@@ -77,6 +77,7 @@ A shared skill marks a part that holds for one kind of project between two lines
 | `client` | a client-routed project (`useCSR = True`) |
 | `web` | either of them: a project with views |
 | `api` | a project without views |
+| `nexy` | a server-rendered project that has `.nexy` files; `nx skills` looks for them in `src/` |
 
 Text without a marker reaches every project. A marker never reaches one, and it is an HTML comment,
 so the skill reads the same here. Markers sit on their own lines and do not nest; a table row cannot
