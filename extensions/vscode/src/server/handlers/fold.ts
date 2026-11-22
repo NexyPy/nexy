@@ -66,15 +66,17 @@ export class FoldHandler {
   }
 
   private addBlockFolding(text: string, ranges: FoldingRange[], tag: string): void {
-    const re = new RegExp(`<${tag}[\\s\\S]*?>`, "g");
-    const close = `</${tag}>`;
+    // HTML reads tag names in any case and ends a block at `</script >` too.
+    const re = new RegExp(`<${tag}\\b[^>]*>`, "gi");
+    const close = new RegExp(`</${tag}\\s*>`, "gi");
     let m: RegExpExecArray | null;
     while ((m = re.exec(text)) !== null) {
-      const closeIdx = text.indexOf(close, m.index);
-      if (closeIdx === -1) continue;
+      close.lastIndex = m.index;
+      const end = close.exec(text);
+      if (end === null) continue;
       ranges.push({
         startLine: text.slice(0, m.index).split("\n").length - 1,
-        endLine: text.slice(0, closeIdx + close.length).split("\n").length - 1,
+        endLine: text.slice(0, end.index + end[0].length).split("\n").length - 1,
         kind: FoldingRangeKind.Region,
       });
     }
