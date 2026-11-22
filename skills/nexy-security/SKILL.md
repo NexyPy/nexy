@@ -29,11 +29,11 @@ If an audit cannot run (no network, tool missing), say so. Do not claim a depend
 
 ## Input and output
 
-<!-- nexy:server -->
+<!-- nexy:nexy -->
 - Autoescaping is **off** in `.nexy` templates. Write `{{ value | e }}` for anything that came from
   a visitor. `| safe` changes nothing there, and in Nexy's helpers it switches escaping off: never use
   it on user input.
-<!-- /nexy:server -->
+<!-- /nexy:nexy -->
 <!-- nexy:web -->
 - Props passed to client components, and the attributes of the built-in helpers, are escaped by
   Nexy. Do not undo that with `dangerouslySetInnerHTML`, `v-html` or `{@html}` on user content.
