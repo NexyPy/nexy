@@ -39,3 +39,13 @@ describe("extractScriptTags", () => {
     expect(extractScriptTags("<div>text</div>")).toEqual([]);
   });
 });
+
+describe("a block closed the other ways HTML allows (#615)", () => {
+  it("ends a script block at a closing tag with a space", () => {
+    expect(extractScriptTags("<script>let a = 1;</script >")[0].content).toBe("let a = 1;");
+  });
+
+  it("ends a style block at a closing tag with a space", () => {
+    expect(extractStyleTags("<style>h1 {}</style >")[0].content).toBe("h1 {}");
+  });
+});
