@@ -241,6 +241,7 @@
     "launch_failed": "サーバーを起動できませんでした",
     "local": "ローカル:",
     "network": "ネットワーク:",
+    "docs": "API 文書:",
     "ready": "準備完了:",
     "stop": "Ctrl+C で停止",
     "missing_table": "テーブルがありません：nexy migrate --upgrade を実行してください。"
