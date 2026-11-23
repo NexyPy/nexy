@@ -20,7 +20,7 @@ El tutorial de Nexy crea una aplicación de notas desde una carpeta vacía hasta
 | [1. Crea el proyecto](../tutorial/create-the-project.md) | un proyecto que se ejecuta | `nexy new`, `nexy dev` |
 | [2. Páginas y diseños](../tutorial/pages-and-layouts.md) | la página de notas | páginas, vistas, el diseño |
 | [3. Rutas dinámicas y una API](../tutorial/dynamic-routes.md) | `/notes/1` y `/api/notes` | Segmentos de URL, rutas JSON, `notFound` |
-| [4. Componentes](../tutorial/components.md) | una tarjeta por nota | `.nexy` componentes y sus accesorios |
+| [4. Componentes](../tutorial/components.md) | una tarjeta por nota | `.nexy` componentes y sus props |
 
 ### Unidad 2: datos
 
@@ -44,8 +44,8 @@ El tutorial de Nexy crea una aplicación de notas desde una carpeta vacía hasta
 
 | parte | lo que agregas | lo que aprendes |
 |---|---|---|
-| [13. Busca las notas mientras escribes](../tutorial/search-the-notes.md) | un cuadro de búsqueda que filtra a medida que escribes | React islas, accesorios de Python |
-| [14. Marca una nota sin recargar la página](../tutorial/tick-a-note.md) | un botón Listo en cada nota | mejora progresiva, una acción para una forma y para `fetch` |
+| [13. Busca las notas mientras escribes](../tutorial/search-the-notes.md) | un cuadro de búsqueda que filtra a medida que escribes | React islas, props de Python |
+| [14. Marca una nota sin recargar la página](../tutorial/tick-a-note.md) | un botón Listo en cada nota | mejora progresiva, una acción para un formulario y para `fetch` |
 
 ### Próximamente
 

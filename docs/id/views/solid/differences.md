@@ -10,7 +10,7 @@ Nexy merender Solid 1.9 komponen di server, lalu Solid mengambilnya di browser. 
 <!-- /router -->
 
 <!-- router:modular -->
-Dengan router modular, komponen Solid adalah [pulau](../../rendering/islands.md) di dalam tampilan `.nexy` yang dikembalikan oleh pengontrol: tidak ada file halaman dan tidak ada router klien.
+Dengan router modular, komponen Solid adalah [pulau](../../rendering/islands.md) di dalam tampilan `.nexy` yang dikembalikan pengontrol: tidak ada file halaman dan tidak ada router klien.
 <!-- /router -->
 
 ## Mulai sebuah proyek
@@ -73,7 +73,7 @@ export default function Counter(props: { start?: number }) {
 ```
 
 - Panggil sinyal, `count()`, di dalam BEJ, bukan di variabel di atasnya.
-- Baca alat peraga sebagai `props.start`. Destrukturisasi `{ start }` membaca nilai satu kali dan kehilangan pembaruan.
+- Baca props sebagai `props.start`. Destrukturisasi `{ start }` membaca nilai satu kali dan kehilangan pembaruan.
 - Solid menulis atribut HTML: `class`, `for`, `charset`, bukan `className`.
 
 ## Aturan
@@ -169,7 +169,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### Arahan hidrasi
 
-Gunakan prop `directive` untuk mengontrol kapan pulau terhidrasi:
+Gunakan `directive` prop untuk mengontrol kapan pulau terhidrasi:
 
 - `client:load` (default): segera
 - `client:idle`: saat browser dalam keadaan idle

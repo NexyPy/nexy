@@ -1,0 +1,344 @@
+{% if useCSR %}
+{%- from "todos_icons.html.jinja2" import pencil, cross -%}
+{%- from "todos_classes.jinja2" import k, c, cls with context -%}
+{%- if client_framework == "vue" -%}
+{%- set call_dd = '{{ last?.call ?? "none" }}' -%}{%- set took_dd = "{{ took(last) }}" -%}
+<script setup lang="ts">
+import { computed, onMounted, ref } from "vue";
+import { EMPTY, FILTERS, LOADING, count, server, shown, took } from "../lib/todos";
+import type { Answer, Filter, Todo } from "../lib/todos";
+
+const items = ref<Todo[]>([]);
+const filter = ref<Filter>("all");
+const editing = ref<number | null>(null);
+const draft = ref("");
+const note = ref("");
+const last = ref<Answer | null>(null);
+const pending = ref(false);
+const visible = computed(() => shown(items.value, filter.value));
+const vFocus = { mounted: (element: HTMLElement) => element.focus() };
+
+async function run(call: Promise<Answer>): Promise<Answer> {
+  const answer = await call;
+  if (answer.items) items.value = answer.items;
+  note.value = answer.note;
+  last.value = answer;
+  return answer;
+}
+
+async function add(event: Event) {
+  const form = event.currentTarget as HTMLFormElement;
+  pending.value = true;
+  const answer = await run(server.add(String(new FormData(form).get("title") ?? "")));
+  pending.value = false;
+  if (answer.items && !answer.note) form.reset();
+}
+
+function edit(todo: Todo) {
+  editing.value = todo.id;
+  draft.value = todo.title;
+}
+
+async function save(todo: Todo) {
+  if (editing.value !== todo.id) return;
+  editing.value = null;
+  if (draft.value.trim() !== todo.title) await run(server.rename(todo.id, draft.value));
+}
+
+onMounted(() => run(server.load()));
+</script>
+
+<template>
+  <section{{ k("section") }}>
+{% filter indent(4, true) %}{% include "todos_intro.html.jinja2" %}{% endfilter %}
+    <div{{ k("card") }}>
+      <form{{ k("form") }} @submit.prevent="add">
+        <input{{ k("input") }} name="title" placeholder="What needs to be done?" aria-label="New task" maxlength="200" autocomplete="off" />
+        <button{{ k("add") }} type="submit" :disabled="pending">Add</button>
+      </form>
+      <p{{ k("note") }} aria-live="polite">{{ "{{ note }}" }}</p>
+      <div{{ k("bar") }}>
+        <div{{ k("filters") }} role="group" aria-label="Show">
+          <button v-for="option in FILTERS" :key="option.key" type="button"{{ k("filter") }} :aria-pressed="filter === option.key" @click="filter = option.key">
+            {{ "{{ option.label }}" }} <span{{ k("count") }}>{{ "{{ count(items, option.key) }}" }}</span>
+          </button>
+        </div>
+        <button type="button"{{ k("clear") }} :disabled="count(items, 'done') === 0" @click="run(server.clear())">Clear done</button>
+      </div>
+      <ul{{ k("list") }} aria-label="Tasks">
+        <li v-for="todo in visible" :key="todo.id"{{ k("row") }}>
+          <input type="checkbox"{{ k("check") }} :checked="todo.done" :aria-label="`Done: ${todo.title}`" @change="run(server.toggle(todo.id))" />
+          <input v-if="editing === todo.id" v-model="draft" v-focus{{ k("edit") }} aria-label="Rename the task" @keydown.enter="save(todo)" @keydown.escape="editing = null" @blur="save(todo)" />
+          <span v-else :class="todo.done ? '{{ c.task_done }}' : '{{ c.task }}'" @dblclick="edit(todo)">{{ "{{ todo.title }}" }}</span>
+          <div{{ k("actions") }}>
+            <button type="button"{{ k("action") }} aria-label="Rename" @click="edit(todo)">{{ pencil() }}</button>
+            <button type="button"{{ k("action") }} data-danger aria-label="Delete" @click="run(server.remove(todo.id))">{{ cross() }}</button>
+          </div>
+        </li>
+      </ul>
+      <p v-if="visible.length === 0"{{ k("empty") }}>{{ "{{ last ? EMPTY[filter] : LOADING }}" }}</p>
+      <footer{{ k("foot") }}>
+        <span>{{ "{{ count(items, 'todo') }}" }} left</span>
+        <span>{{ "{{ items.length }}" }} on the server</span>
+      </footer>
+    </div>
+  </section>
+</template>
+{%- elif client_framework == "svelte" -%}
+{%- set call_dd = '{last?.call ?? "none"}' -%}{%- set took_dd = "{took(last)}" -%}
+<script lang="ts">
+  import { onMount } from "svelte";
+  import { EMPTY, FILTERS, LOADING, count, server, shown, took } from "../lib/todos";
+  import type { Answer, Filter, Todo } from "../lib/todos";
+
+  let items = $state<Todo[]>([]);
+  let filter = $state<Filter>("all");
+  let editing = $state<number | null>(null);
+  let draft = $state("");
+  let note = $state("");
+  let last = $state<Answer | null>(null);
+  let pending = $state(false);
+  const visible = $derived(shown(items, filter));
+
+  function focus(element: HTMLElement) {
+    element.focus();
+  }
+
+  async function run(call: Promise<Answer>): Promise<Answer> {
+    const answer = await call;
+    if (answer.items) items = answer.items;
+    note = answer.note;
+    last = answer;
+    return answer;
+  }
+
+  async function add(event: SubmitEvent & { currentTarget: HTMLFormElement }) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    pending = true;
+    const answer = await run(server.add(String(new FormData(form).get("title") ?? "")));
+    pending = false;
+    if (answer.items && !answer.note) form.reset();
+  }
+
+  function edit(todo: Todo) {
+    editing = todo.id;
+    draft = todo.title;
+  }
+
+  async function save(todo: Todo) {
+    if (editing !== todo.id) return;
+    editing = null;
+    if (draft.trim() !== todo.title) await run(server.rename(todo.id, draft));
+  }
+
+  function key(event: KeyboardEvent, todo: Todo) {
+    if (event.key === "Enter") save(todo);
+    if (event.key === "Escape") editing = null;
+  }
+
+  onMount(() => run(server.load()));
+</script>
+
+<section{{ k("section") }}>
+{% filter indent(2, true) %}{% include "todos_intro.html.jinja2" %}{% endfilter %}
+  <div{{ k("card") }}>
+    <form{{ k("form") }} onsubmit={add}>
+      <input{{ k("input") }} name="title" placeholder="What needs to be done?" aria-label="New task" maxlength="200" autocomplete="off" />
+      <button{{ k("add") }} type="submit" disabled={pending}>Add</button>
+    </form>
+    <p{{ k("note") }} aria-live="polite">{note}</p>
+    <div{{ k("bar") }}>
+      <div{{ k("filters") }} role="group" aria-label="Show">
+        {{ "{#" }}each FILTERS as option (option.key)}
+          <button type="button"{{ k("filter") }} aria-pressed={filter === option.key} onclick={() => (filter = option.key)}>
+            {option.label} <span{{ k("count") }}>{count(items, option.key)}</span>
+          </button>
+        {/each}
+      </div>
+      <button type="button"{{ k("clear") }} disabled={count(items, "done") === 0} onclick={() => run(server.clear())}>Clear done</button>
+    </div>
+    <ul{{ k("list") }} aria-label="Tasks">
+      {{ "{#" }}each visible as todo (todo.id)}
+        <li{{ k("row") }}>
+          <input type="checkbox"{{ k("check") }} checked={todo.done} aria-label={`Done: ${todo.title}`} onchange={() => run(server.toggle(todo.id))} />
+          {{ "{#" }}if editing === todo.id}
+            <input bind:value={draft} use:focus{{ k("edit") }} aria-label="Rename the task" onkeydown={(event) => key(event, todo)} onblur={() => save(todo)} />
+          {:else}
+            <span class={todo.done ? "{{ c.task_done }}" : "{{ c.task }}"} role="presentation" ondblclick={() => edit(todo)}>{todo.title}</span>
+          {/if}
+          <div{{ k("actions") }}>
+            <button type="button"{{ k("action") }} aria-label="Rename" onclick={() => edit(todo)}>{{ pencil() }}</button>
+            <button type="button"{{ k("action") }} data-danger aria-label="Delete" onclick={() => run(server.remove(todo.id))}>{{ cross() }}</button>
+          </div>
+        </li>
+      {/each}
+    </ul>
+    {{ "{#" }}if visible.length === 0}
+      <p{{ k("empty") }}>{last ? EMPTY[filter] : LOADING}</p>
+    {/if}
+    <footer{{ k("foot") }}>
+      <span>{count(items, "todo")} left</span>
+      <span>{items.length} on the server</span>
+    </footer>
+  </div>
+</section>
+{%- else -%}
+{%- set solid = client_framework == "solid" -%}
+{%- set react = client_framework == "react" -%}
+{%- set g = "()" if solid else "" -%}
+{%- set call_dd = '{last' ~ g ~ '?.call ?? "none"}' -%}{%- set took_dd = "{took(last" ~ g ~ ")}" -%}
+{%- set typed = "onChange" if react else "onInput" -%}
+{% if solid %}import { For, Show, createSignal, onMount } from "solid-js";
+{% elif react %}import { useEffect, useRef, useState } from "react";
+{% else %}import { useEffect, useRef, useState } from "preact/hooks";
+{% endif %}import { EMPTY, FILTERS, LOADING, count, server, shown, took } from "../lib/todos";
+import type { Answer, Filter, Todo } from "../lib/todos";
+
+type Typed = { currentTarget: HTMLInputElement };
+
+export default function Todos() {
+{% if solid %}  const [items, setItems] = createSignal<Todo[]>([]);
+  const [filter, setFilter] = createSignal<Filter>("all");
+  const [editing, setEditing] = createSignal<number | null>(null);
+  const [draft, setDraft] = createSignal("");
+  const [note, setNote] = createSignal("");
+  const [last, setLast] = createSignal<Answer | null>(null);
+  const [pending, setPending] = createSignal(false);
+  const visible = () => shown(items(), filter());
+{% else %}  const [items, setItems] = useState<Todo[]>([]);
+  const [filter, setFilter] = useState<Filter>("all");
+  const [editing, setEditing] = useState<number | null>(null);
+  const [draft, setDraft] = useState("");
+  const [note, setNote] = useState("");
+  const [last, setLast] = useState<Answer | null>(null);
+  const [pending, setPending] = useState(false);
+  // The task whose field is open, read when the field closes: a field taken out of the page can
+  // still send blur after Enter or Escape closed it, and the state it sees is the old one.
+  const open = useRef<number | null>(null);
+  const visible = shown(items, filter);
+{% endif %}
+  async function run(call: Promise<Answer>): Promise<Answer> {
+    const answer = await call;
+    if (answer.items) setItems(answer.items);
+    setNote(answer.note);
+    setLast(answer);
+    return answer;
+  }
+
+  async function add(event: { preventDefault(): void; currentTarget: HTMLFormElement }) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    setPending(true);
+    const answer = await run(server.add(String(new FormData(form).get("title") ?? "")));
+    setPending(false);
+    if (answer.items && !answer.note) form.reset();
+  }
+
+  function edit(todo: Todo) {
+{%- if not solid %}
+    open.current = todo.id;
+{%- endif %}
+    setEditing(todo.id);
+    setDraft(todo.title);
+  }
+
+  // Closes the field; true when it was still open on this task.
+  function close(todo: Todo): boolean {
+    const wasOpen = {{ "editing()" if solid else "open.current" }} === todo.id;
+{%- if not solid %}
+    open.current = null;
+{%- endif %}
+    setEditing(null);
+    return wasOpen;
+  }
+
+  async function save(todo: Todo, title: string) {
+    if (close(todo) && title.trim() !== todo.title) await run(server.rename(todo.id, title));
+  }
+
+  function key(event: { key: string; currentTarget: HTMLInputElement }, todo: Todo) {
+    if (event.key === "Enter") save(todo, event.currentTarget.value);
+    if (event.key === "Escape") close(todo);
+  }
+
+{% if solid %}  onMount(() => run(server.load()));
+{% else %}  useEffect(() => {
+    run(server.load());
+  }, []);
+{% endif %}
+{%- set row -%}
+<li{% if not solid %} key={todo.id}{% endif %}{{ k("row") }}>
+  <input type="checkbox"{{ k("check") }} checked={todo.done} aria-label={`Done: ${todo.title}`} onChange={() => run(server.toggle(todo.id))} />
+{%- if solid %}
+  <Show when={editing() === todo.id} fallback={<span class={todo.done ? "{{ c.task_done }}" : "{{ c.task }}"} onDblClick={() => edit(todo)}>{todo.title}</span>}>
+    <input value={draft()} ref={(element) => queueMicrotask(() => element.focus())}{{ k("edit") }} aria-label="Rename the task" onInput={(event: Typed) => setDraft(event.currentTarget.value)} onKeyDown={(event) => key(event, todo)} onBlur={(event) => save(todo, event.currentTarget.value)} />
+  </Show>
+{%- else %}
+  {editing === todo.id ? (
+    <input value={draft} {% if react %}autoFocus{% else %}ref={(element) => element?.focus()}{% endif %}{{ k("edit") }} aria-label="Rename the task" {{ typed }}={(event: Typed) => setDraft(event.currentTarget.value)} onKeyDown={(event) => key(event, todo)} onBlur={(event) => save(todo, event.currentTarget.value)} />
+  ) : (
+    <span {{ cls }}={todo.done ? "{{ c.task_done }}" : "{{ c.task }}"} onDoubleClick={() => edit(todo)}>{todo.title}</span>
+  )}
+{%- endif %}
+  <div{{ k("actions") }}>
+    <button type="button"{{ k("action") }} aria-label="Rename" onClick={() => edit(todo)}>{{ pencil() }}</button>
+    <button type="button"{{ k("action") }} data-danger aria-label="Delete" onClick={() => run(server.remove(todo.id))}>{{ cross() }}</button>
+  </div>
+</li>
+{%- endset %}
+  return (
+    <section{{ k("section") }}>
+{% filter indent(6, true) %}{% include "todos_intro.html.jinja2" %}{% endfilter %}
+      <div{{ k("card") }}>
+        <form{{ k("form") }} onSubmit={add}>
+          <input{{ k("input") }} name="title" placeholder="What needs to be done?" aria-label="New task" maxLength={200} autoComplete="off" />
+          <button{{ k("add") }} type="submit" disabled={pending{{ g }}}>Add</button>
+        </form>
+        <p{{ k("note") }} aria-live="polite">{note{{ g }}}</p>
+        <div{{ k("bar") }}>
+          <div{{ k("filters") }} role="group" aria-label="Show">
+{%- if solid %}
+            <For each={FILTERS}>{(option) => (
+              <button type="button"{{ k("filter") }} aria-pressed={filter() === option.key} onClick={() => setFilter(option.key)}>
+                {option.label} <span{{ k("count") }}>{count(items(), option.key)}</span>
+              </button>
+            )}</For>
+{%- else %}
+            {FILTERS.map((option) => (
+              <button key={option.key} type="button"{{ k("filter") }} aria-pressed={filter === option.key} onClick={() => setFilter(option.key)}>
+                {option.label} <span{{ k("count") }}>{count(items, option.key)}</span>
+              </button>
+            ))}
+{%- endif %}
+          </div>
+          <button type="button"{{ k("clear") }} disabled={count(items{{ g }}, "done") === 0} onClick={() => run(server.clear())}>Clear done</button>
+        </div>
+        <ul{{ k("list") }} aria-label="Tasks">
+{%- if solid %}
+          <For each={visible()}>{(todo) => (
+{{ row | indent(12, true) }}
+          )}</For>
+{%- else %}
+          {visible.map((todo) => (
+{{ row | indent(12, true) }}
+          ))}
+{%- endif %}
+        </ul>
+{%- if solid %}
+        <Show when={visible().length === 0}>
+          <p{{ k("empty") }}>{last() ? EMPTY[filter()] : LOADING}</p>
+        </Show>
+{%- else %}
+        {visible.length === 0 && <p{{ k("empty") }}>{last ? EMPTY[filter] : LOADING}</p>}
+{%- endif %}
+        <footer{{ k("foot") }}>
+          <span>{count(items{{ g }}, "todo")} left</span>
+          <span>{items{{ g }}.length} on the server</span>
+        </footer>
+      </div>
+    </section>
+  );
+}
+{%- endif %}
+{% endif %}

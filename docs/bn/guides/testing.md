@@ -61,7 +61,7 @@ def test_blog_page_renders_slug(client):
     assert "post-1" in response.text
 ```
 
-একটি API হ্যান্ডলার JSON প্রদান করে। একটি বৈধতা ব্যর্থতা হল একটি `422`, এবং একটি অনুপস্থিত রুট হল একটি `404` দ্বারা উত্তর দেওয়া `notfound.nexy` যখন সেই ফাইলটি বিদ্যমান থাকে:
+একটি API হ্যান্ডলার JSON প্রদান করে। একটি বৈধতা ব্যর্থতা হল একটি `422`, এবং একটি অনুপস্থিত রুট হল একটি `404` উত্তর দেওয়া `notfound.nexy` যখন সেই ফাইলটি উপস্থিত থাকে:
 
 ```python
 def test_create_item_validates_body(client):
@@ -93,7 +93,7 @@ JSON এর সাথে একটি কল ফলাফল সহ উত্ত
 
 ## একটি `.nexy` উপাদান পরীক্ষা করুন
 
-`nexy.testing.render` একটি কম্পোনেন্ট কম্পাইল করে, যে কম্পোনেন্ট ইম্পোর্ট করে এবং এর এইচটিএমএল রিটার্ন করে। প্রপস হল কীওয়ার্ড আর্গুমেন্ট এবং `children=` স্লট পূরণ করে:
+`nexy.testing.render` একটি কম্পোনেন্ট কম্পাইল করে, যে কম্পোনেন্ট ইম্পোর্ট করে এবং এর এইচটিএমএল রিটার্ন করে। Props হল কীওয়ার্ড আর্গুমেন্ট এবং `children=` স্লট পূরণ করে:
 
 ```python filename="tests/test_button.py"
 from nexy.testing import render
@@ -142,4 +142,4 @@ Nexy-এ কাজ করার জন্য নিজেই বিভিন্�
 
 - [CLI](../reference/cli.md): `nx test` এর প্রতিটি পতাকা
 - [এপিআই](../routing/fbr/handlers/README.md): কী একটি এন্ডপয়েন্ট রিটার্ন করে
-- [মোতায়েন](../deployment/README.md): সিআই-তে পরীক্ষার আগে তৈরি করুন
+- [স্থাপন ](../deployment/README.md): আপনি CI তে পরীক্ষার আগে তৈরি করুন

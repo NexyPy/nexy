@@ -52,7 +52,7 @@ const route = useRoute();
 </template>
 ```
 
-Die Segmente gelangen als Requisiten auf die Seite:
+Die Segmente erreichen die Seite als props:
 
 ```vue filename="src/routes/blog/[slug].vue"
 <script setup lang="ts">
@@ -397,7 +397,7 @@ defineProps<{ error: { statusCode: number } }>();
 </template>
 ```
 
-`src/routes/notfound.vue` beantwortet unbekannte URLs im Client-Modus, `notfound.nexy` im Server-Modus und API-Clients erhalten `{"detail": ...}`.
+`src/routes/notfound.vue` beantwortet unbekannte URLs im Clientmodus, `notfound.nexy` im Servermodus und API-Clients erhalten `{"detail": ...}`.
 
 ## `runtimeConfig`
 

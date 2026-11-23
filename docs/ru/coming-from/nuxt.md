@@ -38,7 +38,7 @@ class NexyConfig(NexyConfigModel):
 </template>
 ```
 
-`pages/index.vue` - это `src/routes/index.vue`, `pages/blog/index.vue` - это `src/routes/blog/index.vue`.
+`pages/index.vue` — это `src/routes/index.vue`, `pages/blog/index.vue` — это `src/routes/blog/index.vue`.
 
 ## Динамические страницы и `useRoute().params`
 
@@ -52,7 +52,7 @@ const route = useRoute();
 </template>
 ```
 
-Сегменты попадают на страницу в качестве реквизита:
+Сегменты достигают страницы как props:
 
 ```vue filename="src/маршруты/блог/[слизень].vue"
 <script setup lang="ts">
@@ -64,7 +64,7 @@ defineProps<{ slug: string }>();
 </template>
 ```
 
-В любом другом компоненте `useParams()` из `@nexy/client` возвращает их как вычисленную ссылку. `[...slug].vue` является универсальным, как и в Nuxt.
+В любом другом компоненте `useParams()` из `@nexy/client` возвращает их как вычисленную ссылку. `[...slug].vue` является универсальным, как в Nuxt.
 
 ## `layouts/default.vue` и `app.vue`
 
@@ -75,7 +75,7 @@ defineProps<{ slug: string }>();
 </template>
 ```
 
-Нет `<NuxtLayout>` и `app.vue`: корневой элемент `layout.vue` владеет документом и оборачивает каждую страницу, а `layout.vue` в подпапке вложен внутри него.
+Нет `<NuxtLayout>` и `app.vue`: корневой элемент `layout.vue` владеет документом и обертывает каждую страницу, а `layout.vue` в подпапке вложен внутри него.
 
 ```vue filename="src/маршруты/layout.vue"
 <template>
@@ -127,7 +127,7 @@ export default defineEventHandler((event) => {
 });
 ```
 
-Один файл Python на каждый URL, одна функция на метод, без суффикса `.get`:
+Один файл Python на каждый URL-адрес, одна функция на каждый метод, без суффикса `.get`:
 
 ```python filename="src/маршруты/api/items/[id].py"
 async def GET(id: int):
@@ -375,7 +375,7 @@ const count = ref(props.start ?? 0);
 </template>
 ```
 
-В режиме сервера компонент представляет собой островок страницы `.nexy`, аналогичный `<ClientOnly>` части страницы Nuxt, отображаемой на сервере, с директивой, указывающей, когда она гидратируется:
+В режиме сервера компонент представляет собой островок страницы `.nexy`, подобный `<ClientOnly>` части страницы Nuxt, отображаемой на сервере, с директивой, когда она гидратируется:
 
 ```nexy filename="src/маршруты/home.nexy"
 ---
@@ -407,7 +407,7 @@ export default defineNuxtConfig({
 });
 ```
 
-Настройки сервера - это переменные среды, читаемые в Python:
+Настройки сервера — это переменные среды, читаемые в Python:
 
 ```python filename="источник/settings.py"
 import os

@@ -1,0 +1,25 @@
+{#- The left column of /todos: what the page is, and the last round trip to the server. Each
+    framework passes the expressions `call_dd` and `took_dd` that fill the numbers. -#}
+<header{{ k("intro") }}>
+  <p{{ k("eyebrow") }}>Client and server</p>
+  <h1{{ k("title") }}>Todos</h1>
+  <p{{ k("lead") }}>
+    Each change calls an action of <code{{ k("code") }}>{{ "src/actions/todos.py" if FBRouter else "src/apps/todos/todo_actions.py" }}</code>, and the page shows the list
+    the server answers with. The tasks live {% if orm != "None" %}in the <code{{ k("code") }}>todos</code> table of
+    your database{% else %}in the memory of the Python server, until it restarts{% endif %}.
+  </p>
+  <dl{{ k("trip") }}>
+    <div{{ k("trip_row") }}>
+      <dt{{ k("dt") }}>Last call</dt>
+      <dd{{ k("dd") }}>{{ call_dd }}</dd>
+    </div>
+    <div{{ k("trip_row") }}>
+      <dt{{ k("dt") }}>Answered in</dt>
+      <dd{{ k("dd") }}>{{ took_dd }}</dd>
+    </div>
+    <div{{ k("trip_row") }}>
+      <dt{{ k("dt") }}>Stored in</dt>
+      <dd{{ k("dd") }}>{% if orm != "None" %}todos table{% else %}server memory{% endif %}</dd>
+    </div>
+  </dl>
+</header>

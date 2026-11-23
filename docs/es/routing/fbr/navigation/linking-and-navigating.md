@@ -38,7 +38,7 @@ export default function Nav() {
 }
 ```
 
-| apoyo | Significado |
+| Prop | Significado |
 |---|---|
 | `href` | Una ruta del proyecto (un error tipográfico es un error tipográfico), opcionalmente con `?query` o `#fragment`, o una URL externa. |
 | `replace` | Reemplace la entrada del historial en lugar de agregar una. |
@@ -110,7 +110,7 @@ export default function Breadcrumb() {
 | Marco | Importar | Respaldo |
 |---|---|---|
 | React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
-| Vue | `import { ErrorBoundary } from "@nexy/client"` | un accesorio de función `fallback`; los niños van en el espacio predeterminado |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | una función `fallback` prop; los niños van en el espacio predeterminado |
 | Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | un fragmento de `fallback` |
 
 ```tsx
@@ -171,7 +171,7 @@ La bandera se lee donde cambia, en el idioma de cada marco:
 useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undefined));
 ```
 
-Una función no pregunta por sí sola y no retiene una recarga; llame al `confirm()` para preguntar.
+Una función no pregunta por sí sola y no retiene una recarga; Llame al `confirm()` para preguntar.
 
 ## `Image`
 

@@ -56,7 +56,7 @@ export default defineConfig({
 
 | Forfait | La version `nx new` écrit |
 |---|---|
-| `svelte` | `^5.20.2` |
+| `svelte` | `^5.55.7` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
 
 ## Règles
@@ -90,7 +90,7 @@ La page est le composant défini par le bloc de script du fichier `.svelte`.
 
 ### Segments dynamiques
 
-Les paramètres d'URL atteignent la page en tant qu'accessoires via la rune `$props()` :
+Les paramètres d'URL atteignent la page en tant que props via la rune `$props()` :
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -151,7 +151,7 @@ from "@/components/Counter.svelte" import Counter
 
 ### Directives d'hydratation
 
-Utilisez l'accessoire `directive` pour contrôler le moment où l'île s'hydrate :
+Utilisez les `directive` prop pour contrôler quand l'île s'hydrate :
 
 - `client:load` (par défaut) : immédiatement
 - `client:idle` : lorsque le navigateur est inactif

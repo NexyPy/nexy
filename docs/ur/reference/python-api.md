@@ -22,7 +22,7 @@
 | `useRequest` | موجودہ درخواست، جس کے لیے دوسرے ہکس کا احاطہ نہیں کیا گیا ہے۔ |
 | `useHeaders` | درخواست کے ہیڈر کو کم کیس کے ناموں کے ساتھ ایک ڈکٹ کے طور پر |
 | `useUrl` | مکمل URL: `.scheme`، `.hostname`، `.path`، `.query` |
-| `useIsActive` | چاہے کوئی لنک موجودہ صفحہ پر یا اس کے والدین میں سے کسی کو، نیویگیشن بار کے لیے |
+| `useIsActive` | چاہے کوئی لنک موجودہ صفحہ پر یا اس کے والدین میں سے ایک پر، نیویگیشن بار کے لیے |
 | `useRouter` | موجودہ درخواست کی `path`، `base_url` اور `url_for` |
 | `useSession` | سیشن ڈکٹ، سیشن آف ہونے پر خالی |
 | `useCookies` | ایک ڈکٹ کے طور پر درخواست کوکیز |
@@ -144,7 +144,7 @@ async def publish(post_id: int) -> bool:
 
 | نام | یہ کیا ہے |
 |---|---|
-| `render` | دیئے گئے پرپس کے لیے ایک `.nexy` جزو کا HTML، بغیر سرور کے، دیکھیں [ٹیسٹنگ](../guides/testing.md) |
+| `render` | دیئے گئے props کے لیے ایک `.nexy` جزو کا HTML، بغیر سرور کے، دیکھیں [ٹیسٹنگ](../guides/testing.md) |
 
 ```python filename="tests/test_button.py"
 from nexy.testing import render
@@ -158,4 +158,4 @@ def test_the_button_shows_its_label():
 
 - [کنفیگ ](config.md): ان ناموں کے پیچھے `use*` فیلڈز
 - [مستثنیات اور غلطیاں](exceptions.md): ہر ناکامی کا کیا جواب ہوتا ہے۔
-- [دستاویزی اشاریہ](../README.md): وہ صفحہ جو آپ بنا رہے ہیں۔
+- [دستاویزی اشاریہ](../README.md): آپ جو کچھ بنا رہے ہیں اس کا صفحہ

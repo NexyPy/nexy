@@ -1,0 +1,67 @@
+---
+from "@/components/ProjectCard.nexy" import ProjectCard
+from "@/components/copy-email.svelte" import CopyEmail
+from src.content.work import PROJECTS, featured
+
+metadata = {
+    "title": "Product designer in Lisbon",
+    "description": "Noor Halvorsen designs the screens people use when something matters: their money, their health, their train home.",
+}
+
+# Plain names: nexy 2.8.0 does not pass a name made by unpacking to the HTML.
+selected = featured()
+first = selected[0]
+others = selected[1:]
+clients = [project.client.split(",")[0] for project in PROJECTS]
+
+principles = [
+    ("Watch before drawing", "I start where the product is used: at the desk, at the station, in the rain. The first sketch comes after."),
+    ("One screen, one answer", "A screen answers the question people came with, in their words. Everything else waits one tap further."),
+    ("Ship it with the team", "I design in the components the engineers build with, and stay until the work is in people's hands."),
+]
+---
+<section class="mx-auto w-full max-w-6xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24">
+  <p class="flex items-center gap-2 text-sm text-foreground-second">
+    <span class="size-2 rounded-full bg-[#2f9e6b]"></span>
+    Independent product designer, booking from March 2027
+  </p>
+  <h1 class="mt-6 max-w-5xl font-display text-[clamp(2.6rem,7vw,5.6rem)] leading-[1.02] tracking-[-0.01em]">
+    I design the screens people use when something matters: <em class="text-accent">their money, their health, their train home.</em>
+  </h1>
+  <div class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+    <CopyEmail directive="client:load" />
+  </div>
+</section>
+
+<section aria-labelledby="work-title" class="mx-auto w-full max-w-6xl px-4 sm:px-6">
+  <div class="flex items-end justify-between gap-4 border-t border-border pt-6">
+    <h2 id="work-title" class="font-display text-4xl">Selected work</h2>
+    <a href="/work" class="flex h-11 items-center text-sm underline underline-offset-4 hover:text-accent">All {{ PROJECTS | length }} projects</a>
+  </div>
+  <div class="mt-10 grid gap-x-8 gap-y-16 md:grid-cols-2">
+    <div class="md:col-span-2"><ProjectCard project="{{ first }}" wide="{{ True }}" /></div>
+    {% for project in others %}
+    <ProjectCard project="{{ project }}" />
+    {% endfor %}
+  </div>
+</section>
+
+<section aria-labelledby="how-title" class="mx-auto mt-28 w-full max-w-6xl px-4 sm:px-6">
+  <h2 id="how-title" class="border-t border-border pt-6 font-display text-4xl">How I work</h2>
+  <ol class="mt-10 grid gap-10 md:grid-cols-3">
+    {% for title, text in principles %}
+    <li>
+      <span class="font-display text-2xl italic text-accent">{{ loop.index }}.</span>
+      <h3 class="mt-2 text-lg font-semibold">{{ title }}</h3>
+      <p class="mt-2 leading-relaxed text-foreground-second">{{ text }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+<section aria-labelledby="clients-title" class="mx-auto mt-28 w-full max-w-6xl px-4 sm:px-6">
+  <h2 id="clients-title" class="border-t border-border pt-6 text-sm uppercase tracking-[0.14em] text-foreground-second">Recent clients</h2>
+  <ul class="mt-6 flex flex-wrap gap-x-10 gap-y-3 font-display text-3xl">
+    {% for client in clients %}<li>{{ client }}</li>{% endfor %}
+  </ul>
+</section>

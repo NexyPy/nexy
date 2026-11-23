@@ -157,7 +157,7 @@ Halaman tetap berupa file `src/routes/`, atau tampilan yang dikembalikan pengont
 <!-- router:custom -->
 Dengan router khusus, rute adalah jalur `APIRouter` Anda, dan pengendali adalah fungsi yang didaftarkan oleh dekoratornya:
 
-```python filename="src/legacy.py"
+```python filename="src/warisan.py"
 from fastapi import APIRouter
 
 api = APIRouter()
@@ -190,11 +190,11 @@ Dua keputusan independen, yang sering membingungkan:
 
 | Gagasan | Satu baris |
 |---|---|
-| Modus pelayan | server merender halaman `.nexy` dan `.md`; komponennya adalah pulau ([mode](../routing/fbr/modes.md)) |
+| Modus server | server merender halaman `.nexy` dan `.md`; komponennya adalah pulau ([mode](../routing/fbr/modes.md)) |
 | Modus klien | `useCSR = True`: file kerangka adalah rutenya, dan navigasi terjadi di browser |
 | SSR, ISR, CSR, kepulauan | empat mode rendering, ditentukan per halaman kecuali CSR, yaitu per proyek ([perenderan](../rendering/README.md)) |
 | Hidrasi | browser yang melampirkan kerangka kerja ke HTML yang sudah dikirim server ([pulau](../rendering/islands.md)) |
-| Alat peraga | nilai yang diberikan induk ke komponen, dideklarasikan `name: prop[type]` dalam file `.nexy` ([berkas .nexy](../views/nexy/README.md)) |
+| Props | nilai yang diberikan induk ke komponen, dideklarasikan `name: prop[type]` dalam file `.nexy` ([berkas .nexy](../views/nexy/README.md)) |
 
 Halaman mode server dengan satu pulau: server merender halaman, browser menghidrasi grafik hanya ketika grafik digulir hingga terlihat.
 
@@ -271,7 +271,7 @@ async def subscribe(email: str) -> bool:
 
 ## Apa yang Nexy tidak lakukan
 
-Otentikasi, otorisasi, database, internasionalisasi, pekerjaan latar belakang, email, pembayaran dan pencarian adalah **tanggung jawab aplikasi Anda**, bukan kerangka kerja. Nexy memberikan poin ekstensi dan mengatakan di mana harus memasang masing-masing poin: lihat [Apa yang diserahkan Nexy kepada Anda](how-nexy-works.md#what-nexy-leaves-to-you).
+Otentikasi, otorisasi, database, internasionalisasi, pekerjaan latar belakang, email, pembayaran dan pencarian adalah **tanggung jawab aplikasi Anda**, bukan tanggung jawab kerangka kerja. Nexy memberikan poin ekstensi dan mengatakan di mana harus menyambungkan masing-masing poin: lihat [Apa yang diserahkan Nexy kepada Anda](how-nexy-works.md#what-nexy-leaves-to-you).
 
 <!-- router:fbr -->
 Otentikasi, misalnya, dihubungkan ke ketergantungan folder yang dilindunginya. Nexy menjalankannya sebelum setiap rute di bawah; siapa penggunanya tetap menjadi keputusan Anda:

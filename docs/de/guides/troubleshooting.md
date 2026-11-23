@@ -28,7 +28,7 @@ from "@/components/LivePanel.nexy" import LivePanel
 
 Eine `.nexy`-Komponente platziert ihre untergeordneten Elemente mit `<Slot />`, mit einem großen S. Ein Kleinbuchstabe `<slot />` bleibt auf der Seite unverändert. Vue, das über ein eigenes `<slot />` verfügt, ist nicht betroffen.
 
-## Eine Requisite zeigt den Namen der Variablen an
+## Ein prop zeigt den Namen der Variablen
 
 ```nexy
 <Icon path=icon />          renders: icon
@@ -39,7 +39,7 @@ Ein Attribut ohne geschweifte Klammern ist Text. Fügen Sie den Ausdruck Jinja i
 
 ## Ein Wert in `{{ ... }}` wird leer gerendert
 
-Jinja2 verbirgt eine undefinierte Variable. Deklarieren Sie jede Eigenschaft, die Sie im Frontmatter verwenden (`title: prop[str] = ""`), und überprüfen Sie die Schreibweise.
+Jinja2 verbirgt eine undefinierte Variable. Deklarieren Sie jede Eigenschaft, die Sie in der Frontmatter (`title: prop[str] = ""`) verwenden, und überprüfen Sie die Schreibweise.
 
 ## Utility-Klassen haben auf einer `.nexy`-Seite keine Auswirkung (UnoCSS)
 

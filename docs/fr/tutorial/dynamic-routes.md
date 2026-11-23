@@ -57,7 +57,7 @@ notes = NOTES.items()
 ## Ajouter une page par note
 
 <!-- router:fbr,custom -->
-Un nom de dossier ou de fichier entre parenthèses est un segment de l'URL : `[id].nexy` répond à `/notes/1`, `/notes/2` et transmet le segment à la page en tant qu'accessoire. `id: prop[int]` le transforme en nombre, donc `/notes/abc` répond à `404` avant que la page ne s'exécute.
+Un nom de dossier ou de fichier entre parenthèses est un segment de l'URL : `[id].nexy` répond à `/notes/1`, `/notes/2` et transmet le segment à la page sous la forme d'un prop. `id: prop[int]` le transforme en nombre, donc `/notes/abc` répond à `404` avant que la page ne s'exécute.
 
 ```nexy filename="src/routes/notes/[id].nexy"
 ---
@@ -168,7 +168,7 @@ L'API est répertoriée, avec son schéma, dans <http://localhost:3000/docs>.
 
 <!-- router:fbr,custom -->
 - `[id].nexy` est un segment dynamique ; `id: prop[int]` le lit et le convertit.
-- Un fichier `.py` sous `src/routes/` répond au JSON, une fonction par méthode HTTP.
+- Un fichier `.py` sous `src/routes/` répond à JSON, une fonction par méthode HTTP.
 <!-- /router -->
 <!-- router:modular -->
 - `{id}` sur le chemin d'un contrôleur se trouve un segment dynamique ; `id: int` le convertit.

@@ -2,7 +2,7 @@
 
 ## Definition
 
-Eine Insel ist eine Client-Komponente – React, Vue, Svelte, Solid oder Preact – die in eine `.nexy`-Seite importiert wird. Der Server rendert seinen HTML-Code. Der Browser macht diese eine Komponente interaktiv. Der Rest der Seite bleibt HTML.
+Eine Insel ist eine Client-Komponente – React, Vue, Svelte, Solid oder Preact – die in eine `.nexy`-Seite importiert wird. Der Server rendert seinen HTML-Code; Der Browser macht diese eine Komponente interaktiv. Der Rest der Seite bleibt HTML.
 
 Inseln existieren im Servermodus. Im Client-Modus *sind* die Komponenten die Seiten: siehe [CSR](csr.md).
 
@@ -28,15 +28,15 @@ from "@/components/Counter.tsx" import Counter
 ```
 <!-- /router -->
 
-Nexy rendert die Komponente zum Zeitpunkt der Erstellung, speichert ihren HTML-Code und platziert ihn auf der Seite. Die Seitenantwort enthält diesen HTML-Code und die Requisiten als JSON-Attribut. Im Browser lädt die Insellaufzeit die Komponente und übernimmt den Container.
+Nexy rendert die Komponente zum Zeitpunkt der Erstellung, speichert ihren HTML-Code und platziert ihn auf der Seite. Die Seitenantwort enthält diesen HTML-Code und das `props` als JSON-Attribut. Im Browser lädt die Insellaufzeit die Komponente und übernimmt den Container.
 
 `directive` entscheidet, **wann** das geschieht. Ohne eine spendet die Insel Feuchtigkeit, sobald ihre Laufzeit bereit ist.
 
 ## Rendering-Lebenszyklus
 
-1. Beim Build wird jede Client-Komponente in HTML gerendert und unter `__nexy__/client/static/` geschrieben.
+1. Beim Build wird jede Client-Komponente in HTML gerendert und unter `__nexy__/client/static/` geschrieben: einmal mit ihren eigenen Standardwerten und einmal pro Literalsatz `props`, der in einer `.nexy`-Datei enthalten ist.
 2. Eine Anfrage rendert die Seite `.nexy`; Anstelle des Tags wird der HTML-Code der Insel eingefügt.
-3. Die Antwort enthält den HTML-Code, die Requisiten und die Direktive als Attribute.
+3. Die Antwort trägt den HTML-Code, den `props` und die Direktive als Attribute.
 4. Im Browser plant die Laufzeit die Flüssigkeitszufuhr gemäß der Anweisung.
 5. Hydration ersetzt das statische HTML durch die Live-Komponente; Der Rest der Seite ist unberührt.
 
@@ -55,13 +55,13 @@ In der Entwicklung gibt es keinen Build-Snapshot: Der Container ist leer und die
 | keine, oder `client:load` | sofort |
 | `client:idle` | wenn der Browser inaktiv ist (`requestIdleCallback`, 2 s Timeout) |
 | `client:visible` | wenn die Insel das Ansichtsfenster betritt, 200 Pixel früher |
-| `client:media` | wenn eine Medienanfrage übereinstimmt; Stellen Sie es mit der Requisite `media` ein |
+| `client:media` | wenn eine Medienanfrage übereinstimmt; setze es mit `media` |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
 ```
 
-`client:media` wird standardmäßig auf `(min-width: 768px)` gesetzt, wenn `media` nicht vorhanden ist, und hydratisiert einmal. Bei einem Browser ohne `IntersectionObserver` fällt `client:visible` auf den Leerlauf zurück.
+`client:media` ist standardmäßig `(min-width: 768px)`, wenn `media` nicht vorhanden ist, und hydratisiert einmal. In einem Browser ohne `IntersectionObserver` fällt `client:visible` auf den Leerlauf zurück.
 
 `directive` und `media` werden von Nexy verbraucht: Sie werden nicht an Ihre Komponente übergeben.
 
@@ -98,15 +98,16 @@ from "@/components/Counter.tsx" import Counter
 
 ## Einschränkungen
 
-- **`client:only` spendet nie Feuchtigkeit.** Es wird akzeptiert, aber die Laufzeit überspringt es, sodass das Server-HTML inaktiv bleibt. Verwenden Sie eine Client-Route ([CSR](csr.md)), wenn eine Komponente nicht auf dem Server gerendert werden kann.
+- **`client:only` hydratisiert nie.** Es wird akzeptiert, aber die Laufzeit überspringt es, sodass das Server-HTML inaktiv bleibt. Verwenden Sie eine Client-Route ([CSR](csr.md)), wenn eine Komponente nicht auf dem Server gerendert werden kann.
 - **`client:manual` hat keinen öffentlichen Auslöser.** Es wird auch automatisch übersprungen und das Handle, das es fortsetzt, ist intern.
-- **Requisiten müssen JSON sein.** Sie werden mit `json.dumps` serialisiert; Ein Wert, der nicht serialisiert werden kann, wird gelöscht und die Insel empfängt `{}` – stillschweigend.
-- **Eine Insel ist keine Client-Komponente mit gemeinsamem Status.** Ohne einen Mechanismus, den Sie selbst hinzufügen, teilen sich zwei Inseln keinen Status.
+- **`props` muss JSON sein.** Sie werden mit `json.dumps` serialisiert; Ein Wert, der nicht serialisiert werden kann, wird gelöscht und die Insel empfängt `{}` – stillschweigend.
+- **Eine Insel ist keine Client-Komponente mit gemeinsamem Status.** Zwei Inseln teilen keinen Status ohne einen Mechanismus, den Sie selbst hinzufügen.
 - **Die Insel wird vom Server nicht neu gerendert.** Ihr HTML ist der Build-Snapshot sowie alles, was die Komponente nach der Hydratisierung tut.
+- **Nur wörtliche `props` erreichen den Server-HTML.** `<Counter label="clicks" step="2" />` erhält einen Snapshot, der mit diesen `props` gerendert wird. Ein zur Anforderungszeit berechnetes `prop` (`label="{{ name }}"`), ein Spread (`{{ ...props }}`) oder untergeordnete Elemente zwischen den Tags können beim Erstellen nicht bekannt sein: Diese Insel zeigt den Snapshot mit den eigenen Standardwerten der Komponente an, bis sie hydratisiert ist.
 - **Eine Inselseite ist eine getarnte CSR-Seite.** Wenn jeder Block mit jedem anderen kommunizieren muss, wählen Sie stattdessen den Client-Modus.
 
 ## Nächste Schritte
 
 - [Rendering](README.md): die vier Modi
-- [Komponenten](../views/nexy/components.md): wie eine `.nexy`-Seite eine importiert
+- [Komponenten](../views/nexy/components.md): wie eine `.nexy` Seite eine importiert
 - [React](../views/react/differences.md), [Vue](../views/vue/differences.md), [Svelte](../views/svelte/differences.md), [Solid](../views/solid/differences.md), [Preact](../views/preact/differences.md)

@@ -36,6 +36,7 @@
     "count_client_only": "{count} केवल क्लाइंट",
     "more": "और {count}",
     "not_rendered": "{path} का कोई सर्वर HTML नहीं है: यह केवल क्लाइंट पर रेंडर होता है",
+    "not_rendered_because": "{path} का कोई सर्वर HTML नहीं है: {reason}",
     "running_check": "{name} चल रहा है",
     "ran_check": "{name} चल गया"
   },
@@ -60,7 +61,9 @@
       "new": "नई डायरेक्टरी में नया प्रोजेक्ट बनाएँ",
       "start": "प्रोडक्शन सर्वर शुरू करें",
       "test": "टेस्ट चलाएँ (--server / --client)",
-      "skills": "कोडिंग एजेंटों के लिए स्किल और AGENTS.md जोड़ें"
+      "skills": "कोडिंग एजेंटों के लिए स्किल और AGENTS.md जोड़ें",
+      "info": "Print environment and project versions in one block"
+    
     },
     "commands_header": "उपलब्ध कमांड:",
     "help": "Nexy CLI",
@@ -106,7 +109,8 @@
     "updating": "सर्वर अपडेट",
     "vite_failed": "Vite शुरू नहीं हो सका।",
     "vite_failed_hint": "कारण जानने के लिए ऊपर Vite का आउटपुट देखें।",
-    "server_failed": "सर्वर रुक गया ({reason}): सुधार की प्रतीक्षा है।"
+    "server_failed": "सर्वर रुक गया ({reason}): सुधार की प्रतीक्षा है।",
+    "port_in_use": "पोर्ट {asked} उपयोग में है, इसके बजाय {port} का उपयोग हो रहा है।"
   },
   "format": {
     "failed": "{count} फ़ाइलें विफल रहीं",
@@ -119,6 +123,20 @@
     "nexy": "{count} .nexy फ़ाइलें फ़ॉर्मैट हो रही हैं",
     "nexy_done": "{count} .nexy फ़ाइलें फ़ॉर्मैट हो गईं"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "@, ~, # या $ का उपयोग करें, उसके बाद वैकल्पिक अक्षर (जैसे ~ या @app)।",
     "already": "प्रोजेक्ट यहाँ पहले से शुरू किया जा चुका है",
@@ -223,8 +241,10 @@
     "launch_failed": "सर्वर शुरू नहीं हो सका",
     "local": "लोकल:",
     "network": "नेटवर्क:",
+    "docs": "API डॉक्स:",
     "ready": "तैयार:",
-    "stop": "रोकने के लिए Ctrl+C दबाएँ"
+    "stop": "रोकने के लिए Ctrl+C दबाएँ",
+    "missing_table": "एक टेबल नहीं है: nexy migrate --upgrade चलाएँ।"
   },
   "start": {
     "broken": "{count} रूट फ़ाइल लोड नहीं हो सकीं: सर्वर शुरू नहीं किया गया।",

@@ -10,7 +10,7 @@ Nexy merender Preact 10 komponen di server, lalu Preact mengambilnya di browser.
 <!-- /router -->
 
 <!-- router:modular -->
-Dengan router modular, komponen Preact adalah [pulau](../../rendering/islands.md) di dalam tampilan `.nexy` yang dikembalikan oleh pengontrol: tidak ada file halaman dan tidak ada router klien.
+Dengan router modular, komponen Preact adalah [pulau](../../rendering/islands.md) di dalam tampilan `.nexy` yang dikembalikan pengontrol: tidak ada file halaman dan tidak ada router klien.
 <!-- /router -->
 
 ## Mulai sebuah proyek
@@ -167,7 +167,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### Arahan hidrasi
 
-Gunakan prop `directive` untuk mengontrol kapan pulau terhidrasi:
+Gunakan `directive` prop untuk mengontrol kapan pulau terhidrasi:
 
 - `client:load` (default): segera
 - `client:idle`: saat browser dalam keadaan idle

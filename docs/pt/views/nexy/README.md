@@ -129,7 +129,7 @@ A última linha é exatamente `{{ Audio("/theme.mp3", controls=True) }}`. Ambas 
 
 Os filhos são renderizados por meio de `<Slot />` (S maiúsculo) dentro do componente filho e por meio de `{{ children }}` dentro de um layout.
 
-Passe um valor calculado com Jinja dentro do atributo: `<Icon path="{{ icon }}" size="{{ size }}" />`. Um nome simples como `path=icon` é o texto `icon`, não a variável. Para dar a um componente uma classe CSS, declare uma prop `class_name`: `class` é uma palavra-chave Python.
+Passe um valor calculado com Jinja dentro do atributo: `<Icon path="{{ icon }}" size="{{ size }}" />`. Um nome simples como `path=icon` é o texto `icon`, não a variável. Para dar a um componente uma classe CSS, declare uma `class_name` prop: `class` é uma palavra-chave Python.
 
 > [!NOTE]
 > uma tag auxiliar sempre fecha automaticamente. Passar conteúdo para `Link` passa por seu argumento `children` (`<Link href="/about" children="About" />`), não por meio do conteúdo do elemento.
@@ -141,7 +141,7 @@ Passe um valor calculado com Jinja dentro do atributo: `<Icon path="{{ icon }}" 
 ## Regras que economizam tempo
 
 - Um componente por arquivo. O nome do arquivo é o nome do componente, em PascalCase (`CopyChip.nexy`). Um componente `.nexy` é importado como um módulo Python: um hífen no nome (`copy-chip.nexy`) não é compilado.
-- Declare adereços antes de usá-los: uma variável não declarada é renderizada como uma string vazia, porque o indefinido de Jinja2 é silencioso aqui.
+- Declare props antes de usá-los: uma variável não declarada é renderizada como uma string vazia, porque o indefinido de Jinja2 é silencioso aqui.
 - Mantenha os efeitos colaterais dentro das funções - o frontmatter é executado novamente a cada solicitação.
 
 ## Próximas etapas

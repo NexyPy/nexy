@@ -6,7 +6,7 @@ Teil 4 verwandelt jede Notiz in eine wiederverwendbare Komponente, eine `.nexy`-
 
 ## Schreiben Sie die Komponente
 
-Eine Komponente ist eine `.nexy`-Datei außerhalb der Routen. Seine Requisiten werden mit `prop[...]` deklariert und der Aufrufer übergibt sie als Attribute:
+Eine Komponente ist eine `.nexy`-Datei außerhalb der Routen. Seine props werden mit `prop[...]` deklariert und der Aufrufer übergibt sie als Attribute:
 
 ```nexy filename="src/components/NoteCard.nexy"
 ---
@@ -22,7 +22,7 @@ text: prop[str]
 </style>
 ```
 
-Der `<style>`-Block wird mit jeder Seite gesendet, die die Karte verwendet. Es hat keinen Gültigkeitsbereich: `.note` ist eine Klasse für die gesamte Seite, also geben Sie den Klassen einer Komponente Namen, die nur von ihr verwendet werden.
+Der `<style>`-Block wird mit jeder Seite gesendet, die die Karte verwendet. Es hat keinen Gültigkeitsbereich: `.note` ist eine Klasse für die gesamte Seite. Geben Sie daher den Klassen einer Komponente Namen, die nur von ihr verwendet werden.
 
 ## Verwenden Sie es in der Liste
 
@@ -60,7 +60,7 @@ notes = NOTES.items()
 ```
 <!-- /router -->
 
-`@/` ist der Importalias von Teil 1: Er zeigt auf `src/`. Der Dateiname ist der Komponentenname, in PascalCase: `NoteCard.nexy` exportiert `NoteCard`.
+`@/` ist der Import-Alias von Teil 1: Er zeigt auf `src/`. Der Dateiname ist der Komponentenname, in PascalCase: `NoteCard.nexy` exportiert `NoteCard`.
 
 Öffnen Sie <http://localhost:3000/notes>: Jede Notiz ist jetzt eine Karte.
 

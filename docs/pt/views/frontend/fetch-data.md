@@ -158,7 +158,7 @@ Um componente Vue, Svelte ou Solid é montado da mesma forma, com a sintaxe de i
 - Um estado por URL: dois componentes que leem `/api/users` enviam uma solicitação e mostram os mesmos dados.
 - `refresh()` mantém o `data` atual até que a nova resposta chegue e duas atualizações de uma vez enviam uma solicitação.
 - Uma resposta `204` dá `data` como `undefined`.
-- A solicitação é enviada no navegador, após a montagem do componente. Os dados que o primeiro HTML deve conter pertencem aos atributos da página, renderizados no servidor.
+- A solicitação é enviada no navegador, após a montagem do componente. Os dados que o primeiro HTML deve conter pertencem à página props, renderizada no servidor.
 
 ## Erros da rota
 

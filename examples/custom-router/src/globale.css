@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* A sample keeps its style short: the colours follow the light or dark setting of the system. */
+:root {
+  color-scheme: light dark;
+  --background: light-dark(#ffffff, #111214);
+  --background-second: light-dark(#f4f5f7, #1b1d21);
+  --foreground: light-dark(#17181b, #eceef1);
+  --foreground-second: light-dark(#5b606b, #a2a8b3);
+  --border: light-dark(#e2e4e8, #2c2f36);
+  --accent: light-dark(#2457c5, #8db0ff);
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-background-second: var(--background-second);
+  --color-foreground: var(--foreground);
+  --color-foreground-second: var(--foreground-second);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+}
+
+@layer base {
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+  a {
+    @apply text-accent underline underline-offset-4;
+  }
+  code {
+    @apply rounded bg-background-second px-1.5 py-0.5 font-mono text-[0.85em];
+  }
+}

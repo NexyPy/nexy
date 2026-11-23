@@ -63,6 +63,6 @@ A `layout.*` dalam direktori membungkus halaman di bawahnya. Lihat [tata letak](
 
 ## Langkah selanjutnya
 
-- [File .nexy](nexy/README.md): Python + Jinja2 + alat peraga
+- [File .nexy](nexy/README.md): Python + Jinja2 + props
 - [Markdown dan MDX](nexy/markdown.md): halaman konten
 - [Komponen](nexy/components.md): pembantu HTML bawaan

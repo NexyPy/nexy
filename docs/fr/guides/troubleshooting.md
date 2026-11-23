@@ -28,7 +28,7 @@ from "@/components/LivePanel.nexy" import LivePanel
 
 Un composant `.nexy` place ses enfants avec `<Slot />`, avec un S majuscule. Un `<slot />` minuscule est laissé tel quel dans la page. Vue, qui possède son propre `<slot />`, n'est pas affecté.
 
-## Un accessoire montre le nom de la variable
+## Un prop indique le nom de la variable
 
 ```nexy
 <Icon path=icon />          renders: icon
@@ -60,7 +60,7 @@ Tailwind trouve les fichiers `.nexy` tout seul.
 [nexy] MDX support requires optional packages that are not installed.
 ```
 
-Installez-les dans le projet : `@mdx-js/rollup`, `remark-gfm` et `@mdx-js/react` (plus `@mdx-js/esbuild` pour `nx build`). MDX a besoin de React ou Preact dans `useFF`. Sans framework client, écrivez la page comme `.md`. Voir [Markdown et MDX](../views/nexy/markdown.md).
+Installez-les dans le projet : `@mdx-js/rollup`, `remark-gfm` et `@mdx-js/react` (plus `@mdx-js/esbuild` pour `nx build`). MDX a besoin de React ou Preact dans `useFF`. Sans framework client, écrivez la page sous la forme `.md`. Voir [Markdown et MDX](../views/nexy/markdown.md).
 
 ## `No module named 'sqlmodel'` (ou n'importe quel package) lorsqu'une commande démarre
 

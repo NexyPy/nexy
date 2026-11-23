@@ -48,7 +48,7 @@ class NexyConfig(NexyConfigModel):
 <h1>{page.params.slug}</h1>
 ```
 
-खंड पृष्ठ पर प्रॉप्स के रूप में पहुंचते हैं:
+खंड पृष्ठ पर props के रूप में पहुंचते हैं:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -422,4 +422,4 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///dev.db")
 - [सर्वर मोड और क्लाइंट मोड](../routing/fbr/modes.md)
 - [Svelte नेक्सी में](../views/svelte/differences.md)
 - [क्रियाएँ](../guides/actions.md)
-- [नेक्सट से नेक्सी तक](nuxt.md)
+- [नेक्स्ट से नेक्सी तक](nuxt.md)

@@ -91,7 +91,7 @@ Debajo de la portada está HTML con Jinja2. Las variables del frontmatter y las 
 El escape automático está **desactivado**: las plantillas son el propio HTML del proyecto, por lo que `{{ value }}` se inserta tal como está escrito. Escápese usted mismo de los valores que no le son de confianza con `{{ value | e }}`. `| safe` por lo tanto no cambia nada.
 
 > [!NOTE]
-> ajuste JavaScript que contiene `{{` o `{%` en `{% raw %}...{% endraw %}`. Marcos como Vue y Svelte utilizan las mismas llaves.
+> ajuste JavaScript que contiene `{{` o `{%` en `{% raw %}...{% endraw %}`. Marcos como Vue y Svelte usan las mismas llaves.
 
 ## Componentes
 
@@ -129,7 +129,7 @@ La última línea es exactamente `{{ Audio("/theme.mp3", controls=True) }}`. Amb
 
 Los niños se representan a través de `<Slot />` (S mayúscula) dentro del componente secundario y a través de `{{ children }}` dentro de un diseño.
 
-Pase un valor calculado con Jinja dentro del atributo: `<Icon path="{{ icon }}" size="{{ size }}" />`. Un nombre simple como `path=icon` es el texto `icon`, no la variable. Para darle a un componente una clase CSS, declare una propiedad `class_name`: `class` es una palabra clave Python.
+Pase un valor calculado con Jinja dentro del atributo: `<Icon path="{{ icon }}" size="{{ size }}" />`. Un nombre simple como `path=icon` es el texto `icon`, no la variable. Para darle a un componente una clase CSS, declare una `class_name` prop: `class` es una palabra clave Python.
 
 > [!NOTE]
 > una etiqueta auxiliar siempre se cierra sola. Pasar contenido a `Link` pasa por su argumento `children` (`<Link href="/about" children="About" />`), no por el contenido del elemento.
@@ -141,7 +141,7 @@ Pase un valor calculado con Jinja dentro del atributo: `<Icon path="{{ icon }}" 
 ## Reglas que ahorran tiempo
 
 - Un componente por archivo. El nombre del archivo es el nombre del componente, en PascalCase (`CopyChip.nexy`). Un componente `.nexy` se importa como un módulo Python: un guión en el nombre (`copy-chip.nexy`) no se compila.
-- Declare los accesorios antes de usarlos: una variable no declarada se representa como una cadena vacía, porque el indefinido de Jinja2 no dice nada aquí.
+- Declare props antes de usarlos: una variable no declarada se representa como una cadena vacía, porque el indefinido de Jinja2 no se dice aquí.
 - Mantenga los efectos secundarios dentro de las funciones: el frontmatter se ejecuta nuevamente en cada solicitud.
 
 ## Próximos pasos

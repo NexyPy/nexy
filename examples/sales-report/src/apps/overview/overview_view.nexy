@@ -1,0 +1,83 @@
+---
+from "@/components/revenue-chart.tsx" import RevenueChart
+
+page:prop[dict]
+---
+<div class="nx-container py-8 sm:py-10">
+  <header class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="font-mono text-xs uppercase tracking-[0.08em] text-foreground-second">{{ page.range }}</p>
+      <h1 class="mt-1 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Overview</h1>
+    </div>
+    <nav aria-label="Filters" class="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <ul class="flex w-fit rounded-lg border border-border bg-background-second p-0.5" aria-label="Period">
+        {% for item in page.period_links %}
+        <li><a href="{{ item.href }}" {% if item.current %}aria-current="true"{% endif %} class="inline-flex min-h-9 items-center rounded-md px-3 text-sm text-foreground-second transition-colors hover:text-foreground aria-[current=true]:bg-foreground aria-[current=true]:text-background">{{ item.label }}</a></li>
+        {% endfor %}
+      </ul>
+      <ul class="flex w-fit flex-wrap rounded-lg border border-border bg-background-second p-0.5" aria-label="Channel">
+        {% for item in page.channel_links %}
+        <li><a href="{{ item.href }}" {% if item.current %}aria-current="true"{% endif %} class="inline-flex min-h-9 items-center rounded-md px-3 text-sm text-foreground-second transition-colors hover:text-foreground aria-[current=true]:bg-foreground aria-[current=true]:text-background">{{ item.label }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </header>
+
+  <section aria-label="Totals" class="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+    {% for tile in page.tiles %}
+    <article class="rounded-xl border border-border bg-background-second p-4 sm:p-5">
+      <h2 class="text-sm text-foreground-second">{{ tile.label }}</h2>
+      <p class="mt-2 font-display text-2xl font-semibold tabular-nums tracking-tight sm:text-3xl">{{ tile.value }}</p>
+      <p class="mt-2 text-xs text-foreground-second">
+        <span class="font-mono font-medium {% if tile.trend == 'up' %}text-up{% elif tile.trend == 'down' %}text-down{% endif %}">{{ tile.change }}</span>
+        <span class="hidden sm:inline">against the {{ page.days }} days before</span><span class="sm:hidden">vs before</span>
+      </p>
+    </article>
+    {% endfor %}
+  </section>
+
+  <section aria-labelledby="chart-title" class="mt-3 rounded-xl border border-border bg-background-second p-4 sm:p-6">
+    <RevenueChart directive="client:load" days="{{ page.days }}" channel="{{ page.channel }}" />
+  </section>
+
+  <div class="mt-3 grid gap-3 lg:grid-cols-2">
+    <section aria-labelledby="channels-title" class="rounded-xl border border-border bg-background-second p-4 sm:p-6">
+      <h2 id="channels-title" class="font-display text-lg font-semibold">Revenue by channel</h2>
+      <ul class="mt-5 space-y-4">
+        {% for row in page.channels %}
+        <li>
+          <div class="flex items-baseline justify-between gap-3 text-sm">
+            <span class="{% if row.chosen %}font-semibold{% endif %}">{{ row.name }}</span>
+            <span class="tabular-nums"><span class="font-medium">{{ row.revenue }}</span> <span class="text-foreground-second">{{ row.share }}</span></span>
+          </div>
+          <div class="mt-1.5 h-2 rounded-full bg-border" aria-hidden="true">
+            <div class="h-2 rounded-full {% if row.chosen or not page.channel %}bg-chart{% else %}bg-foreground-second/40{% endif %}" style="width: {{ row.width }}%"></div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section aria-labelledby="products-title" class="rounded-xl border border-border bg-background-second p-4 sm:p-6">
+      <h2 id="products-title" class="font-display text-lg font-semibold">Best sellers</h2>
+      {% if page.products %}
+      <table class="mt-4 w-full text-sm">
+        <thead class="text-left text-xs text-foreground-second">
+          <tr><th scope="col" class="pb-2 font-normal">Product</th><th scope="col" class="pb-2 text-right font-normal">Units</th><th scope="col" class="pb-2 text-right font-normal">Revenue</th></tr>
+        </thead>
+        <tbody>
+          {% for row in page.products %}
+          <tr class="border-t border-border">
+            <td class="py-2.5 pr-3">{{ row.name }}</td>
+            <td class="py-2.5 text-right tabular-nums text-foreground-second">{{ row.units }}</td>
+            <td class="py-2.5 pl-3 text-right font-medium tabular-nums">{{ row.revenue }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="mt-4 text-sm text-foreground-second">No sale in these days.</p>
+      {% endif %}
+    </section>
+  </div>
+</div>

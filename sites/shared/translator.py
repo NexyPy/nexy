@@ -30,7 +30,10 @@ NAMES = (
     "Aerich", "SQLite", "PostgreSQL", "WebSocket", "OpenAPI", "GitHub", "Nginx", "Caddy",
     "Docker", "Codex", "OpenCode", "pnpm", "npm", "pytest", "uv",
 )  # fmt: skip
-_NAME = "|".join(re.escape(name) for name in sorted(NAMES, key=len, reverse=True))
+# The words of the code a service reads as ordinary words: `props` comes back as the props of a
+# theatre, "accessoires" in French (50 times in 12 pages of docs/fr before this list).
+CODE_WORDS = ("props", "Props", "prop", "Prop")
+_NAME = "|".join(re.escape(name) for name in sorted(NAMES + CODE_WORDS, key=len, reverse=True))
 
 # What must survive the trip, in the order that keeps the longest match first: a fenced block is
 # read before a lone backtick, a comment before a tag, a link target before a bare URL.

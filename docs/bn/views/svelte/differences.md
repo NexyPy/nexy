@@ -56,7 +56,7 @@ export default defineConfig({
 
 | প্যাকেজ | সংস্করণ `nx new` লিখেছেন |
 |---|---|
-| `svelte` | `^5.20.2` |
+| `svelte` | `^5.55.7` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
 
 ## নিয়ম
@@ -90,7 +90,7 @@ export default defineConfig({
 
 ### গতিশীল সেগমেন্ট
 
-URL প্যারামিটারগুলি `$props()` রুনের মাধ্যমে প্রপস হিসাবে পৃষ্ঠায় পৌঁছায়:
+URL প্যারামিটারগুলি `$props()` রুনের মাধ্যমে props হিসাবে পৃষ্ঠায় পৌঁছায়:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -151,7 +151,7 @@ from "@/components/Counter.svelte" import Counter
 
 ### হাইড্রেশন নির্দেশাবলী
 
-যখন দ্বীপ হাইড্রেট হয় তখন নিয়ন্ত্রণ করতে `directive` প্রপ ব্যবহার করুন:
+দ্বীপ হাইড্রেট করার সময় নিয়ন্ত্রণ করতে `directive` prop ব্যবহার করুন:
 
 - `client:load` (ডিফল্ট): অবিলম্বে
 - `client:idle`: যখন ব্রাউজার নিষ্ক্রিয় থাকে
@@ -205,7 +205,7 @@ router.push("/dashboard");
 
 - `$pathname`: বর্তমান পথ
 - `$params`: গতিশীল সেগমেন্ট
-- `$searchParams`: কোয়েরি স্ট্রিং
+- `$searchParams`: ক্যোয়ারী স্ট্রিং
 - `$location`: সম্পূর্ণ অবস্থান বস্তু
 
 ## পরবর্তী পদক্ষেপ

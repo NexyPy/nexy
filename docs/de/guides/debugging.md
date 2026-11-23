@@ -112,4 +112,4 @@ debugpy warnt möglicherweise, dass „eingefrorene Module verwendet werden“. 
 
 - [Fehlerbehebung](troubleshooting.md): Die ersten Probleme, auf die Menschen stoßen
 - [Testen](testing.md): Reproduzieren Sie den Fehler in einem Test, sobald Sie ihn gefunden haben
-- [.nexy-Dateien](../views/nexy/README.md): Frontmatter, Requisiten und Vorlagen
+- [.nexy-Dateien](../views/nexy/README.md): Frontmatter, props und Vorlagen

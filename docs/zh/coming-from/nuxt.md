@@ -52,7 +52,7 @@ const route = useRoute();
 </template>
 ```
 
-这些段作为 props 到达页面：
+这些段到达页面时为 props：
 
 ```vue filename="src/routes/blog/[slug].vue"
 <script setup lang="ts">

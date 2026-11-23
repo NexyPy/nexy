@@ -38,7 +38,9 @@ A project made with `nx new` already has them. Nexy writes:
 | `.claude/skills/` | the skills for Claude Code and OpenCode |
 
 Only the skills that fit the project are copied: a client-routed Vue project gets `nexy-vue` and no
-`.nexy` skill; an API project gets no view skill. `nx new --no-agents` skips all of it.
+`.nexy` skill; an API project gets no view skill. A shared skill is cut to the mode too, so a
+client-routed or an API project never reads about `.nexy` files. `nx new --no-agents` skips all of
+it.
 
 For an existing project, run `nx skills` at its root. It adds or refreshes the skills, writes
 `AGENTS.md` and `CLAUDE.md` when they are missing, and **never overwrites** a file you wrote or a
@@ -55,6 +57,33 @@ By hand: copy the folders you need into `.claude/skills/` or `.agents/skills/`, 
 - **Loaded when relevant:** every skill starts with a `name` and a `description` that say what it
   covers and when to load it. The agent reads those at start-up and opens the whole skill only for
   a matching task.
+
+## Write a part for one mode
+
+A shared skill marks a part that holds for one kind of project between two lines of its own:
+
+```markdown
+<!-- nexy:nexy -->
+`notfound.nexy` renders 404 and `errors.nexy` renders 500.
+<!-- /nexy:nexy -->
+<!-- nexy:client -->
+`notfound.tsx` renders 404 and `errors.tsx` renders 500.
+<!-- /nexy:client -->
+```
+
+| Tag | Reaches |
+|---|---|
+| `server` | a server-rendered project (`useCSR = False`) |
+| `client` | a client-routed project (`useCSR = True`) |
+| `web` | either of them: a project with views |
+| `api` | a project without views |
+| `nexy` | a server-rendered project that has `.nexy` files; `nx skills` looks for them in `src/` |
+
+Text without a marker reaches every project. A marker never reaches one, and it is an HTML comment,
+so the skill reads the same here. Markers sit on their own lines and do not nest; a table row cannot
+be tagged, so split the table instead. When a part only holds for one mode, write the other mode's
+version next to it if there is one. `tests/unit/nexy/cli/test_skills_fit_mode.py` installs the
+skills for each kind of project and checks what lands there.
 
 ## Keep them true
 

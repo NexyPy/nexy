@@ -48,7 +48,7 @@ Eine Seite ist die Datei selbst, benannt nach ihrer URL:
 <h1>{page.params.slug}</h1>
 ```
 
-Die Segmente gelangen als Requisiten auf die Seite:
+Die Segmente erreichen die Seite als props:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -97,7 +97,7 @@ export function GET({ params }) {
 }
 ```
 
-Der gleiche `GET`-Export in Python:
+Derselbe `GET`-Export in Python:
 
 ```python filename="src/routes/api/items/[id].py"
 async def GET(id: int):
@@ -344,7 +344,7 @@ Exportieren Sie `getStaticParams` von der Seite für ein vorgerendertes Dokument
 <h1>{slug}</h1>
 ```
 
-Im Servermodus speichert `revalidate = 60` im Titelblatt einer `.nexy`-Seite diese stattdessen pro URL im Cache:
+Im Servermodus speichert `revalidate = 60` im Titelblatt einer `.nexy`-Seite diese stattdessen pro URL zwischen:
 
 ```nexy filename="src/routes/news.nexy"
 ---
@@ -422,4 +422,4 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///dev.db")
 - [Servermodus und Clientmodus](../routing/fbr/modes.md)
 - [Svelte in Nexy](../views/svelte/differences.md)
 - [Aktionen](../guides/actions.md)
-- [Von Nuxt zu Nexy](nuxt.md)
+- [Von Nuxt bis Nexy](nuxt.md)

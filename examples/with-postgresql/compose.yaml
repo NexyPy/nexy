@@ -1,0 +1,16 @@
+# A PostgreSQL for local work: `docker compose up -d`, then copy .env.example to .env.
+# The password is for this machine only.
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: nexy
+      POSTGRES_PASSWORD: nexy-dev-only
+      POSTGRES_DB: bookmarks
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

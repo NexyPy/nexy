@@ -28,18 +28,18 @@ from "@/components/LivePanel.nexy" import LivePanel
 
 Um componente `.nexy` coloca seus filhos com `<Slot />`, com S maiúsculo. Um `<slot />` minúsculo é deixado na página como está. Vue, que possui seu próprio `<slot />`, não é afetado.
 
-## Um suporte mostra o nome da variável
+## Um prop mostra o nome da variável
 
 ```nexy
 <Icon path=icon />          renders: icon
 <Icon path="{{ icon }}" />  renders: the value of icon
 ```
 
-Um atributo sem colchetes é o texto. Coloque a expressão Jinja no atributo para passar um valor calculado.
+Um atributo sem colchetes é o texto. Coloque a expressão Jinja no atributo para passar um valor computado.
 
 ## Um valor em `{{ ... }}` fica vazio
 
-Jinja2 esconde uma variável indefinida. Declare todas as propriedades que você usa no frontmatter (`title: prop[str] = ""`) e verifique a ortografia.
+Jinja2 oculta uma variável indefinida. Declare todas as propriedades que você usa no frontmatter (`title: prop[str] = ""`) e verifique a ortografia.
 
 ## Classes utilitárias não têm efeito em uma página `.nexy` (UnoCSS)
 
@@ -82,7 +82,7 @@ O prompt começa com `(.venv)` quando está ativo. Ou pule a ativação com `uv 
 
 ## `nx dev` mostra um erro e espera
 
-Quando sua aplicação não pode ser iniciada, `nx dev` informa o motivo e aguarda a próxima alteração do arquivo; não sai. Corrija o arquivo e salve. Apenas Ctrl+C interrompe isso.
+Quando sua aplicação não pode ser iniciada, `nx dev` informa o motivo e aguarda pela próxima alteração no arquivo; não sai. Corrija o arquivo e salve. Apenas Ctrl+C interrompe isso.
 
 ## O porto está ocupado
 

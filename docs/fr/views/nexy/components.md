@@ -130,11 +130,11 @@ from "@/components/Card.nexy" import Card
 ```
 <!-- /router -->
 
-`title` n'a pas de valeur par défaut, la page doit donc la transmettre ; `tone` revient à `"neutral"`. Le balisage entre les balises arrive à l’intérieur de `<Slot />` (S majuscule). Voir [fichiers .nexy](README.md#components) pour les accessoires, les emplacements et les règles du formulaire de balise.
+`title` n'a pas de valeur par défaut, la page doit donc la transmettre ; `tone` revient à `"neutral"`. Le balisage entre les balises arrive à l’intérieur de `<Slot />` (S majuscule). Voir les [fichiers .nexy](README.md#components) pour props, les slots et les règles du formulaire de balise.
 
 ## Importer un composant client
 
-A partir d'un fichier `.nexy`, importez un composant du framework par chemin ; le compilateur le monte sur le client et transmet les attributs comme accessoires :
+A partir d'un fichier `.nexy`, importez un composant du framework par chemin ; le compilateur le monte sur le client et transmet les attributs comme props :
 
 ```nexy
 ---
@@ -152,7 +152,7 @@ counter = Import("@/components/Counter.tsx", "react", "Counter")
 html = counter(start=0)
 ```
 
-La même syntaxe d'importation résout les `.json`, `.css` et les fichiers image en leurs URL.
+La même syntaxe d'importation résout les fichiers `.json`, `.css` et image en leurs URL.
 
 ## Modèle et Vite
 

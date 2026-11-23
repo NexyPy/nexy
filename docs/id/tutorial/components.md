@@ -6,7 +6,7 @@ Bagian 4 mengubah setiap catatan menjadi komponen yang dapat digunakan kembali, 
 
 ## Tulis komponennya
 
-Komponen adalah file `.nexy` di luar rute. Propsnya dideklarasikan dengan `prop[...]`, dan pemanggil meneruskannya sebagai atribut:
+Komponen adalah file `.nexy` di luar rute. props-nya dideklarasikan dengan `prop[...]`, dan pemanggil meneruskannya sebagai atribut:
 
 ```nexy filename="src/components/NoteCard.nexy"
 ---

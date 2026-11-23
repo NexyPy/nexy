@@ -28,7 +28,7 @@ from "@/components/LivePanel.nexy" import LivePanel
 
 المكون `.nexy` يضع أطفاله بـ `<Slot />`، بحرف S كبير. ويتم ترك الحرف الصغير `<slot />` في الصفحة كما هو. Vue، الذي له `<slot />` خاصته، لا يتأثر.
 
-## تُظهر الدعامة اسم المتغير
+## يظهر prop اسم المتغير
 
 ```nexy
 <Icon path=icon />          renders: icon
@@ -43,7 +43,7 @@ Jinja2 يخفي متغير غير محدد. قم بتعريف كل خاصية ت
 
 ## فئات الأدوات المساعدة ليس لها أي تأثير في صفحة `.nexy` (UnoCSS)
 
-UnoCSS يقرأ الملف فقط عندما يكون امتداده في مسار المحتوى الخاص به. مشروع خادم تم إنشاؤه بواسطة `nx new` مع UnoCSS يسرد بالفعل `.nexy`؛ ويحتاج إليه كبير في `uno.config.ts`:
+UnoCSS يقرأ الملف فقط عندما يكون امتداده في مسار المحتوى الخاص به. مشروع خادم تم إنشاؤه بواسطة `nx new` مع UnoCSS يسرد بالفعل `.nexy`؛ ويحتاجه كبير في `uno.config.ts`:
 
 ```ts
 content: {
@@ -60,7 +60,7 @@ Tailwind يعثر على `.nexy` من الملفات بمفرده.
 [nexy] MDX support requires optional packages that are not installed.
 ```
 
-تثبيتها في المشروع: `@mdx-js/rollup`، `remark-gfm` و `@mdx-js/react` (زائد `@mdx-js/esbuild` لـ `nx build`). MDX يحتاج إلى React أو Preact في `useFF`. بدون إطار عمل عميل، اكتب الصفحة كـ `.md`. انظر [Markdown و MDX](../views/nexy/markdown.md).
+تثبيتها في المشروع: `@mdx-js/rollup`، `remark-gfm` و `@mdx-js/react` (زائد `@mdx-js/esbuild` لـ `nx build`). MDX يحتاج إلى React أو Preact في `useFF`. بدون إطار عمل العميل، اكتب الصفحة كـ `.md`. انظر [Markdown و MDX](../views/nexy/markdown.md).
 
 ## `No module named 'sqlmodel'` (أو أي حزمة) عند بدء تشغيل الأمر
 
@@ -78,11 +78,11 @@ in this Python (...) or activate the project's virtual environment.
 nexy dev
 ```
 
-يبدأ الموجه بـ `(.venv)` عندما يكون نشطًا. أو تخطي التنشيط بـ `uv run nexy dev`. إذا كانت الحزمة مفقودة بالفعل من المشروع، فأضفها مع `uv add sqlmodel`.
+يبدأ الموجه بـ `(.venv)` عندما يكون نشطًا. أو تخطي التفعيل ب `uv run nexy dev`. إذا كانت الحزمة مفقودة بالفعل من المشروع، فأضفها مع `uv add sqlmodel`.
 
 ## `nx dev` يظهر خطأ وينتظر
 
-عندما لا يمكن بدء تشغيل التطبيق الخاص بك، يقوم `nx dev` بالإبلاغ عن السبب وينتظر تغيير الملف التالي؛ لا يخرج. إصلاح الملف وحفظه. فقط Ctrl + C يوقفه.
+عندما لا يمكن بدء التطبيق الخاص بك، `nx dev` يبلغ عن السبب وينتظر تغيير الملف التالي؛ لا يخرج. إصلاح الملف وحفظه. فقط Ctrl + C يوقفه.
 
 ## الميناء مشغول
 

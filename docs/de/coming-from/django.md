@@ -151,7 +151,7 @@ children: prop[NexyElement]
 {% include "card.html" with title="Latest" body="This week" %}
 ```
 
-Eine Komponente ist eine `.nexy`-Datei mit typisierten Requisiten und einem Slot für ihre untergeordneten Elemente:
+Eine Komponente ist eine `.nexy`-Datei mit dem Typ props und einem Slot für ihre untergeordneten Elemente:
 
 ```nexy filename="src/components/Card.nexy"
 ---

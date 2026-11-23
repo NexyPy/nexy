@@ -2,7 +2,7 @@
 
 Di Nexy, proyek SvelteKit mempertahankan halaman Svelte dan tata letaknya sebagai file `.svelte` biasa, sementara `+server.ts`, `+page.server.ts` memuat, tindakan formulir, dan kait dipindahkan ke file Python di sebelahnya.
 
-Setiap bagian di bawah ini menunjukkan kebiasaan SvelteKit, lalu hal yang sama di Nexy.
+Setiap bagian di bawah menunjukkan kebiasaan SvelteKit, lalu hal yang sama di Nexy.
 
 ## Pilih modenya terlebih dahulu
 
@@ -22,7 +22,7 @@ class NexyConfig(NexyConfigModel):
     useAliases = {"@": "src"}
 ```
 
-Bagian di bawah ini menggunakan mode klien kecuali dinyatakan lain.
+Bagian di bawah ini menggunakan mode klien kecuali dinyatakan sebaliknya.
 
 ## `+page.svelte`
 
@@ -40,7 +40,7 @@ Halaman adalah file itu sendiri, dinamai berdasarkan URL-nya:
 
 ## Rute dinamis dan `params`
 
-```svelte filename="src/routes/blog/[siput]/+halaman.svelte"
+```svelte filename=""
 <script lang="ts">
   import { page } from "$app/state";
 </script>
@@ -48,7 +48,7 @@ Halaman adalah file itu sendiri, dinamai berdasarkan URL-nya:
 <h1>{page.params.slug}</h1>
 ```
 
-Segmen mencapai halaman sebagai alat peraga:
+Segmen mencapai halaman sebagai props:
 
 ```svelte filename="src/rute/blog/[siput].svelte"
 <script lang="ts">

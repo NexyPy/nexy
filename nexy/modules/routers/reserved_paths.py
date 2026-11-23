@@ -17,8 +17,18 @@ _REFERENCE_FIX = "Move the reference with useDocsUrl, or set useDocs = False, in
 _SCHEMA_FIX = "Give the route another path."
 
 
+def _literally_at(route: APIRoute, path: str) -> bool:
+    """The part of *route* before its first parameter is *path*: a parameter does not take it.
+
+    ``/{lang}`` matches ``/docs`` only because ``lang`` accepts any segment; it answers ``/fr``.
+    """
+    return route.path.split("{", 1)[0].rstrip("/") == path.rstrip("/")
+
+
 def _claims(route: APIRoute, path: str) -> bool:
     """*route* answers *path*, or ``path/``, where Starlette would redirect *path* without one."""
+    if not _literally_at(route, path):
+        return False
     for candidate in {path, path.rstrip("/") + "/"}:
         scope = {"type": "http", "path": candidate, "root_path": "", "method": "GET"}
         if route.matches(scope)[0] is not Match.NONE:

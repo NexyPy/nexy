@@ -130,7 +130,7 @@ from "@/components/Card.nexy" import Card
 ```
 <!-- /router -->
 
-`title` tidak memiliki default, jadi halaman harus meneruskannya; `tone` kembali ke `"neutral"`. Markup di antara tag berada di dalam `<Slot />` (huruf kapital S). Lihat [berkas .nexy](README.md#components) untuk props, slot dan aturan bentuk tag.
+`title` tidak memiliki default, jadi halaman harus meneruskannya; `tone` kembali ke `"neutral"`. Markup di antara tag berada di dalam `<Slot />` (huruf kapital S). Lihat [berkas .nexy](README.md#components) untuk props, slot, dan aturan formulir tag.
 
 ## Mengimpor komponen klien
 

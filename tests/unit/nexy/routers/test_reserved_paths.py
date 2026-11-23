@@ -61,3 +61,13 @@ def test_the_warning_names_the_path_when_the_file_is_unknown():
 
 def test_without_the_reference_only_the_schema_path_is_checked():
     assert shadowed_routes(_app("/docs").routes, None, _reference) == []
+
+
+def test_a_dynamic_first_segment_is_not_reported_at_the_reference_path():
+    # `/{lang}` answers `/fr` and `/en`; it only matches `/docs` because its parameter takes any
+    # segment (#619).
+    assert _shadowed(_app("/{lang}")) == []
+
+
+def test_a_catch_all_at_the_root_is_not_reported_at_the_reference_path():
+    assert _shadowed(_app("/{path:path}")) == []

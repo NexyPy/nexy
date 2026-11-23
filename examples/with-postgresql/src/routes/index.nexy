@@ -1,0 +1,44 @@
+---
+from nexy import useSearchParams
+from src.configs.db import engine
+from src.services import bookmarks
+
+metadata = {"title": "Bookmarks", "description": "Bookmarks kept in PostgreSQL with SQLModel."}
+query = useSearchParams()
+words = query.get("q", "")[:100]
+found = bookmarks.search(words)
+errors = {"title": "Give the bookmark a title, up to 200 characters.", "url": "The address must start with http:// or https://."}
+error = errors.get(query.get("error", ""), "")
+database = engine.dialect.name
+---
+<h1 class="text-3xl font-semibold">Bookmarks</h1>
+<p class="mt-2 text-sm text-foreground-second">Kept in <strong>{{ database }}</strong>. Set <code>DATABASE_URL</code> to change it.</p>
+
+<form method="get" action="/" role="search" class="mt-8 flex gap-2">
+  <label for="q" class="sr-only">Search the titles</label>
+  <input id="q" name="q" type="search" value="{{ words | e }}" placeholder="Search the titles" class="h-11 min-w-0 flex-1 rounded-lg border border-border bg-background px-3">
+  <button class="h-11 rounded-lg border border-border px-4 text-sm font-medium">Search</button>
+</form>
+
+{% if query.get("added") %}<p role="status" class="mt-4 text-sm">Bookmark added.</p>{% endif %}
+<ul class="mt-6 divide-y divide-border border-y border-border">
+  {% for bookmark in found %}
+  <li class="py-2"><a href="{{ bookmark.url | e }}" rel="noopener" class="flex min-h-11 flex-col justify-center [overflow-wrap:anywhere]"><span class="font-medium">{{ bookmark.title | e }}</span><span class="text-xs text-foreground-second">{{ bookmark.url | e }}</span></a></li>
+  {% else %}
+  <li class="py-4 text-sm text-foreground-second">{{ "No title holds these words." if words else "No bookmark yet. Add the first one below." }}</li>
+  {% endfor %}
+</ul>
+
+<h2 class="mt-10 text-xl font-semibold">Add a bookmark</h2>
+<form method="post" action="{{ __actions_path['add_bookmark'] }}" class="mt-4 flex flex-col gap-4">
+  {% if error %}<p id="form-error" role="alert" class="text-sm font-medium">{{ error }}</p>{% endif %}
+  <div>
+    <label for="title" class="mb-1 block text-sm font-medium">Title</label>
+    <input id="title" name="title" required maxlength="200" value="{{ query.get('title', '')[:200] | e }}" class="h-11 w-full rounded-lg border border-border bg-background px-3"{% if error %} aria-describedby="form-error"{% endif %}>
+  </div>
+  <div>
+    <label for="url" class="mb-1 block text-sm font-medium">Address</label>
+    <input id="url" name="url" type="url" required maxlength="2000" placeholder="https://" value="{{ query.get('url', '')[:2000] | e }}" class="h-11 w-full rounded-lg border border-border bg-background px-3"{% if error %} aria-describedby="form-error"{% endif %}>
+  </div>
+  <button class="h-11 w-fit rounded-lg bg-foreground px-5 text-sm font-medium text-background">Add</button>
+</form>

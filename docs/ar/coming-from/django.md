@@ -151,7 +151,7 @@ children: prop[NexyElement]
 {% include "card.html" with title="Latest" body="This week" %}
 ```
 
-المكون هو ملف `.nexy` مع دعائم مكتوبة وفتحة لأبناءه:
+المكون هو ملف `.nexy` مكتوب به props وفتحة لأبناءه:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -380,7 +380,7 @@ class AppHeaderMiddleware:
 MIDDLEWARE = [..., "blog.middleware.AppHeaderMiddleware"]
 ```
 
-A `middleware.py` يلتف حول مسارات المجلد الخاص به؛ الذي في الجذر يغلفهم جميعًا:
+A `middleware.py` يغلف مسارات المجلد الخاص به؛ الذي في الجذر يغلفهم جميعًا:
 
 ```python filename="src/routes/middleware.py"
 from nexy.http import Request
@@ -456,7 +456,7 @@ revalidate = 60
 
 ## تطبيقات
 
-يتم تقسيم المشروع Django إلى تطبيقات. في Nexy، مجلد `src/routes/` هو وحدة عناوين URL، و `src/models/` و `src/services/` يحتفظان بالرمز الذي يتشاركانه. بالنسبة لوحدات التحكم والوحدات النمطية التي تحتوي على حقن التبعية، فإن [جهاز التوجيه المعياري ](../routing/modular/README.md) هو الأقرب تطابقًا.
+يتم تقسيم المشروع Django إلى تطبيقات. في Nexy، مجلد `src/routes/` هو وحدة عناوين URL، و `src/models/` و `src/services/` يحتفظان بالرمز الذي يتشاركانه. بالنسبة لوحدات التحكم والوحدات النمطية التي تحتوي على حقن التبعية، فإن [جهاز التوجيه المعياري](../routing/modular/README.md) هو الأقرب تطابقًا.
 
 ## المشرف
 

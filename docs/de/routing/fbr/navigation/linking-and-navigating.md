@@ -12,7 +12,7 @@ Jeder `<a href>` zu einer Seite Ihres Projekts navigiert auf dem Client, ohne Ko
 
 Es wird ein Link zum Browser hinterlassen und die Seite wird normal geladen, wenn:
 
-- eine Sondertaste gedrückt wird oder die Taste nicht die Haupttaste ist;
+- eine Zusatztaste gedrückt wird oder die Taste nicht die Haupttaste ist;
 - es hat `target` (außer `_self`), `download`, `rel="external"` oder `data-nexy-reload`;
 - das `href` ist ein anderer Ursprung, ein `mailto:`- oder `tel:`-Link oder nur ein `#fragment`;
 - Da der Pfad mit keiner Client-Route übereinstimmt, antwortet der Server darauf.
@@ -90,7 +90,7 @@ export default function Progress() {
 }
 ```
 
-## Ordnen Sie einen Pfad mit `useMatch` zu.
+## Passen Sie einen Pfad an `useMatch`
 
 `useMatch(path)` gibt an, ob `path` mit einer Client-Route übereinstimmt. Es gibt `{ match, found }` zurück, wobei `match` die Route `file`, ihre `layouts` und ihre `params` enthält oder `null` ist. Ohne Pfad entspricht es der aktuellen Seite und folgt jeder Navigation. Während des Serverrenderings gibt es noch keinen Router, also ist `match` `null` und `found` ist `false`.
 
@@ -103,14 +103,14 @@ export default function Breadcrumb() {
 }
 ```
 
-## Erfassen Sie eine Seite, die mit `ErrorBoundary` fehlschlägt.
+## Fangen Sie eine Seite ab, die mit `ErrorBoundary` fehlschlägt
 
 `ErrorBoundary` zeigt einen Fallback anstelle seiner untergeordneten Elemente an, wenn eines von ihnen beim Rendern im Browser auslöst. Der Fallback erhält den Fehler und `reset`, wodurch die untergeordneten Elemente erneut gerendert werden.
 
 | Rahmen | Importieren | Rückfall |
 |---|---|---|
 | React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
-| Vue | `import { ErrorBoundary } from "@nexy/client"` | eine `fallback` Funktionsstütze; Die Kinder kommen in den Standard-Slot |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | eine `fallback`-Funktion prop; Die Kinder kommen in den Standard-Slot |
 | Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | ein `fallback`-Ausschnitt |
 
 ```tsx
@@ -132,12 +132,12 @@ import { ErrorBoundary } from "@nexy/client";
 
 Es fängt nicht:
 
-- ein später ausgelöster Fehler, in einem Event-Handler, einem Timer oder einem Versprechen: Fangen Sie ihn dort ab, wo er passiert. Vue ist die Ausnahme für eigene Event-Handler, deren Fehler die Grenze erreichen;
+- ein später ausgelöster Fehler, in einem Event-Handler, einem Timer oder einem Versprechen: Fangen Sie ihn dort ab, wo er passiert. Vue ist die Ausnahme für seine eigenen Event-Handler, deren Fehler die Grenze erreichen;
 - eine Seite, die der Router nicht laden kann: Der Browser fragt stattdessen den Server danach (siehe [Was der Router macht](#what-the-router-does)).
 
 ## Fragen Sie nach, bevor Sie eine Seite mit nicht gespeicherten Änderungen verlassen
 
-`useBlocker(dirty, message?)` fragt den Besucher, bevor er geht, während `dirty` wahr ist: ein Link, ein `router.push`, die Zurück- und Vorwärts-Buttons, ein Neuladen und ein geschlossener Tab. Eine Client-Navigation zeigt `message` in `confirm()`: „Ja“ geht weiter, „Nein“ bleibt auf der Seite. Ein Neuladen oder ein geschlossener Tab zeigt die eigene Frage des Browsers an, die keine Seite formulieren kann. Ohne Meldung lautet die Frage: „Sie haben nicht gespeicherte Änderungen. Diese Seite verlassen?“.
+`useBlocker(dirty, message?)` fragt den Besucher, bevor er geht, während `dirty` wahr ist: ein Link, ein `router.push`, die Zurück- und Vorwärts-Buttons, ein Neuladen und ein geschlossener Tab. Eine Client-Navigation zeigt `message` in `confirm()`: „Ja“ geht weiter, „Nein“ bleibt auf der Seite. Ein erneutes Laden oder ein geschlossener Tab zeigt die eigene Frage des Browsers an, die keine Seite formulieren kann. Ohne Meldung lautet die Frage: „Sie haben nicht gespeicherte Änderungen. Diese Seite verlassen?“.
 
 ```tsx
 import { useState } from "react";
@@ -189,7 +189,7 @@ Eine Funktion fragt nicht selbst nach und hält kein Neuladen bereit; Rufen Sie 
 - `alt` ist erforderlich; Verwenden Sie `alt=""` für ein dekoratives Bild. Nexy warnt einmal, wenn es fehlt.
 - Sowohl bei `width` als auch bei `height` geben die Attribute dem Browser das Seitenverhältnis vor und das Bild bleibt flüssig (`height: auto; max-width: 100%`).
 - `priority` lädt das Bild jetzt mit hoher Priorität für das Bild, das bei der Ankunft sichtbar ist.
-- `fill` sorgt dafür, dass das Bild sein positioniertes übergeordnetes Element verdeckt und ignoriert dabei `width` und `height`.
+- `fill` sorgt dafür, dass das Bild sein positioniertes übergeordnetes Bild verdeckt und ignoriert dabei `width` und `height`.
 - `sizes` und `srcSet` gehen durch. Nexy ändert die Größe von Bildern nicht und konvertiert sie nicht.
 
 ## Link von einer `.nexy`-Seite
@@ -207,7 +207,7 @@ from nexy import Link
 
 Bei einer Navigation: Der Router:
 
-1. gleicht den Pfad mit den Client-Routen ab (`.tsx`, `.jsx`, `.vue`, `.svelte`);
+1. Gleicht den Pfad mit den Client-Routen ab (`.tsx`, `.jsx`, `.vue`, `.svelte`);
 2. importiert und rendert die Seite und ihre [Layouts](../layouts/README.md) **zuerst** und verschiebt erst dann die URL mit `history.pushState`, sodass in der Adressleiste nie eine Seite angezeigt wird, die fehlgeschlagen ist;
 3. löst ein `nexy:navigated`-Ereignis am `document` aus;
 4. scrollt nach oben oder zum Ziel `#fragment`.

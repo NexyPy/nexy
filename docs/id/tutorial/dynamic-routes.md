@@ -57,7 +57,7 @@ notes = NOTES.items()
 ## Tambahkan halaman per catatan
 
 <!-- router:fbr,custom -->
-Nama folder atau file dalam tanda kurung adalah segmen URL: `[id].nexy` menjawab `/notes/1`, `/notes/2`, dan meneruskan segmen tersebut ke halaman sebagai penyangga. `id: prop[int]` mengubahnya menjadi angka, jadi `/notes/abc` menjawab `404` sebelum halaman dijalankan.
+Nama folder atau file dalam tanda kurung adalah segmen URL: `[id].nexy` menjawab `/notes/1`, `/notes/2`, dan meneruskan segmen tersebut ke halaman sebagai prop. `id: prop[int]` mengubahnya menjadi angka, jadi `/notes/abc` menjawab `404` sebelum halaman dijalankan.
 
 ```nexy filename="src/rute/catatan/[id].nexy"
 ---
@@ -90,7 +90,7 @@ text: prop[str]
 ```
 <!-- /router -->
 
-`notFound()` menghentikan permintaan dengan `404`: catatan yang tidak ada jawaban seperti URL yang tidak ada.
+`notFound()` menghentikan permintaan dengan `404`: catatan yang tidak ada jawabannya seperti URL yang tidak ada.
 
 ## Sajikan catatan sebagai JSON
 

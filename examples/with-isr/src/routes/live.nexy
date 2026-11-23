@@ -1,0 +1,12 @@
+---
+from "@/components/Board.nexy" import Board
+from src.board import now, render_number
+
+metadata = {"title": "Live board", "description": "The same board with no revalidate: rendered on every visit."}
+number = render_number()
+rendered_at = now()
+---
+<h1 class="text-3xl font-semibold">Departures, live</h1>
+<p class="mt-3 text-foreground-second">The same board with no <code>revalidate</code>: the server renders it on every visit, so the time changes each time you reload.</p>
+<p class="mt-6 rounded-lg bg-background-second px-4 py-3 text-sm">Render <strong data-render>{{ number }}</strong>, at <time>{{ rendered_at }}</time>.</p>
+<Board />

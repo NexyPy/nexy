@@ -1,0 +1,9 @@
+---
+metadata = {"title": "A bakery on the corner", "description": "Crumb bakes bread and buns every morning."}
+---
+<h1 class="text-3xl font-semibold">Crumb, a bakery on the corner</h1>
+<p class="mt-3 text-foreground-second">This site has <code>useSiteUrl</code> in <code>nexyconfig.py</code>, so it answers two more addresses. The sitemap lists the three pages of the menu, not the page of each bake: Nexy cannot know the values of <code>[slug]</code>.</p>
+<ul class="mt-4 flex gap-4">
+  <li><a href="/sitemap.xml" class="flex min-h-11 items-center">/sitemap.xml</a></li>
+  <li><a href="/robots.txt" class="flex min-h-11 items-center">/robots.txt</a></li>
+</ul>

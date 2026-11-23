@@ -1,0 +1,12 @@
+---
+from src.board import DEPARTURES
+---
+<table class="mt-8 w-full text-left text-sm">
+  <caption class="sr-only">Departures</caption>
+  <thead><tr class="border-b border-border"><th scope="col" class="py-2 pr-4 font-semibold">Time</th><th scope="col" class="py-2 pr-4 font-semibold">To</th><th scope="col" class="py-2 font-semibold">Status</th></tr></thead>
+  <tbody>
+    {% for time, to, status in DEPARTURES %}
+    <tr class="border-b border-border"><td class="py-2 pr-4 tabular-nums">{{ time }}</td><td class="py-2 pr-4">{{ to }}</td><td class="py-2">{{ status }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>

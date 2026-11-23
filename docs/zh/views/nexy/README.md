@@ -129,7 +129,7 @@ from nexy import Audio
 
 子组件通过子组件内的 `<Slot />`（大写 S）以及布局内的 `{{ children }}` 进行渲染。
 
-在属性 `<Icon path="{{ icon }}" size="{{ size }}" />` 内传递带有 Jinja 的计算值。诸如 `path=icon` 之类的裸名称是文本 `icon`，而不是变量。要为组件提供 CSS 类，请声明 `class_name` 属性：`class` 是 Python 关键字。
+在属性 `<Icon path="{{ icon }}" size="{{ size }}" />` 内传递带有 Jinja 的计算值。诸如 `path=icon` 之类的裸名称是文本 `icon`，而不是变量。要为组件提供 CSS 类，请声明 `class_name` prop：`class` 是 Python 关键字。
 
 > [!NOTE]
 > 辅助标签总是自动关闭的。将内容传递给 `Link` 会通过其 `children` 参数 (`<Link href="/about" children="About" />`)，而不是通过元素内容。
@@ -141,7 +141,7 @@ from nexy import Audio
 ## 节省时间的规则
 
 - 每个文件一个组件。文件名是组件名称，采用 PascalCase (`CopyChip.nexy`)。 `.nexy` 组件作为 Python 模块导入：名称中的连字符 (`copy-chip.nexy`) 无法编译。
-- 在使用 props 之前声明它们：未声明的变量呈现为空字符串，因为 Jinja2 的 undefined 在这里是沉默的。
+- 在使用它们之前声明 props：未声明的变量呈现为空字符串，因为 Jinja2的未定义在这里是沉默的。
 - 将副作用保留在函数内部 - frontmatter 在每次请求时都会再次运行。
 
 ## 后续步骤

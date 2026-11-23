@@ -28,15 +28,15 @@ from "@/components/Counter.tsx" import Counter
 ```
 <!-- /router -->
 
-Nexy restitue le composant au moment de la construction, stocke son HTML et le place à l'intérieur de la page. La réponse de la page contient ce code HTML ainsi que les accessoires en tant qu'attribut JSON. Dans le navigateur, le runtime de l'îlot charge le composant et prend en charge le conteneur.
+Nexy restitue le composant au moment de la construction, stocke son HTML et le place à l'intérieur de la page. La réponse de la page contient ce HTML plus le `props` comme attribut JSON. Dans le navigateur, le runtime de l'îlot charge le composant et prend en charge le conteneur.
 
 `directive` décide **quand** cela se produit. Sans cela, l'île s'hydrate dès que son exécution est prête.
 
 ## Cycle de vie du rendu
 
-1. Lors de la construction, chaque composant client est rendu au format HTML et écrit sous `__nexy__/client/static/`.
+1. Lors de la construction, chaque composant client est rendu au format HTML et écrit sous `__nexy__/client/static/` : une fois avec ses propres valeurs par défaut, et une fois par ensemble de `props` littéraux qu'un fichier `.nexy` lui donne.
 2. Une requête affiche la page `.nexy` ; le HTML de l'île est inséré à la place de la balise.
-3. La réponse contient le code HTML, les accessoires et la directive comme attributs.
+3. La réponse porte le HTML, le `props` et la directive comme attributs.
 4. Dans le navigateur, le runtime planifie l'hydratation selon la directive.
 5. Hydration remplace le HTML statique par le composant dynamique ; le reste de la page est intact.
 
@@ -55,7 +55,7 @@ En développement, il n'y a pas d'instantané de construction : le conteneur es
 | aucun, ou `client:load` | immédiatement |
 | `client:idle` | lorsque le navigateur est inactif (`requestIdleCallback`, délai d'attente de 2 s) |
 | `client:visible` | lorsque l'île entre dans la fenêtre, 200 px plus tôt |
-| `client:media` | lorsqu'une requête multimédia correspond ; réglez-le avec l'accessoire `media` |
+| `client:media` | lorsqu'une requête multimédia correspond ; réglez-le avec `media` |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
@@ -100,9 +100,10 @@ from "@/components/Counter.tsx" import Counter
 
 - **`client:only` ne s'hydrate jamais.** Il est accepté, mais le runtime l'ignore, donc le HTML du serveur reste inerte. Utilisez une route client ([CSR](csr.md)) lorsqu'un composant ne peut pas être rendu sur le serveur.
 - **`client:manual` n'a pas de déclencheur public.** Il est également ignoré automatiquement et le handle qui le reprend est interne.
-- **Les accessoires doivent être JSON.** Ils sont sérialisés avec `json.dumps`; une valeur qui ne peut pas être sérialisée est supprimée et l'îlot reçoit `{}` - silencieusement.
+- **`props` doit être JSON.** Ils sont sérialisés avec `json.dumps`; une valeur qui ne peut pas être sérialisée est supprimée et l'îlot reçoit `{}` - silencieusement.
 - **Une île n'est pas un composant client avec un état partagé.** Deux îles ne partagent pas d'état sans un mécanisme que vous ajoutez vous-même.
 - **L'île n'est pas restituée par le serveur.** Son HTML est l'instantané de construction, plus tout ce que fait le composant une fois hydraté.
+- **Seuls les `props` littéraux atteignent le serveur HTML.** `<Counter label="clicks" step="2" />` obtient un instantané rendu avec ces `props`. Un `prop` calculé au moment de la requête (`label="{{ name }}"`), un spread (`{{ ...props }}`) ou des enfants entre les balises ne peuvent pas être connus lors de la construction : cet îlot affiche l'instantané avec les propres valeurs par défaut du composant jusqu'à ce qu'il s'hydrate.
 - **Une page d'îles est une page CSR déguisée.** Si chaque bloc doit communiquer entre eux, choisissez plutôt le mode client.
 
 ## Prochaines étapes

@@ -1,6 +1,6 @@
 # Frontend-Layouts
 
-Ein **Layout** ist ein Wrapper, der die gemeinsame Struktur um eine oder mehrere Seiten definiert. Layouts ermöglichen ein „App-ähnliches“ Erlebnis, indem sie den Status beibehalten und das Neuladen ganzer Seiten während der Navigation vermeiden.
+Ein **Layout** ist ein Wrapper, der die gemeinsame Struktur um eine oder mehrere Seiten herum definiert. Layouts ermöglichen ein „App-ähnliches“ Erlebnis, indem sie den Status beibehalten und das Neuladen ganzer Seiten während der Navigation vermeiden.
 
 ## Verschachtelungslogik
 
@@ -38,7 +38,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
 Layouts sind auf Stabilität ausgelegt. Wenn Sie im Client-Modus zwischen zwei Seiten navigieren, die dasselbe Layout haben, wird das Layout **nicht** neu gerendert; Nur der untergeordnete Inhalt ändert sich. Im Servermodus ist jede Navigation ein neues Dokument.
 
-- **Slots**: Layouts bieten einen Slot, in den die verschachtelte Seite eingefügt wird: `children` in JSX und die `children`-Requisite in einem `.nexy`-Layout.
+- **Slots**: Layouts bieten einen Slot, in den die verschachtelte Seite eingefügt wird: `children` in JSX und `children` prop in einem `.nexy`-Layout.
 - **Statuserhaltung**: Da das Layout gemountet bleibt, bleibt jeder darin enthaltene Status (z. B. eine Suchabfrage in einem Header) während der Navigation erhalten.
 
 Derselbe Slot in einem `.nexy`-Layout:

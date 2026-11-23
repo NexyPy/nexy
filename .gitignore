@@ -68,7 +68,7 @@ __pycache__
 /packages/docs/js/search-index.js
 /packages/docs/sitemap.xml
 /packages/docs/robots.txt
-apps/
+/apps/
 TASKS/
 .qoder/
 memoire/
@@ -107,3 +107,9 @@ examples/test/
 
 # Social cards packed for LinkedIn: the cards are the source, the PDF is an artifact
 build/com/
+
+# The examples follow the release of Nexy they show: no lock file pins their packages.
+examples/*/bun.lock
+examples/*/package-lock.json
+examples/*/pnpm-lock.yaml
+examples/*/uv.lock

@@ -112,4 +112,4 @@ debugpy mungkin memperingatkan bahwa "modul beku sedang digunakan". Mulai Python
 
 - [Pemecahan masalah](troubleshooting.md): masalah pertama yang dialami orang
 - [Pengujian](testing.md): mereproduksi bug dalam pengujian setelah Anda menemukannya
-- [File .nexy](../views/nexy/README.md): materi depan, alat peraga, dan templat
+- [File .nexy](../views/nexy/README.md): frontmatter, props dan templat

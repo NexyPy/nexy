@@ -36,6 +36,7 @@
     "count_client_only": "{count} 个仅客户端",
     "more": "还有 {count} 个",
     "not_rendered": "{path} 没有服务端 HTML:它只在客户端渲染",
+    "not_rendered_because": "{path} 没有服务端 HTML:{reason}",
     "running_check": "正在运行 {name}",
     "ran_check": "已运行 {name}"
   },
@@ -60,7 +61,9 @@
       "new": "在新目录中创建新项目",
       "start": "启动生产服务器",
       "test": "运行测试（--server / --client）",
-      "skills": "为编码代理添加 skills 和 AGENTS.md"
+      "skills": "为编码代理添加 skills 和 AGENTS.md",
+      "info": "Print environment and project versions in one block"
+
     },
     "commands_header": "可用命令：",
     "help": "Nexy 命令行工具",
@@ -106,7 +109,8 @@
     "updating": "更新服务器",
     "vite_failed": "Vite 启动失败。",
     "vite_failed_hint": "请查看上方的 Vite 输出以了解原因。",
-    "server_failed": "服务器已停止（{reason}）：等待修复。"
+    "server_failed": "服务器已停止（{reason}）：等待修复。",
+    "port_in_use": "端口 {asked} 已被占用，改用 {port}。"
   },
   "format": {
     "failed": "{count} 个文件失败",
@@ -119,6 +123,20 @@
     "nexy": "正在格式化 {count} 个 .nexy 文件",
     "nexy_done": "已格式化 {count} 个 .nexy 文件"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "使用 @、~、# 或 $,后面可跟字母(例如 ~ 或 @app)。",
     "already": "此处的项目已初始化",
@@ -223,8 +241,10 @@
     "launch_failed": "无法启动服务器",
     "local": "本地：",
     "network": "网络：",
+    "docs": "API 文档：",
     "ready": "就绪：",
-    "stop": "按 Ctrl+C 停止"
+    "stop": "按 Ctrl+C 停止",
+    "missing_table": "缺少一个表：请运行 nexy migrate --upgrade。"
   },
   "start": {
     "broken": "{count} 个路由文件加载失败：服务器未启动。",

@@ -88,7 +88,7 @@ La página es el componente definido por el bloque `<script setup>`.
 
 ### Segmentos dinámicos
 
-Los parámetros de URL llegan a la página como accesorios. Puedes declararlos usando `defineProps`:
+Los parámetros de URL llegan a la página como props. Puedes declararlos usando `defineProps`:
 
 ```vue filename="src/rutas/blog/[slug].vue"
 <script setup lang="ts">
@@ -148,7 +148,7 @@ from "@/components/Counter.vue" import Counter
 
 ### Directivas de hidratación
 
-Utilice el accesorio `directive` para controlar cuándo se hidrata la isla:
+Usa el `directive` prop para controlar cuando la isla se hidrata:
 
 - `client:load` (predeterminado): inmediatamente
 - `client:idle`: cuando el navegador está inactivo

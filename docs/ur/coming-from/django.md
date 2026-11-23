@@ -151,7 +151,7 @@ children: prop[NexyElement]
 {% include "card.html" with title="Latest" body="This week" %}
 ```
 
-ایک جزو ایک `.nexy` فائل ہے جس میں ٹائپ شدہ پرپس اور اس کے بچوں کے لیے ایک سلاٹ ہے:
+ایک جزو ایک `.nexy` فائل ہے جس میں ٹائپ شدہ props ہے اور اس کے بچوں کے لیے ایک سلاٹ:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -204,7 +204,7 @@ def published(request):
     return JsonResponse({"titles": [p.title for p in posts]})
 ```
 
-Nexy کا اپنا کوئی ORM نہیں ہے۔ `nx new` سکیفولڈ کر سکتے ہیں SQLModel، SQLAlchemy یا کچھوا-ORM؛ SQLModel کے ساتھ ماڈل اور استفسار اس طرح پڑھا گیا:
+Nexy کا اپنا کوئی ORM نہیں ہے۔ `nx new` سکیفولڈ کر سکتے ہیں SQLModel، SQLAlchemy یا کچھوا-ORM؛ ماڈل اور استفسار کے ساتھ SQLModel اس طرح پڑھا:
 
 ```python filename="src/models/post_model.py"
 from sqlmodel import Field, SQLModel
@@ -238,7 +238,7 @@ async def GET():
 | `python manage.py makemigrations` | `nx migrate -m "add posts"` |
 | `python manage.py migrate` | `nx migrate --upgrade` |
 
-`nx migrate` Alembic SQLModel اور SQLAlchemy کے لیے، اور Aerich ٹورٹوائز-ORM کے لیے چلاتا ہے۔
+`nx migrate` چلاتا ہے Alembic کے لیے SQLModel اور SQLAlchemy، اور Aerich Tortoise-ORM کے لیے۔
 
 ## فارم اور CSRF
 
@@ -433,7 +433,7 @@ from django.views.decorators.cache import cache_page
 def post_list(request): ...
 ```
 
-فرنٹ میٹر میں ایک لائن صفحہ کو فی یو آر ایل کیش کرتی ہے اور اسے پس منظر میں دوبارہ پیش کرتی ہے:
+فرنٹ میٹر میں ایک لائن صفحہ کو فی یو آر ایل کیش کرتی ہے اور اسے دوبارہ پس منظر میں پیش کرتی ہے:
 
 ```nexy filename="src/routes/blog/archive.nexy"
 ---
@@ -452,11 +452,11 @@ revalidate = 60
 | `CORS_ALLOWED_ORIGINS` (django-cors-headers) | `useCORS = {"allow_origins": [...]}` |
 | `MIDDLEWARE` | `useMiddlewares = [...]`، یا `middleware.py` فائلیں۔ |
 | `DATABASES` | `DATABASE_URL` `.env` میں، `src/configs/db.py` نے پڑھا |
-| `STATIC_URL`، `STATICFILES_DIRS` | `public/`، پر خدمت کی `/` |
+| `STATIC_URL`، `STATICFILES_DIRS` | `public/`، `/` میں خدمت کی |
 
 ## ایپس
 
-ایک Django پروجیکٹ ایپس میں تقسیم ہے۔ Nexy میں، `src/routes/` کا ایک فولڈر یو آر ایل کی اکائی ہے، اور `src/models/` اور `src/services/` وہ کوڈ رکھتے ہیں جسے وہ بانٹتے ہیں۔ انحصار انجیکشن والے کنٹرولرز اور ماڈیولز کے لیے، [ماڈیولر روٹر](../routing/modular/README.md) قریب ترین میچ ہے۔
+ایک Django پروجیکٹ ایپس میں تقسیم ہے۔ Nexy میں، `src/routes/` کا ایک فولڈر URLs کی اکائی ہے، اور `src/models/` اور `src/services/` وہ کوڈ رکھتے ہیں جسے وہ بانٹتے ہیں۔ انحصار انجیکشن والے کنٹرولرز اور ماڈیولز کے لیے، [ماڈیولر روٹر](../routing/modular/README.md) قریب ترین میچ ہے۔
 
 ## ایڈمن
 
@@ -498,4 +498,4 @@ def test_hello():
 - [سے Flask سے Nexy](flask.md)
 - [ڈیٹا بیس](../guides/databases.md)
 - [اعمال](../guides/actions.md)
-- [انحصار اور محافظ](../routing/fbr/dependencies/README.md)
+- [انحصار اور محافظ ](../routing/fbr/dependencies/README.md)

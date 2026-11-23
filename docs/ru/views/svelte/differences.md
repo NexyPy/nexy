@@ -56,7 +56,7 @@ export default defineConfig({
 
 | Пакет | Версия `nx new` пишет |
 |---|---|
-| `svelte` | `^5.20.2` |
+| `svelte` | `^5.55.7` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
 
 ## Правила
@@ -90,7 +90,7 @@ export default defineConfig({
 
 ### Динамические сегменты
 
-Параметры URL-адреса попадают на страницу в качестве реквизита через руну `$props()`:
+Параметры URL достигают страницы как props через руну `$props()`:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -151,7 +151,7 @@ from "@/components/Counter.svelte" import Counter
 
 ### Директивы по гидратации
 
-Используйте реквизит `directive` для управления моментом гидратации острова:
+Используйте `directive` prop для управления моментом гидратации острова:
 
 - `client:load` (по умолчанию): немедленно
 - `client:idle`: когда браузер бездействует
@@ -206,7 +206,7 @@ router.push("/dashboard");
 - `$pathname`: текущий путь
 - `$params`: динамические сегменты
 - `$searchParams`: строка запроса
-- `$location`: объект полного местоположения
+- `$location`: объект с полным местоположением
 
 ## Следующие шаги
 

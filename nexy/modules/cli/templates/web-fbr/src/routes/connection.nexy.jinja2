@@ -1,8 +1,0 @@
-{% if not useCSR %}{%- set cls = "class" -%}
-{%- set source = "two server actions, <code>team</code> and <code>join_team</code> of <code>src/actions/team.py</code>" -%}
-{%- set list_url = "{{ __actions_path['team'] }}" -%}
-{%- set join_url = "{{ __actions_path['join_team'] }}" -%}
-{%- set list_method = "POST" -%}
-{% include "connection.html.jinja2" %}
-{% include "connection_script.html.jinja2" %}
-{% endif %}

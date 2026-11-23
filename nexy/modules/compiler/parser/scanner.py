@@ -9,9 +9,11 @@ class Scanner:
     Logic is only extracted if enclosed by two '---' markers.
     """
 
+    # The block closes on a line that is only `---`: a `---` inside a line of Python (a string,
+    # a comment) stays Python.
     _PATTERN = re.compile(
-        r"^\s*---\s*(?P<logic>.*?)\s*---\s*(?P<template>.*)",
-        re.DOTALL,
+        r"\A\s*---\s*(?P<logic>.*?)^[ \t]*---[ \t]*\r?$\s*(?P<template>.*)",
+        re.DOTALL | re.MULTILINE,
     )
 
     def scan(self, source: str) -> ScanResult:

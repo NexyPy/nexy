@@ -147,7 +147,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### Trinkrichtlinien
 
-Verwenden Sie die Requisite `directive`, um zu steuern, wann die Insel hydratisiert:
+Verwenden Sie `directive` prop, um zu steuern, wann die Insel hydratisiert:
 
 - `client:load` (Standard): sofort
 - `client:idle`: wenn der Browser inaktiv ist

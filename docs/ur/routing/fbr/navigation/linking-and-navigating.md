@@ -38,7 +38,7 @@ export default function Nav() {
 }
 ```
 
-| سہارا | مطلب |
+| Prop | مطلب |
 |---|---|
 | `href` | پروجیکٹ کا راستہ (ٹائپو ایک قسم کی غلطی ہے)، اختیاری طور پر `?query` یا `#fragment`، یا ایک بیرونی URL کے ساتھ۔ |
 | `replace` | تاریخ کے اندراج کو شامل کرنے کے بجائے تبدیل کریں۔ |
@@ -79,7 +79,7 @@ export default function User() {
 
 ## لوڈنگ حالت `useTransition` کے ساتھ دکھائیں
 
-`useTransition()` بتاتا ہے کہ آیا ایک کلائنٹ نیویگیشن پرواز میں ہے۔ `pending` کلک سے لے کر اگلا صفحہ ظاہر ہونے تک `true` ہے، اور `next` وہ مقام ہے جہاں وہ جا رہا ہے۔ صفحہ کے دکھائے جانے کے بعد، جب نیویگیشن رک جاتی ہے، یا جب کوئی نیا اس کی جگہ لے لیتا ہے تو یہ واپس `{ pending: false, next: null }` پر چلا جاتا ہے۔
+`useTransition()` بتاتا ہے کہ آیا کلائنٹ نیویگیشن پرواز میں ہے۔ `pending` کلک سے اگلا صفحہ ظاہر ہونے تک `true` ہے، اور `next` وہ مقام ہے جہاں یہ جا رہا ہے۔ صفحہ کے دکھائے جانے کے بعد، جب نیویگیشن رک جاتی ہے، یا جب کوئی نیا اس کی جگہ لے لیتا ہے تو یہ واپس `{ pending: false, next: null }` پر چلا جاتا ہے۔
 
 ```tsx
 import { useTransition } from "@nexy/client";
@@ -90,9 +90,9 @@ export default function Progress() {
 }
 ```
 
-## ایک راستے کو `useMatch` کے ساتھ جوڑیں
+## ایک راستے کو `useMatch` سے جوڑیں
 
-`useMatch(path)` بتاتا ہے کہ آیا `path` کلائنٹ کے راستے سے میل کھاتا ہے۔ یہ `{ match, found }` لوٹتا ہے، جہاں `match` راستے `file` کو رکھتا ہے، اس کا `layouts` اور اس کا `params`، یا ہے `null`۔ راستے کے بغیر یہ موجودہ صفحہ سے میل کھاتا ہے اور ہر نیویگیشن کی پیروی کرتا ہے۔ سرور رینڈر کے دوران ابھی تک کوئی روٹر نہیں ہے، لہذا `match` ہے `null` اور `found` `false` ہے۔
+`useMatch(path)` بتاتا ہے کہ آیا `path` کلائنٹ کے راستے سے میل کھاتا ہے۔ یہ `{ match, found }` لوٹتا ہے، جہاں `match` راستے `file` کو رکھتا ہے، اس کا `layouts` اور اس کا `params`، یا ہے `null`۔ راستے کے بغیر یہ موجودہ صفحہ سے میل کھاتا ہے اور ہر نیویگیشن کی پیروی کرتا ہے۔ سرور رینڈر کے دوران ابھی تک کوئی راؤٹر نہیں ہے، اس لیے `match` ہے `null` اور `found` ہے `false`۔
 
 ```tsx
 import { useMatch } from "@nexy/client";
@@ -110,7 +110,7 @@ export default function Breadcrumb() {
 | فریم ورک | درآمد کریں۔ | فال بیک |
 |---|---|---|
 | React، Preact، Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
-| Vue | `import { ErrorBoundary } from "@nexy/client"` | ایک `fallback` فنکشن پروپ؛ بچے پہلے سے طے شدہ سلاٹ میں جاتے ہیں۔ |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | ایک `fallback` فنکشن prop؛ بچے پہلے سے طے شدہ سلاٹ میں جاتے ہیں۔ |
 | Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | ایک `fallback` کا ٹکڑا |
 
 ```tsx
@@ -137,7 +137,7 @@ import { ErrorBoundary } from "@nexy/client";
 
 ## غیر محفوظ شدہ تبدیلیوں کے ساتھ صفحہ چھوڑنے سے پہلے پوچھیں۔
 
-`useBlocker(dirty, message?)` آنے والے سے جانے سے پہلے پوچھتا ہے جب کہ `dirty` سچ ہے: ایک لنک، ایک `router.push`، پیچھے اور آگے کے بٹن، ایک دوبارہ لوڈ اور ایک بند ٹیب۔ ایک کلائنٹ نیویگیشن دکھاتا ہے `message` میں `confirm()`: ہاں جاری ہے، صفحہ پر نہیں رہتا۔ دوبارہ لوڈ یا بند ٹیب براؤزر کا اپنا سوال دکھاتا ہے، جسے کوئی صفحہ لفظ نہیں کرسکتا۔ ایک پیغام کے بغیر، سوال یہ ہے کہ "آپ کے پاس غیر محفوظ شدہ تبدیلیاں ہیں۔ اس صفحہ کو چھوڑ دیں؟"۔
+`useBlocker(dirty, message?)` آنے والے سے جانے سے پہلے پوچھتا ہے جب کہ `dirty` سچ ہے: ایک لنک، ایک `router.push`، پیچھے اور آگے کے بٹن، ایک دوبارہ لوڈ اور ایک بند ٹیب۔ ایک کلائنٹ نیویگیشن دکھاتا ہے `message` میں `confirm()`: ہاں جاری ہے، صفحہ پر نہیں رہتا۔ دوبارہ لوڈ یا بند ٹیب براؤزر کا اپنا سوال دکھاتا ہے، جسے کوئی صفحہ لفظ نہیں دے سکتا۔ ایک پیغام کے بغیر، سوال یہ ہے کہ "آپ کے پاس غیر محفوظ شدہ تبدیلیاں ہیں۔ اس صفحہ کو چھوڑ دیں؟"۔
 
 ```tsx
 import { useState } from "react";
@@ -160,8 +160,8 @@ export default function Editor() {
 
 | فریم ورک | پرچم کی پیروی کریں۔ |
 |---|---|
-| React، Preact | `useBlocker(dirty)` ہر رینڈر پر |
-| Vue | `useBlocker(dirty)` `dirty` کے ساتھ ایک حوالہ یا ایک کمپیوٹیڈ |
+| React، Preact | ہر رینڈر پر `useBlocker(dirty)` |
+| Vue | `useBlocker(dirty)` `dirty` کے ساتھ ریف یا ایک کمپیوٹیڈ |
 | Solid | `createEffect(() => useBlocker(dirty()))` |
 | Svelte | `$effect(() => useBlocker(dirty))` |
 
@@ -175,7 +175,7 @@ useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undef
 
 ## `Image`
 
-`Image` ایک `<img>` رینڈر کرتا ہے جو ڈیفالٹ کے لحاظ سے سست ہے اور جب اس کا سائز معلوم ہوتا ہے تو ترتیب کو تبدیل نہیں کرتا ہے۔
+`Image` ایک `<img>` پیش کرتا ہے جو پہلے سے سست ہے اور جب اس کا سائز معلوم ہوتا ہے تو ترتیب کو تبدیل نہیں کرتا ہے۔
 
 | فریم ورک | درآمد کریں۔ |
 |---|---|
@@ -187,7 +187,7 @@ useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undef
 ```
 
 - `alt` درکار ہے۔ آرائشی تصویر کے لیے `alt=""` کا استعمال کریں۔ جب یہ غائب ہو تو Nexy ایک بار خبردار کرتا ہے۔
-- `width` اور `height` دونوں کے ساتھ، اوصاف براؤزر کو پہلو کا تناسب دیتے ہیں اور تصویر سیال رہتی ہے (`height: auto; max-width: 100%`)۔
+- دونوں `width` اور `height` کے ساتھ، اوصاف براؤزر کو پہلو کا تناسب دیتے ہیں اور تصویر سیال رہتی ہے (`height: auto; max-width: 100%`)۔
 - `priority` تصویر کو اب اعلی ترجیح پر لوڈ کرتا ہے، اس کے لیے جو آمد پر نظر آتا ہے۔
 - `fill` `width` اور `height` کو نظر انداز کرتے ہوئے، تصویر کو اپنے پوزیشن والے والدین کا احاطہ کرتا ہے۔
 - `sizes` اور `srcSet` سے گزرتے ہیں۔ Nexy تصاویر کا سائز تبدیل یا تبدیل نہیں کرتا ہے۔

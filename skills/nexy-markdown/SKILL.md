@@ -13,7 +13,10 @@ description: Writing .md and .mdx content pages in Nexy. Markdown is rendered by
 ## `.md`
 
 Nexy renders `.md` files, adds heading ids, derives a table of contents and wraps the page in the
-nearest `layout.*`. Frontmatter is not Python. When a page needs server logic, write a `.nexy` page.
+nearest `layout.*`. Frontmatter is not Python.
+<!-- nexy:nexy -->
+When a page needs server logic, write a `.nexy` page.
+<!-- /nexy:nexy -->
 
 ## `.mdx`
 

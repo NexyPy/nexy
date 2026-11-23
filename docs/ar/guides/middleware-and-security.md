@@ -42,11 +42,11 @@ class NexyConfig(NexyConfigModel):
 - `useTrustedHost` تم تعيينه على نطاقاتك لمنع هجمات رأس المضيف.
 - `useCORS` بأصول صريحة، لا `["*"]` أبدًا مع بيانات الاعتماد.
 - حقيقي `secret_key` لجلسات القراءة من البيئة.
-- الدعائم التي تم تمريرها إلى مكونات العميل تم تجاوزها من خلال HTML بواسطة Nexy. لا تضع علامة على إدخال المستخدم `| safe` في القوالب.
+- Props تم تمريرها إلى مكونات العميل والتي تم تجاوزها بصيغة HTML بواسطة Nexy. لا تضع علامة على إدخال المستخدم `| safe` في القوالب.
 
 ## الحراس والتبعيات
 
-تستخدم الحماية لكل مسار تبعيات FastAPI. ينطبق `dependencies.py` في دليل المسارات على كل شيء تحته: راجع [التبعيات](../routing/fbr/dependencies/README.md). في جهاز التوجيه المعياري، استخدم [`@UseGuard`](../routing/modular/guards-and-metadata.md).
+تستخدم الحماية لكل مسار تبعيات FastAPI. ينطبق `dependencies.py` في دليل المسارات على كل شيء تحته: راجع [التبعيات](../routing/fbr/dependencies/README.md). في جهاز التوجيه المعياري، استخدم [`@UseGuard` ](../routing/modular/guards-and-metadata.md).
 
 ## الخطوات التالية
 

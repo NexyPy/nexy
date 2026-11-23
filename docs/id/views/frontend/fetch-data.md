@@ -152,13 +152,13 @@ from "@/components/Users.tsx" import Users
 
 Komponen Vue, Svelte atau Solid dipasang dengan cara yang sama, dengan sintaks import kerangka kerjanya.
 
-## Apa yang `useFetch` kirim dan bagikan
+## Apa yang `useFetch` kirimkan dan bagikan
 
 - Permintaannya adalah `GET` dengan `Accept: application/json` dan cookie situs, sehingga rute melihat sesi yang sama dengan halaman tersebut.
 - Satu status per URL: dua komponen yang membaca `/api/users` mengirimkan satu permintaan dan menampilkan data yang sama.
 - `refresh()` menyimpan `data` saat ini hingga jawaban baru tiba, dan dua penyegaran sekaligus mengirimkan satu permintaan.
 - Jawaban `204` menghasilkan `data` sebagai `undefined`.
-- Permintaan dikirim di browser, setelah komponen dipasang. Data yang harus disimpan oleh HTML pertama adalah milik props halaman, yang dirender di server.
+- Permintaan dikirim di browser, setelah komponen dipasang. Data yang harus disimpan oleh HTML pertama adalah milik halaman props, yang dirender di server.
 
 ## Kesalahan dari rute
 
@@ -211,7 +211,7 @@ export function UserName({ id }: { id: number }) {
 
 ## Muat ulang data setelah suatu tindakan
 
-Tindakan yang memanggil `revalidate()` untuk halaman yang terbuka membuat setiap `useFetch` halaman tersebut diambil lagi, setelah halaman itu sendiri di-refresh:
+Tindakan yang memanggil `revalidate()` untuk halaman yang terbuka membuat setiap `useFetch` halaman tersebut diambil kembali, setelah halaman itu sendiri di-refresh:
 
 ```python filename="src/aksi/pengguna.py"
 from nexy.decorators import Action, revalidate

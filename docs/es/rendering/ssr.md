@@ -193,7 +193,7 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello` ejecuta esta plantilla una vez, con `slug` establecida en `hello`. Una segunda solicitud lo ejecuta nuevamente: no se guarda nada entre los dos. La cadena de consulta no es un accesorio; léala con los ganchos en [navegación](../routing/fbr/navigation/hooks.md).
+`GET /blog/hello` ejecuta esta plantilla una vez, con `slug` establecida en `hello`. Una segunda solicitud lo ejecuta nuevamente: no se guarda nada entre los dos. La cadena de consulta no es un prop; léala con los ganchos en [navegación](../routing/fbr/navigation/hooks.md).
 <!-- /router -->
 
 <!-- router:modular -->
@@ -215,14 +215,14 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello/` ejecuta esta vista una vez, con `slug` establecido en `hello`. Una segunda solicitud lo ejecuta nuevamente: no se guarda nada entre los dos. La cadena de consulta no es un accesorio; léala con `useSearchParams`.
+`GET /blog/hello/` ejecuta esta vista una vez, con `slug` establecido en `hello`. Una segunda solicitud lo ejecuta nuevamente: no se guarda nada entre los dos. La cadena de consulta no es prop; léala con `useSearchParams`.
 <!-- /router -->
 
 ## Limitaciones
 
 - **Un render por solicitud.** Dos visitantes en el mismo segundo pagan cada uno por el render y por las consultas detrás de él.
 - **Sin caché.** No hay un caché de respuesta compartido para calentar: con rutas de archivos, [ISR](isr.md) agrega uno por URL.
-- **La transmisión por secuencias solo ayuda a un componente que produce rendimiento.** Una consulta lenta en la parte superior de la página aún retrasa el primer byte.
+- **La transmisión por secuencias solo ayuda a un componente que rinde.** Una consulta lenta en la parte superior de la página aún retrasa el primer byte.
 - **Sin salida estática.** En el modo servidor, nada se congela en la compilación: no hay modo SSG ni comando de exportación. El modo cliente prerenderiza sus rutas, incluida una dinámica: consulte [Prerenderizar una ruta dinámica](csr.md#pre-render-a-dynamic-route).
 - **El escape automático está desactivado** en `.nexy` plantillas. Escapa de valores que no son de confianza con `| e`.
 

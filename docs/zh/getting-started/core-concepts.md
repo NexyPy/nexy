@@ -194,7 +194,7 @@ async def create_post():
 | 客户端模式 | `useCSR = True`：框架文件是路线，导航发生在浏览器中 |
 | SSR、ISR、CSR、岛屿 | 四种渲染模式，按页面决定，CSR 除外，CSR 是按项目决定的 ([渲染](../rendering/README.md)) |
 | 保湿 | 浏览器将框架附加到服务器已发送的 HTML ([岛屿](../rendering/islands.md)) |
-| 道具 | 父级传递给组件的值，在 `.nexy` 文件（[.nexy 文件](../views/nexy/README.md)）中声明为 `name: prop[type]` |
+| Props | 父级传递给组件的值，在 `.nexy` 文件（[.nexy 文件](../views/nexy/README.md)）中声明为 `name: prop[type]` |
 
 具有一个岛的服务器模式页面：服务器呈现页面，浏览器仅在图表滚动到视图中时才对图表进行水合。
 
@@ -276,7 +276,7 @@ async def subscribe(email: str) -> bool:
 <!-- router:fbr -->
 例如，身份验证插入到其保护的文件夹的依赖项中。 Nexy 在下面的每条路线之前运行它；用户是谁由您决定：
 
-```python filename="src/routes/account/dependencies.py"
+```python filename=""
 from nexy import unauthorized
 from nexy.http import Request
 

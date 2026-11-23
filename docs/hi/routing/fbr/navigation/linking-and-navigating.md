@@ -38,16 +38,16 @@ export default function Nav() {
 }
 ```
 
-| प्रोप | मतलब |
+| Prop | मतलब |
 |---|---|
 | `href` | प्रोजेक्ट का एक रूट (टाइपो एक प्रकार की त्रुटि है), वैकल्पिक रूप से `?query` या `#fragment`, या एक बाहरी यूआरएल के साथ। |
 | `replace` | इतिहास प्रविष्टि को जोड़ने के बजाय बदलें। |
 | `scroll` | `false` नेविगेट करने के बाद स्क्रॉल स्थिति बनाए रखता है। डिफ़ॉल्ट: `true`। |
-| `prefetch` | `'intent'` (डिफ़ॉल्ट) पृष्ठ को होवर, फ़ोकस या स्पर्श पर लोड करता है; `'viewport'` जब लिंक स्क्रॉल होकर दृश्य में आता है; `false` कभी नहीं। |
-| `activeClassName` | कक्षा में जोड़ा गया जबकि लिंक वर्तमान पृष्ठ या उसके नीचे एक पृष्ठ (`activeClass` में Vue और Svelte) पर इंगित करता है। |
+| `prefetch` | `'intent'` (डिफ़ॉल्ट) पृष्ठ को होवर, फ़ोकस या स्पर्श पर लोड करता है; `'viewport'` जब लिंक दृश्य में स्क्रॉल होता है; `false` कभी नहीं। |
+| `activeClassName` | कक्षा में जोड़ा गया जबकि लिंक वर्तमान पृष्ठ या उसके नीचे एक पृष्ठ (`activeClass` में Vue और Svelte) को इंगित करता है। |
 | `exact` | केवल सटीक पृष्ठ पर सक्रिय. |
 
-वर्तमान पृष्ठ पर इंगित करने वाला लिंक `aria-current="page"` भी मिलता है।
+वर्तमान पृष्ठ पर इंगित करने वाला लिंक भी `aria-current="page"` मिलता है।
 
 ## हुक
 
@@ -56,15 +56,15 @@ export default function Nav() {
 | | React, Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
 | पथ | `usePathname()` | `usePathname()` एक एक्सेसर लौटाता है | `usePathname()` एक रेफरी लौटाता है | `$pathname` दुकान |
-| रूट पैरामीटर | `useParams()` | `useParams()` एक्सेसर | `useParams()` रेफरी | `$params` दुकान |
-| प्रश्न | `useSearchParams()` | `useSearchParams()` एक्सेसर | `useSearchParams()` संदर्भ | `$searchParams` स्टोर |
+| रूट पैरामीटर | `useParams()` | `useParams()` एक्सेसर | `useParams()` संदर्भ | `$params` दुकान |
+| प्रश्न | `useSearchParams()` | `useSearchParams()` एक्सेसर | `useSearchParams()` रेफरी | `$searchParams` दुकान |
 | हर चीज़ | `useLocation()` | `useLocation()` एक्सेसर | `useLocation()` संदर्भ | `$location` दुकान |
 | नेविगेट करें | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
 | उड़ान में नेविगेशन | `useTransition()` | `useTransition()` एक्सेसर | `useTransition()` संदर्भ | `useTransition()` दुकान |
 | एक पथ का मिलान करें | `useMatch(path?)` | `useMatch(path?)` एक्सेसर | `useMatch(path?)` संदर्भ | `useMatch(path?)` स्टोर |
 | जाने से पहले पूछ लें | `useBlocker(dirty)` | `useBlocker(dirty())` में `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` में `$effect` |
 
-क्वेरी एक `URLSearchParams` है। `useRouter()` और `router` दें `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` और `prefetch(href)`; `push` और `replace` स्वीकार करते हैं `{ scroll: false }`।
+क्वेरी एक `URLSearchParams` है। `useRouter()` और `router` दें `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` और `prefetch(href)`; `push` और `replace` `{ scroll: false }` स्वीकार करते हैं।
 
 ```tsx
 import { useParams, useRouter, useSearchParams } from "@nexy/client";
@@ -110,7 +110,7 @@ export default function Breadcrumb() {
 | ढाँचा | आयात करें | फ़ॉलबैक |
 |---|---|---|
 | React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
-| Vue | `import { ErrorBoundary } from "@nexy/client"` | एक `fallback` फ़ंक्शन प्रोप; बच्चे डिफ़ॉल्ट स्लॉट में चले जाते हैं |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | एक `fallback` फ़ंक्शन prop; बच्चे डिफ़ॉल्ट स्लॉट में चले जाते हैं |
 | Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | एक `fallback` स्निपेट |
 
 ```tsx
@@ -137,7 +137,7 @@ import { ErrorBoundary } from "@nexy/client";
 
 ## सहेजे न गए परिवर्तनों वाला पृष्ठ छोड़ने से पहले पूछें
 
-`useBlocker(dirty, message?)` जाने से पहले आगंतुक से पूछता है जबकि `dirty` सत्य है: एक लिंक, एक `router.push`, पीछे और आगे के बटन, एक पुनः लोड और एक बंद टैब। एक क्लाइंट नेविगेशन `confirm()` में `message` दिखाता है: हाँ चलता है, पृष्ठ पर कोई नहीं रहता है। पुनः लोड या बंद टैब ब्राउज़र का अपना प्रश्न दिखाता है, जिसे कोई भी पृष्ठ नहीं बता सकता। बिना किसी संदेश के, प्रश्न यह है कि "आपके पास सहेजे नहीं गए परिवर्तन हैं। इस पृष्ठ को छोड़ दें?"।
+`useBlocker(dirty, message?)` जाने से पहले आगंतुक से पूछता है जबकि `dirty` सत्य है: एक लिंक, एक `router.push`, पीछे और आगे के बटन, एक पुनः लोड और एक बंद टैब। एक क्लाइंट नेविगेशन `confirm()` में `message` दिखाता है: हाँ चलता रहता है, पृष्ठ पर नहीं रहता है। पुनः लोड या बंद टैब ब्राउज़र का अपना प्रश्न दिखाता है, जिसे कोई भी पृष्ठ नहीं बता सकता। बिना किसी संदेश के, प्रश्न यह है कि "आपके पास सहेजे नहीं गए परिवर्तन हैं। इस पृष्ठ को छोड़ दें?"।
 
 ```tsx
 import { useState } from "react";
@@ -210,7 +210,7 @@ from nexy import Link
 1. क्लाइंट मार्गों के विरुद्ध पथ से मेल खाता है (`.tsx`, `.jsx`, `.vue`, `.svelte`);
 2. पृष्ठ और उसके [लेआउट्स](../layouts/README.md) **पहले** को आयात और प्रस्तुत करता है, और उसके बाद ही यूआरएल को `history.pushState` के साथ ले जाता है, इसलिए पता बार कभी भी विफल पृष्ठ नहीं दिखाता है;
 3. `nexy:navigated` ईवेंट को `document` पर भेजता है;
-4. शीर्ष पर या `#fragment` लक्ष्य तक स्क्रॉल करता है।
+4. शीर्ष पर, या `#fragment` लक्ष्य तक स्क्रॉल करता है।
 
 एक नया नेविगेशन पुराने नेविगेशन को रद्द कर देता है जो अभी भी प्रस्तुत हो रहा है। यदि कोई पृष्ठ प्रस्तुत नहीं हो पाता है, तो ब्राउज़र इसके बदले सर्वर से इसके लिए पूछता है। पीछे और आगे के बटन उस प्रविष्टि के पृष्ठ को प्रस्तुत करते हैं और उसकी स्क्रॉल स्थिति को पुनर्स्थापित करते हैं।
 

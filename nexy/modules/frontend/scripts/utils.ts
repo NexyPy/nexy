@@ -3,7 +3,6 @@ import fs from 'fs'
 import os from 'os'
 import path from 'path'
 import { glob } from 'glob'
-import ts from 'typescript'
 import { EXCLUDES } from './excludes'
 
 export type Framework = 'react' | 'preact' | 'solid' | 'vue' | 'svelte'
@@ -138,126 +137,6 @@ export function resolveMdxFramework(filePath: string): 'react' | 'preact' {
   return 'react'
 }
 
-export function extractPropPaths(filePath: string): string[] {
-  const program = ts.createProgram([filePath], { jsx: ts.JsxEmit.React, strict: true })
-  return _extractFromProgram(program, filePath)
-}
-
-export function createPropExtractor(files: string[]): (filePath: string) => string[] {
-  const program = ts.createProgram(files, { jsx: ts.JsxEmit.React, strict: true })
-  return (filePath: string) => _extractFromProgram(program, filePath)
-}
-
-function _extractFromProgram(program: ts.Program, filePath: string): string[] {
-  const checker = program.getTypeChecker()
-  const source = program.getSourceFile(filePath)
-  if (!source) return []
-
-  const paths: string[] = []
-
-  function isPrimitive(type: ts.Type): boolean {
-    const flags = type.getFlags()
-    return !!(
-      flags & ts.TypeFlags.String ||
-      flags & ts.TypeFlags.Number ||
-      flags & ts.TypeFlags.Boolean ||
-      flags & ts.TypeFlags.StringLiteral ||
-      flags & ts.TypeFlags.NumberLiteral ||
-      flags & ts.TypeFlags.BooleanLiteral ||
-      flags & ts.TypeFlags.Undefined ||
-      flags & ts.TypeFlags.Null ||
-      (type.isUnion() && type.types.every(t => isPrimitive(t)))
-    )
-  }
-
-  function isFunction(type: ts.Type): boolean {
-    return type.getCallSignatures().length > 0
-  }
-
-  function walk(type: ts.Type, prefix: string, depth = 0) {
-    if (depth > 5) return
-    if (isPrimitive(type)) {
-      if (prefix) paths.push(prefix)
-      return
-    }
-    if (isFunction(type)) return
-    const props = checker.getPropertiesOfType(type)
-    if (props.length === 0) {
-      if (prefix) paths.push(prefix)
-      return
-    }
-    for (const prop of props) {
-      const propType = checker.getTypeOfSymbol(prop)
-      const propPath = prefix ? `${prefix}.${prop.name}` : prop.name
-      if (isFunction(propType)) continue
-      if (isPrimitive(propType)) {
-        paths.push(propPath)
-      } else {
-        walk(propType, propPath, depth + 1)
-      }
-    }
-  }
-
-  const tryExtract = (fn: ts.SignatureDeclaration) => {
-    const sig = checker.getSignatureFromDeclaration(fn)
-    if (!sig) return
-    const param = sig.parameters[0]
-    if (!param) return
-    const type = checker.getTypeOfSymbolAtLocation(param, fn)
-    walk(type, '')
-  }
-
-  ts.forEachChild(source, node => {
-    if (ts.isFunctionDeclaration(node)) tryExtract(node)
-    if (ts.isVariableStatement(node)) {
-      ts.forEachChild(node.declarationList, decl => {
-        if (!ts.isVariableDeclaration(decl) || !decl.initializer) return
-        const init = decl.initializer
-        if (ts.isArrowFunction(init) || ts.isFunctionExpression(init)) tryExtract(init)
-      })
-    }
-  })
-
-  return [...new Set(paths)]
-}
-
-export const PLACEHOLDER_PREFIX = 'NEXY'
-
-export const createJinjaProps = (propPaths: string[]): Record<string, any> => {
-  const result: Record<string, any> = {}
-  for (const propPath of propPaths) {
-    const parts = propPath.split('.')
-    let current = result
-    for (let i = 0; i < parts.length - 1; i++) {
-      current[parts[i]] ??= {}
-      current = current[parts[i]]
-    }
-    const last = parts[parts.length - 1]
-    current[last] = `${PLACEHOLDER_PREFIX}${propPath.replace(/\./g, 'DOT')}`
-  }
-  return result
-}
-
-export const normalizeClassWhitespace = (html: string): string => {
-  return html.replace(
-    /(\sclass(?:Name)?=")([^"]+)(")/g,
-    (_, prefix, classes, suffix) => {
-      const normalized = classes.trim().replace(/\s+/g, ' ')
-      return `${prefix}${normalized}${suffix}`
-    }
-  )
-}
-
-export const restoreJinjaVars = (html: string, propPaths: string[]): string => {
-  let result = normalizeClassWhitespace(html)
-  const sorted = [...propPaths].sort((a, b) => b.length - a.length)
-  for (const propPath of sorted) {
-    const placeholder = `${PLACEHOLDER_PREFIX}${propPath.replace(/\./g, 'DOT')}`
-    result = result.split(placeholder).join(`{{ ${propPath} }}`)
-  }
-  return result
-}
-
 export const isComponent = (exportName: string, Component: any, fileName: string): boolean => {
   if (typeof Component !== 'function') return false
   if (Component.prototype?.isReactComponent) return true
@@ -340,6 +219,8 @@ export interface SSGEntry {
   file: string;
   component: string;
   status: 'success' | 'failed' | 'not_supported';
+  /** Why a component has no server HTML; `nx build` prints it next to the file. */
+  reason?: string;
 }
 
 export interface SSGResult {

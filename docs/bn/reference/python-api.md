@@ -144,7 +144,7 @@ async def publish(post_id: int) -> bool:
 
 | নাম | এটা কি |
 |---|---|
-| `render` | প্রদত্ত প্রপসের জন্য একটি `.nexy` উপাদানের HTML, একটি সার্ভার ছাড়াই, [টেস্টিং](../guides/testing.md) দেখুন |
+| `render` | প্রদত্ত props জন্য একটি `.nexy` উপাদানের এইচটিএমএল, একটি সার্ভার ছাড়া, [পরীক্ষা](../guides/testing.md) দেখুন |
 
 ```python filename="tests/test_button.py"
 from nexy.testing import render
@@ -157,5 +157,5 @@ def test_the_button_shows_its_label():
 ## যেখানে পরের
 
 - [কনফিগ](config.md): এই নামের পিছনে `use*` ক্ষেত্র
-- [ব্যতিক্রম এবং ত্রুটি ](exceptions.md): প্রতিটি ব্যর্থতার উত্তর কি
+- [ব্যতিক্রম এবং ত্রুটি](exceptions.md): প্রতিটি ব্যর্থতার উত্তর কি
 - [ডকুমেন্টেশন ইনডেক্স](../README.md): আপনি যা তৈরি করছেন তার পৃষ্ঠা

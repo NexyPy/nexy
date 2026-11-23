@@ -1,0 +1,42 @@
+---
+from nexy import Vite, setMetadata, useMetadata, usePathname, useUrl
+from src.i18n import DEFAULT, LANGUAGES, t
+
+children: prop[NexyElement]
+
+# The language is the first part of the address: /fr/about is French. Anything else is English.
+path = usePathname()
+first, _, rest = path.strip("/").partition("/")
+lang = first if first in LANGUAGES else DEFAULT
+# Search engines read the other languages of a page as full addresses. `origin` and `suffix` come
+# from the request: they are printed with `| e`, so an address can never add HTML to the page.
+url = useUrl()
+origin = f"{url.scheme}://{url.netloc}"
+suffix = "/" + rest if rest else ""
+setMetadata(title_template="%s | Harbour Cafe")
+---
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ useMetadata().html() }}
+    {% for code in LANGUAGES %}<link rel="alternate" hreflang="{{ code }}" href="{{ origin | e }}/{{ code }}{{ suffix | e }}">
+    {% endfor %}<link rel="alternate" hreflang="x-default" href="{{ origin | e }}/">
+    <Vite />
+</head>
+<body class="mx-auto max-w-2xl px-4 py-10">
+    <header class="flex flex-wrap items-center justify-between gap-4 text-sm">
+        <nav aria-label="Site" class="flex gap-4">
+            <a href="/{{ lang }}" class="flex min-h-11 items-center">{{ t(lang, "nav.home") }}</a>
+            <a href="/{{ lang }}/about" class="flex min-h-11 items-center">{{ t(lang, "nav.about") }}</a>
+        </nav>
+        <nav aria-label="{{ t(lang, 'nav.language') }}" class="flex gap-4">
+            {% for code, name in LANGUAGES.items() %}
+            <a href="/{{ code }}{{ suffix | e }}" hreflang="{{ code }}" lang="{{ code }}" class="flex min-h-11 items-center aria-[current=true]:font-semibold aria-[current=true]:text-foreground aria-[current=true]:no-underline"{% if code == lang %} aria-current="true"{% endif %}>{{ name }}</a>
+            {% endfor %}
+        </nav>
+    </header>
+    <main class="mt-8">{{ children }}</main>
+</body>
+</html>

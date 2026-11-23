@@ -58,3 +58,8 @@ class TestStringTransform:
     def test_normalize_route_path(self) -> None:
         result = StringTransform.normalize_route_path_for_namespace("src/routes/blog/post.nexy")
         assert result == "src/routes/blog/post.nexy"
+
+    def test_normalize_route_path_reads_a_windows_path(self) -> None:
+        # The scanner gives the compiler `str(path)`, which Windows writes with backslashes.
+        result = StringTransform.normalize_route_path_for_namespace(r"src\routes\(pages)\about.md")
+        assert result == "src/routes/pages_group/about.md"

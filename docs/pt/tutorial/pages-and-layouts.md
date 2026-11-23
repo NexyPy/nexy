@@ -163,4 +163,4 @@ Tailwind, que o starter utiliza, remove as bordas dos campos do formulário: ess
 ## Próximas etapas
 
 - [Parte 3: rotas dinâmicas e uma API](dynamic-routes.md)
-- [Arquivos .nexy](../views/nexy/README.md): adereços, componentes e estilos
+- [Arquivos .nexy](../views/nexy/README.md): props, componentes e estilos

@@ -60,7 +60,7 @@ Tailwind 自行查找 `.nexy` 文件。
 [nexy] MDX support requires optional packages that are not installed.
 ```
 
-将它们安装在项目中：`@mdx-js/rollup`、`remark-gfm` 和 `@mdx-js/react`（加上 `nx build` 的 `@mdx-js/esbuild`）。 MDX 需要 `useFF` 中的 React 或 Preact。如果没有客户端框架，则将页面编写为 `.md`。参见[Markdown 和 MDX](../views/nexy/markdown.md)。
+将它们安装到项目中：`@mdx-js/rollup`、`remark-gfm` 和 `@mdx-js/react`（加上 `@mdx-js/esbuild` 表示 `nx build`）。 MDX 需要 `useFF` 中的 React 或 Preact。如果没有客户端框架，则将页面编写为 `.md`。参见[Markdown 和 MDX](../views/nexy/markdown.md)。
 
 ## 命令启动时的 `No module named 'sqlmodel'` （或任何包）
 

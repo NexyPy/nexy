@@ -7,7 +7,7 @@ from pathlib import Path
 from nexy.modules.cli.agents.profile import Profile
 
 _FRAMEWORKS = {
-    "none": "no client framework (HTML in `.nexy` pages)",
+    "none": "no client framework",
     "react": "React",
     "preact": "Preact",
     "solid": "Solid",
@@ -31,6 +31,8 @@ def _stack(profile: Profile) -> str:
         return "A Nexy API project: Python handlers, no views."
     mode = "client-routed (`useCSR = True`)" if profile.client_routed else "server-rendered"
     framework = _FRAMEWORKS.get(profile.framework, profile.framework)
+    if profile.writes_nexy:
+        framework += ", pages in `.nexy`"
     style = _STYLES.get(profile.style, profile.style)
     return f"A Nexy project: {mode}, {framework}, styled with {style}."
 

@@ -98,7 +98,7 @@ Im Servermodus rendert der Server jede Seite, `revalidate` speichert eine Seite 
 
 **Vite ersetzt Nexy nicht.** Vite bündelt und stellt Client-Code bereit. Es leitet keine Anfrage weiter, rendert keine `.nexy`-Seite, führt keine Aktion aus und besitzt keinen Ursprung. Der Browser kommuniziert mit einem Ursprung – Nexys – und in der Entwicklung stellt Nexy Vites Endpunkte darüber als Proxy bereit, sodass kein CORS konfiguriert werden muss.
 
-**Nexy ersetzt nicht React.** Nexy entscheidet, welche Komponente wann und mit welchen Requisiten gerendert wird; Das Framework besitzt das Komponentenmodell, die Reaktivität und das Ökosystem. Eine `.nexy`-Seite importiert eine Komponente als Insel; Im Client-Modus ist eine Route eine Komponente.
+**Nexy ersetzt nicht React.** Nexy entscheidet, welche Komponente wann und mit welcher rendert props; Das Framework besitzt das Komponentenmodell, die Reaktivität und das Ökosystem. Eine `.nexy`-Seite importiert eine Komponente als Insel; Im Client-Modus ist eine Route eine Komponente.
 
 Für eine Komponentenroute schreibt Python nur ein Thin-Wrapper-Modul, das auf die Datei zeigt. Die Kompilierung und das serverseitige Rendering sind Aufgabe von Vite.
 

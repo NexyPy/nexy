@@ -102,7 +102,7 @@ async def GET():
 - পৃষ্ঠাগুলি `layout.nexy` দ্বারা মোড়ানো হয় না;
 - `useCSR = True` প্রত্যাখ্যান করা হয়েছে: `nx dev` এবং `nx build` উত্তর `useCSR requires file-based routing`।
 
-একটি URL একবার উত্তর দেওয়া হয়. অন্তর্ভুক্ত রাউটারটিকে একটি উপসর্গ দিন, এখানে `/api`, এবং `src/routes/` এর ফাইলগুলি এটি ব্যবহার করা পাথগুলি থেকে দূরে রাখুন।
+একটি URL একবার উত্তর দেওয়া হয়. অন্তর্ভুক্ত রাউটারকে একটি উপসর্গ দিন, এখানে `/api`, এবং `src/routes/` এর ফাইলগুলি এটি যে পাথগুলি ব্যবহার করে তা বন্ধ রাখুন।
 
 ## একটি সম্পূর্ণ FastAPI অ্যাপ
 
@@ -133,7 +133,7 @@ class NexyConfig(NexyConfigModel):
 
 ## নির্ভরতা, প্রমাণীকরণ এবং ডাটাবেস
 
-রাউটারটি Nexy প্রক্রিয়ায় চলে, তাই `Depends`, সিকিউরিটি স্কিম এবং ডাটাবেস সেশনগুলি মূল অ্যাপের মতোই কাজ করে:
+রাউটারটি Nexy প্রক্রিয়ায় চলে, তাই `Depends`, সিকিউরিটি স্কিম এবং ডাটাবেস সেশনগুলি মূল অ্যাপের মতো কাজ করে:
 
 ```python filename="src/legacy/secure.py"
 from fastapi import APIRouter, Depends, Header, HTTPException
@@ -152,6 +152,23 @@ async def data():
     return {"data": 42}
 ```
 
+## কি পার্থক্য FastAPI
+
+রাউটার নেক্সির ভিতরে চলে গেলে দুটি জিনিস ভিন্নভাবে উত্তর দেয়:
+
+| মামলা | FastAPI | নেক্সির ভিতরে |
+|---|---|---|
+| `raise HTTPException(404, "No such user.")` | `{"detail": "No such user."}` প্রত্যেক ক্লায়েন্টের কাছে | যে JSON শুধুমাত্র যখন অনুরোধ পাঠায় `Accept: application/json` ছাড়া `text/html`; অন্য কোনো ক্লায়েন্ট, কার্ল এর ডিফল্ট `Accept: */*` সহ, HTML ত্রুটি পৃষ্ঠা পায় |
+| `/api/users/one` জন্য `id: int` | `422` যাচাইকরণের ত্রুটি সহ | `404`: একটি ঠিকানা যার পথের মান ভুল টাইপ বিদ্যমান নেই |
+
+তাই একটি API ক্লায়েন্ট পাঠায় `Accept: application/json`:
+
+```bash
+curl -H "Accept: application/json" localhost:3000/api/users/one
+```
+
+ভুল টাইপের একটি বডি বা কোয়েরি মান এখনও `422` ত্রুটি সহ উত্তর দেয়, যেমন FastAPI।
+
 ## এটি পরীক্ষা করুন
 
 ```python filename="tests/test_legacy.py"
@@ -166,6 +183,6 @@ def test_the_included_route_answers():
 
 ## পরবর্তী পদক্ষেপ
 
-- [থেকে FastAPI নেক্সিতে](../../coming-from/fastapi.md): রুটগুলিকে ফাইলগুলিতে সরান, একে একে
+- [থেকে FastAPI থেকে Nexy](../../coming-from/fastapi.md): রুটগুলিকে ফাইলগুলিতে সরান, একে একে
 - [ফাইল-ভিত্তিক রাউটিং](../fbr/README.md)
 - [মডুলার রাউটিং ](../modular/README.md): `useRouter = AppModule`

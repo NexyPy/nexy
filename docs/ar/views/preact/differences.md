@@ -167,7 +167,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### توجيهات الترطيب
 
-استخدم الدعامة `directive` للتحكم في وقت ترطيب الجزيرة:
+استخدم `directive` prop للتحكم في وقت ترطيب الجزيرة:
 
 - `client:load` (افتراضي): فورًا
 - `client:idle`: عندما يكون المتصفح خاملاً

@@ -66,7 +66,7 @@ class StringTransform:
 
     @staticmethod
     def normalize_route_path_for_namespace(path: str) -> str:
-        path = path.strip("/")
+        path = path.replace("\\", "/").strip("/")  # a Windows path is read like any other
         if not path:
             return ""
 

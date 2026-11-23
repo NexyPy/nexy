@@ -128,6 +128,11 @@ class TestOrmPackages:
     def test_tortoise_brings_aerich(self):
         assert "aerich" in dependencies.orm_packages("Tortoise-ORM", "sqlite")
 
+    def test_tortoise_brings_the_zone_data_windows_lacks(self):
+        assert "tzdata; sys_platform == 'win32'" in dependencies.orm_packages(
+            "Tortoise-ORM", "sqlite"
+        )
+
     def test_a_project_without_an_orm_brings_no_package(self):
         assert dependencies.orm_packages("None", "sqlite") == []
 

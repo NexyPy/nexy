@@ -36,6 +36,7 @@
     "count_client_only": "{count} nur im Client",
     "more": "und {count} weitere",
     "not_rendered": "{path} hat kein Server-HTML: es wird nur im Client gerendert",
+    "not_rendered_because": "{path} hat kein Server-HTML: {reason}",
     "running_check": "Führe {name} aus",
     "ran_check": "{name} ausgeführt"
   },
@@ -60,7 +61,9 @@
       "new": "Neues Projekt in einem neuen Verzeichnis erstellen",
       "start": "Produktionsserver starten",
       "test": "Tests ausführen (--server / --client)",
-      "skills": "Skills und AGENTS.md für Code-Agenten hinzufügen"
+      "skills": "Skills und AGENTS.md für Code-Agenten hinzufügen",
+      "info": "Print environment and project versions in one block"
+      
     },
     "commands_header": "Verfügbare Befehle:",
     "help": "Nexy-CLI",
@@ -106,7 +109,8 @@
     "updating": "Server wird aktualisiert",
     "vite_failed": "Vite konnte nicht gestartet werden.",
     "vite_failed_hint": "Die Ursache steht in der Vite-Ausgabe oben.",
-    "server_failed": "Der Server wurde beendet ({reason}): wartet auf eine Korrektur."
+    "server_failed": "Der Server wurde beendet ({reason}): wartet auf eine Korrektur.",
+    "port_in_use": "Port {asked} ist belegt, verwende stattdessen {port}."
   },
   "format": {
     "failed": "{count} Datei(en) fehlgeschlagen",
@@ -119,6 +123,20 @@
     "nexy": "Formatiere {count} .nexy-Datei(en)",
     "nexy_done": "{count} .nexy-Datei(en) formatiert"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "Verwende @, ~, # oder $, optional gefolgt von Buchstaben (zum Beispiel ~ oder @app).",
     "already": "Das Projekt ist hier bereits initialisiert",
@@ -223,8 +241,10 @@
     "launch_failed": "Der Server konnte nicht gestartet werden",
     "local": "Lokal:",
     "network": "Netzwerk:",
+    "docs": "API-Doku:",
     "ready": "Bereit:",
-    "stop": "Zum Beenden Strg+C drücken"
+    "stop": "Zum Beenden Strg+C drücken",
+    "missing_table": "Eine Tabelle fehlt: führen Sie nexy migrate --upgrade aus."
   },
   "start": {
     "broken": "{count} Routendatei(en) konnten nicht geladen werden: Der Server wurde nicht gestartet.",

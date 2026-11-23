@@ -38,7 +38,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
 लेआउट स्थिर होने के लिए डिज़ाइन किए गए हैं। क्लाइंट मोड में, समान लेआउट साझा करने वाले दो पेजों के बीच नेविगेट करते समय, लेआउट को **नहीं** दोबारा प्रस्तुत किया जाता है; केवल बाल सामग्री बदलती है. सर्वर मोड में प्रत्येक नेविगेशन एक नया दस्तावेज़ है।
 
-- **स्लॉट**: लेआउट एक स्लॉट प्रदान करते हैं जहां नेस्टेड पेज इंजेक्ट किया जाता है: `children` जेएसएक्स में, और `children` प्रोप `.nexy` लेआउट में।
+- **स्लॉट**: लेआउट एक स्लॉट प्रदान करते हैं जहां नेस्टेड पेज इंजेक्ट किया जाता है: `children` जेएसएक्स में, और `children` prop एक `.nexy` लेआउट में।
 - **राज्य संरक्षण**: क्योंकि लेआउट माउंटेड रहता है, इसके भीतर मौजूद कोई भी राज्य (उदाहरण के लिए, हेडर में एक खोज क्वेरी) नेविगेशन के दौरान संरक्षित रहता है।
 
 `.nexy` लेआउट में समान स्लॉट:
@@ -99,6 +99,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 - [React मतभेद](../react/differences.md)
 - [Vue मतभेद](../vue/differences.md)
-- [Svelte मतभेद](../svelte/differences.md)
+- [Svelte अंतर](../svelte/differences.md)
 - [Solid मतभेद](../solid/differences.md)
-- [Preact अंतर](../preact/differences.md)
+- [Preact मतभेद](../preact/differences.md)

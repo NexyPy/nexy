@@ -269,7 +269,7 @@ def add_note():
 
 Suatu tindakan adalah fungsi Python yang diposkan oleh formulir. Nexy memberinya jalur, membaca kolom formulir sebagai parameternya, dan mengirim pengunjung kembali ke halaman dengan `303`:
 
-```python filename="src/aksi/catatan.py"
+```python filename="src/tindakan/catatan.py"
 from nexy.decorators import Action
 
 NOTES: list[str] = []

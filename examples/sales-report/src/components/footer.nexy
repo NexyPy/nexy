@@ -1,0 +1,9 @@
+<footer class="nx-footer">
+  <div class="nx-container nx-footer-inner">
+    <p>Kiln Coffee is an example: its orders are made up by a migration.</p>
+    <div class="nx-footer-links">
+      <a href="/api/revenue/">The API</a>
+      <a href="https://github.com/NexyPy/nexy/tree/main/examples/sales-report" target="_blank" rel="noopener noreferrer">The code</a>
+    </div>
+  </div>
+</footer>

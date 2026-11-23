@@ -44,13 +44,13 @@ export default function NoteSearch({ notes }: { notes: Note[] }) {
 
 React escreve `{note.text}` como texto: uma nota `<b>x</b>` mostra seus colchetes, sem `| e` para adicionar.
 
-`found` só é computado quando algo é digitado, e isso é importante para a construção: `nx build` renderiza cada ilha uma vez em HTML, com espaços reservados em vez de seus adereços. Um componente que lê uma propriedade list durante a primeira renderização obtém um espaço reservado em vez de uma lista e não envia HTML. Este lê `notes` somente após pressionar uma tecla, então a compilação renderiza sua caixa de pesquisa e a página a mostra antes de qualquer JavaScript ser executado.
+`found` só é computado quando algo é digitado, e isso é importante para a construção: `nx build` renderiza cada ilha uma vez em HTML, com espaços reservados em vez de seu props. Um componente que lê uma lista prop durante a primeira renderização obtém um espaço reservado em vez de uma lista e não envia HTML. Este lê `notes` somente após pressionar uma tecla, então a compilação renderiza sua caixa de pesquisa e a página a mostra antes de qualquer JavaScript ser executado.
 
 `aria-live="polite"` faz com que um leitor de tela leia os resultados quando eles mudam, sem interromper.
 
 ## Coloque a ilha na página
 
-A página passa as notas como um adereço: uma lista de dicionários, que o Nexy transforma em JSON para o navegador. Cada nota entra, não apenas as cinco da página atual, então a pesquisa cobre todas elas:
+A página passa as notas como um prop: uma lista de dicionários, que o Nexy transforma em JSON para o navegador. Cada nota entra, não apenas as cinco da página atual, então a pesquisa cobre todas elas:
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/rotas/notes/index.nexy"
@@ -154,20 +154,20 @@ searchable = [{"id": note.id, "text": note.text} for note in all_notes(user_id)]
 ```
 <!-- /router -->
 
-`from "@/components/NoteSearch.tsx" import NoteSearch` importa um componente React para uma página `.nexy`; a tag passa seus atributos como adereços. `notes="{{ searchable }}"` passa a lista Python em si, não uma string. `directive="client:idle"` torna a ilha interativa quando o navegador não tem nada mais urgente para fazer.
+`from "@/components/NoteSearch.tsx" import NoteSearch` importa um componente React para uma página `.nexy`; a tag passa seus atributos como props. `notes="{{ searchable }}"` passa a lista Python em si, não uma string. `directive="client:idle"` torna a ilha interativa quando o navegador não tem nada mais urgente para fazer.
 
 Abra <http://localhost:3000/notes> e digite algumas letras de uma nota: as notas correspondentes aparecem abaixo da caixa a cada pressionamento de tecla. Limpe a caixa e os resultados desaparecem.
 
 > [!NOTE]
-> Os adereços de uma ilha viajam na página, como JSON. Enviar cada nota é adequado para algumas centenas delas; para milhares, pesquise no servidor, com uma consulta e um filtro `LIKE`.
+> O props de uma ilha viaja na página, como JSON. Enviar cada nota é adequado para algumas centenas delas; para milhares, pesquise no servidor, com uma consulta e um filtro `LIKE`.
 
 ## O que você aprendeu
 
 - Uma ilha é um componente cliente dentro de uma página do servidor: aqui, React apenas para a caixa de pesquisa.
-- Uma página `.nexy` importa-o por caminho e passa valores Python como adereços, serializados para JSON.
-- A compilação renderiza uma ilha uma vez, com espaços reservados para seus adereços: leia a lista de adereços após a primeira renderização e a ilha envia o HTML.
+- Uma página `.nexy` importa por caminho e passa valores Python como props, serializados para JSON.
+- A compilação renderiza uma ilha uma vez, com espaços reservados para sua props: read list props após a primeira renderização, e a ilha envia HTML.
 
 ## Próximas etapas
 
 - [Parte 14: marque uma nota sem recarregar a página](tick-a-note.md)
-- [Ilhas e hidratação](../rendering/islands.md): diretrizes, adereços e limitações
+- [Ilhas e hidratação](../rendering/islands.md): diretrizes, props e limitações

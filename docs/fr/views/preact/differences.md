@@ -167,7 +167,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### Directives d'hydratation
 
-Utilisez l'accessoire `directive` pour contrôler le moment où l'île s'hydrate :
+Utilisez les `directive` prop pour contrôler quand l'île s'hydrate :
 
 - `client:load` (par défaut) : immédiatement
 - `client:idle` : lorsque le navigateur est inactif

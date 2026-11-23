@@ -147,7 +147,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### 补水指令
 
-使用 `directive` 道具来控制岛屿何时水合：
+使用 `directive` prop 控制岛屿何时水合：
 
 - `client:load`（默认）：立即
 - `client:idle`：当浏览器空闲时

@@ -162,7 +162,7 @@ children: prop[NexyElement]
 {% endmacro %}
 ```
 
-Un componente es un archivo `.nexy` con accesorios, importado en el frontmatter:
+Un componente es un archivo `.nexy` con props, importado en el frontmatter:
 
 ```nexy filename="src/components/Card.nexy"
 ---

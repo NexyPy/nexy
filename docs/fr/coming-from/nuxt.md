@@ -52,7 +52,7 @@ const route = useRoute();
 </template>
 ```
 
-Les segments atteignent la page en tant qu'accessoires :
+Les segments atteignent la page comme props :
 
 ```vue filename="src/routes/blog/[slug].vue"
 <script setup lang="ts">
@@ -88,7 +88,7 @@ Il n'y a ni `<NuxtLayout>` ni `app.vue` : la racine `layout.vue` est propriéta
 </template>
 ```
 
-Une disposition nommée, `definePageMeta({ layout: "admin" })`, devient un dossier avec son propre `layout.vue`, ou un groupe de routage tel que `(admin)/layout.vue`.
+Une présentation nommée, `definePageMeta({ layout: "admin" })`, devient un dossier avec son propre `layout.vue`, ou un groupe de routage tel que `(admin)/layout.vue`.
 
 ## `<NuxtLink>` et `navigateTo`
 

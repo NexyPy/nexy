@@ -1,0 +1,43 @@
+---
+from "@/components/password-help.vue" import PasswordHelp
+from nexy import redirect, useSearchParams
+from src.accounts.messages import DONE, ERRORS
+from src.accounts.session import current
+from src.accounts.store import LONGEST_PASSWORD, SHORTEST_PASSWORD
+
+metadata = {"title": "Your account", "robots": "noindex"}
+# Not signed in: to the sign-in form, which comes back here once it is done.
+account = current() or redirect("/signin?error=signin&then=/account")
+query = useSearchParams()
+error = ERRORS.get(query.get("error", ""), "")
+done = DONE.get(query.get("done", ""), "")
+---
+<section class="mx-auto w-full max-w-xl flex-1 px-4 py-16 sm:px-6">
+  <h1 class="text-2xl font-semibold tracking-tight">Your account</h1>
+  {% if done %}<p role="status" class="mt-6 rounded-lg bg-accent-soft px-4 py-3 text-sm">{{ done }}</p>{% endif %}
+
+  <dl class="mt-8 divide-y divide-border rounded-xl border border-border text-sm">
+    <div class="flex flex-wrap justify-between gap-2 px-4 py-3"><dt class="text-foreground-second">Email</dt><dd class="font-medium [overflow-wrap:anywhere]">{{ account.email | e }}</dd></div>
+    <div class="flex flex-wrap justify-between gap-2 px-4 py-3"><dt class="text-foreground-second">Member since</dt><dd><time datetime="{{ account.created_at }}">{{ account.created_at }}</time></dd></div>
+  </dl>
+
+  <h2 class="mt-12 text-lg font-semibold">Change your password</h2>
+  <form method="post" action="{{ __actions_path['change_password'] }}" class="mt-4 flex flex-col gap-5">
+    {% if error %}<p id="form-error" role="alert" class="rounded-lg border border-down/40 bg-down/10 px-4 py-3 text-sm">{{ error }}</p>{% endif %}
+    <div>
+      <label for="current-password" class="mb-1.5 block text-sm font-medium">Current password</label>
+      <input id="current-password" name="current_password" type="password" required maxlength="{{ LONGEST_PASSWORD }}" autocomplete="current-password" class="field" data-password>
+      <PasswordHelp directive="client:load" />
+    </div>
+    <div>
+      <label for="new-password" class="mb-1.5 block text-sm font-medium">New password</label>
+      <input id="new-password" name="new_password" type="password" required minlength="{{ SHORTEST_PASSWORD }}" maxlength="{{ LONGEST_PASSWORD }}" autocomplete="new-password" class="field" data-password data-strength>
+      <PasswordHelp directive="client:load" />
+    </div>
+    <button type="submit" class="h-11 w-fit rounded-lg bg-accent px-5 text-sm font-medium text-on-accent hover:opacity-90">Change the password</button>
+  </form>
+
+  <form method="post" action="{{ __actions_path['sign_out'] }}" class="mt-12 border-t border-border pt-8">
+    <button type="submit" class="h-11 rounded-lg border border-border px-5 text-sm font-medium hover:border-foreground">Sign out</button>
+  </form>
+</section>

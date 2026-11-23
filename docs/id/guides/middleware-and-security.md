@@ -42,7 +42,7 @@ Sajikan HTTPS secara langsung dengan `useSslKeyfile` dan `useSslCertfile`, atau 
 - `useTrustedHost` disetel ke domain Anda, untuk memblokir serangan header host.
 - `useCORS` dengan asal usul yang jelas, tidak pernah `["*"]` bersama dengan kredensial.
 - `secret_key` nyata untuk sesi, dibaca dari lingkungan.
-- Props yang diteruskan ke komponen klien di-escape oleh HTML oleh Nexy. Jangan tandai masukan pengguna `| safe` di templat.
+- Props yang diteruskan ke komponen klien di-escape HTML oleh Nexy. Jangan tandai masukan pengguna `| safe` di templat.
 
 ## Penjaga dan ketergantungan
 

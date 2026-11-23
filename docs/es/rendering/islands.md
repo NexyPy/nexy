@@ -28,15 +28,15 @@ from "@/components/Counter.tsx" import Counter
 ```
 <!-- /router -->
 
-Nexy renderiza el componente en el momento de la compilación, almacena su HTML y lo coloca dentro de la página. La respuesta de la página lleva ese HTML más los accesorios como un atributo JSON. En el navegador, el tiempo de ejecución de la isla carga el componente y se hace cargo del contenedor.
+Nexy renderiza el componente en el momento de la compilación, almacena su HTML y lo coloca dentro de la página. La respuesta de la página lleva ese HTML más `props` como atributo JSON. En el navegador, el tiempo de ejecución de la isla carga el componente y se hace cargo del contenedor.
 
 `directive` decide **cuándo** eso sucede. Sin uno, la isla se hidrata tan pronto como su tiempo de ejecución esté listo.
 
 ## Ciclo de vida de renderizado
 
-1. En el momento de la compilación, cada componente del cliente se representa en HTML y se escribe en `__nexy__/client/static/`.
+1. En el momento de la compilación, cada componente del cliente se representa en HTML y se escribe en `__nexy__/client/static/`: una vez con sus propios valores predeterminados y una vez por conjunto de literales `props` que le proporciona un archivo `.nexy`.
 2. Una solicitud muestra la página `.nexy`; El HTML de la isla se inserta en lugar de la etiqueta.
-3. La respuesta lleva el HTML, los accesorios y la directiva como atributos.
+3. La respuesta lleva el HTML, el `props` y la directiva como atributos.
 4. En el navegador, el motor de ejecución programa la hidratación según la directiva.
 5. La hidratación reemplaza el HTML estático con el componente en vivo; el resto de la página está intacta.
 
@@ -55,7 +55,7 @@ En desarrollo no hay una instantánea de compilación: el contenedor está vací
 | ninguno, o `client:load` | inmediatamente |
 | `client:idle` | cuando el navegador está inactivo (`requestIdleCallback`, tiempo de espera de 2 s) |
 | `client:visible` | cuando la isla ingresa a la ventana gráfica, 200 px antes |
-| `client:media` | cuando una consulta de medios coincide; configúrelo con el accesorio `media` |
+| `client:media` | cuando una consulta de medios coincide; configúrelo con `media` |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
@@ -100,9 +100,10 @@ from "@/components/Counter.tsx" import Counter
 
 - **`client:only` nunca se hidrata.** Se acepta, pero el tiempo de ejecución lo omite, por lo que el HTML del servidor permanece inerte. Utilice una ruta de cliente ([CSR](csr.md)) cuando un componente no pueda renderizarse en el servidor.
 - **`client:manual` no tiene ningún disparador público.** También se omite automáticamente y el identificador que lo reanuda es interno.
-- **Los accesorios deben ser JSON.** Están serializados con `json.dumps`; se elimina un valor que no se puede serializar y la isla recibe `{}` - silenciosamente.
+- **`props` debe ser JSON.** Están serializados con `json.dumps`; se elimina un valor que no se puede serializar y la isla recibe `{}` - silenciosamente.
 - **Una isla no es un componente cliente con estado compartido.** Dos islas no comparten estado sin un mecanismo que usted mismo agregue.
 - **El servidor no vuelve a renderizar la isla.** Su HTML es la instantánea de compilación, más todo lo que hace el componente una vez hidratado.
+- **Sólo el `props` literal llega al HTML del servidor.** `<Counter label="clicks" step="2" />` obtiene una instantánea renderizada con esos `props`. Un `prop` calculado en el momento de la solicitud (`label="{{ name }}"`), una extensión (`{{ ...props }}`) o hijos entre las etiquetas no se pueden conocer en la compilación: esa isla muestra la instantánea con los valores predeterminados propios del componente hasta que se hidrata.
 - **Una página de islas es una página de CSR disfrazada.** Si cada bloque necesita comunicarse entre sí, elige el modo cliente.
 
 ## Próximos pasos

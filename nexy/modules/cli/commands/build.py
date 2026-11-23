@@ -17,6 +17,7 @@ from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.markers import write_build_marker
 from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder, BuildResult
+from nexy.modules.builder.island_props import write_manifest
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
 from nexy.modules.cli.devtools.pycache import pycache
 from nexy.modules.frontend import FrontendGenerator
@@ -42,6 +43,7 @@ def build(check: bool = False) -> None:
     _announce_start()
     build_result = _compile_server_components()
     _exit_on_failed_components(build_result)
+    write_manifest(Path("src").rglob("*.nexy"))
     ssg_entries = _build_client_bundle() if Config().useVite else []
     if check:
         _run_checks()
@@ -142,9 +144,21 @@ def _show_client_summary(entries: list[dict[str, Any]], more: str) -> None:
             t("build.count_client_only", "{count} client-only").format(count=len(client_only))
         )
     print_summary(t("build.client_components", "Client components"), counts, rendered, more=more)
-    for path in _ssg_by_status(entries, "failed"):
+    for entry in entries:
+        if entry["status"] != "success":
+            _warn_no_server_html(entry)
+
+
+def _warn_no_server_html(entry: dict[str, Any]) -> None:
+    """One warning per component the build could not render, with the reason the SSG gave."""
+    path = escape(entry["file"])
+    reason = entry.get("reason")
+    if not reason:
         default = "{path} has no server HTML: it renders on the client only"
-        warning(t("build.not_rendered", default).format(path=escape(path)))
+        warning(t("build.not_rendered", default).format(path=path))
+        return
+    default = "{path} has no server HTML: {reason}"
+    warning(t("build.not_rendered_because", default).format(path=path, reason=escape(reason)))
 
 
 def _run_checks() -> None:

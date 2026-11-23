@@ -31,7 +31,7 @@ from "@/components/Counter.tsx" import Counter
 <!-- /router -->
 
 Nexy renders the component at build time, stores its HTML, and places it inside the page. The page
-response carries that HTML plus the props as a JSON attribute. In the browser, the island runtime
+response carries that HTML plus the `props` as a JSON attribute. In the browser, the island runtime
 loads the component and takes over the container.
 
 `directive` decides **when** that happens. Without one, the island hydrates as soon as its runtime
@@ -39,9 +39,10 @@ is ready.
 
 ## Rendering lifecycle
 
-1. At build, every client component is rendered to HTML and written under `__nexy__/client/static/`.
+1. At build, every client component is rendered to HTML and written under `__nexy__/client/static/`:
+   once with its own defaults, and once per set of literal `props` a `.nexy` file gives it.
 2. A request renders the `.nexy` page; the island's HTML is inserted in place of the tag.
-3. The response carries the HTML, the props, and the directive as attributes.
+3. The response carries the HTML, the `props`, and the directive as attributes.
 4. In the browser, the runtime schedules hydration according to the directive.
 5. Hydration replaces the static HTML with the live component; the rest of the page is untouched.
 
@@ -61,7 +62,7 @@ browser. The page looks the same, but the first paint differs from production.
 | none, or `client:load` | immediately |
 | `client:idle` | when the browser is idle (`requestIdleCallback`, 2 s timeout) |
 | `client:visible` | when the island enters the viewport, 200 px early |
-| `client:media` | when a media query matches; set it with the `media` prop |
+| `client:media` | when a media query matches; set it with `media` |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
@@ -109,12 +110,16 @@ from "@/components/Counter.tsx" import Counter
   inert. Use a client route ([CSR](csr.md)) when a component cannot render on the server.
 - **`client:manual` has no public trigger.** It is also skipped automatically, and the handle that
   resumes it is internal.
-- **Props must be JSON.** They are serialized with `json.dumps`; a value that cannot be serialized is
+- **`props` must be JSON.** They are serialized with `json.dumps`; a value that cannot be serialized is
   dropped, and the island receives `{}` - silently.
 - **An island is not a client component with shared state.** Two islands do not share state without a
   mechanism you add yourself.
 - **The island is not re-rendered by the server.** Its HTML is the build snapshot, plus whatever the
   component does once hydrated.
+- **Only literal `props` reach the server HTML.** `<Counter label="clicks" step="2" />` gets a snapshot
+  rendered with those `props`. A `prop` computed at request time (`label="{{ name }}"`), a spread
+  (`{{ ...props }}`) or children between the tags cannot be known at build: that island shows the
+  snapshot with the component's own defaults until it hydrates.
 - **A page of islands is a CSR page in disguise.** If every block needs to talk to every other, pick
   client mode instead.
 

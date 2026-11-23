@@ -1,0 +1,41 @@
+{#- The server-rendered /todos page. `actions` maps each action name to the URL that runs it; the
+    script reads them, and the classes of a task, from data attributes. A title typed by a visitor is written with
+    textContent, never read as HTML. -#}
+{%- from "todos_icons.html.jinja2" import pencil, cross -%}
+{%- from "todos_classes.jinja2" import k, c, cls with context -%}
+{%- set call_dd = '<span data-todos-call>none</span>' -%}{%- set took_dd = '<span data-todos-took>...</span>' -%}
+<section{{ k("section") }} data-todos data-task-class="{{ c.task }}" data-done-class="{{ c.task_done }}" data-edit-class="{{ c.edit }}"{% for name, url in actions.items() %} data-{{ name | replace("_", "-") }}="{{ url }}"{% endfor %}>
+{% filter indent(2, true) %}{% include "todos_intro.html.jinja2" %}{% endfilter %}
+  <div{{ k("card") }}>
+    <form{{ k("form") }} data-todos-new>
+      <input{{ k("input") }} name="title" placeholder="What needs to be done?" aria-label="New task" maxlength="200" autocomplete="off" />
+      <button{{ k("add") }} type="submit">Add</button>
+    </form>
+    <p{{ k("note") }} aria-live="polite" data-todos-note></p>
+    <div{{ k("bar") }}>
+      <div{{ k("filters") }} role="group" aria-label="Show">
+        <button type="button"{{ k("filter") }} aria-pressed="true" data-filter="all">All <span{{ k("count") }}>0</span></button>
+        <button type="button"{{ k("filter") }} aria-pressed="false" data-filter="todo">To do <span{{ k("count") }}>0</span></button>
+        <button type="button"{{ k("filter") }} aria-pressed="false" data-filter="done">Done <span{{ k("count") }}>0</span></button>
+      </div>
+      <button type="button"{{ k("clear") }} disabled data-todos-clear>Clear done</button>
+    </div>
+    <ul{{ k("list") }} aria-label="Tasks" data-todos-list></ul>
+    <p{{ k("empty") }} data-todos-empty>Asking the server for the tasks...</p>
+    <footer{{ k("foot") }}>
+      <span><span data-todos-left>0</span> left</span>
+      <span><span data-todos-total>0</span> on the server</span>
+    </footer>
+    <template data-todos-row>
+      <li{{ k("row") }}>
+        <input type="checkbox"{{ k("check") }} data-check />
+        <span{{ k("task") }} data-title></span>
+        <div{{ k("actions") }}>
+          <button type="button"{{ k("action") }} aria-label="Rename" data-rename>{{ pencil() }}</button>
+          <button type="button"{{ k("action") }} data-danger aria-label="Delete" data-delete>{{ cross() }}</button>
+        </div>
+      </li>
+    </template>
+  </div>
+</section>
+{% include "todos_script.html.jinja2" %}

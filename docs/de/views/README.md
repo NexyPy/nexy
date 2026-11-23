@@ -63,6 +63,6 @@ Ein `layout.*` in einem Verzeichnis umschließt Seiten darunter. Siehe [Layouts]
 
 ## Nächste Schritte
 
-- [.nexy-Dateien](nexy/README.md): Python + Jinja2 + Requisiten
+- [.nexy-Dateien](nexy/README.md): Python + Jinja2 + props
 - [Markdown und MDX](nexy/markdown.md): Inhaltsseiten
 - [Komponenten](nexy/components.md): integrierte HTML-Helfer

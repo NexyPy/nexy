@@ -8,11 +8,16 @@ Nexy hängt von FastAPI, Starlette, Jinja2, Vite und React ab. Ein Boden ist die
 
 | Paket | Boden | Warum |
 |---|---|---|
-| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost): Ein manipulierter `Host`-Header ändert den Pfad, den Starlette an die Middleware meldet, wodurch die auf `request.url.path` geschriebene Autorisierung umgangen wird. Von CISA als ausgenutzt aufgeführt. |
+| `starlette` | 1.3.1 | CVE-2026-48710 (BadHost, behoben in 1.0.1): Ein manipulierter `Host`-Header ändert den Pfad, den Starlette an die Middleware meldet, wodurch die auf `request.url.path` geschriebene Autorisierung umgangen wird; als von CISA ausgenutzt aufgeführt. CVE-2026-48817 und CVE-2026-48818 (Anforderungsversand, `StaticFiles` unter Windows, behoben in 1.1.0), CVE-2026-54282 (Anforderungspfad nicht validiert, 1.3.0) und CVE-2026-54283 (`request.form()` Grenzwerte, 1.3.1). |
+| `python-dotenv` | 1.2.2 | CVE-2026-28684, im Reader wird die Datei `.env` `nx migrate` geladen |
 | `fastapi` | 0,133,0 | die erste Version, die ein festes Starlette akzeptiert |
 | `jinja2` | 3.1.6 | Sandbox-Flucht durch den `attr`-Filter (CVE-2025-27516) |
-| `vite` (Gerüstprojekte) | 6.4.3 | `server.fs.deny` Umgehung auf alternativen Windows-Pfaden (CVE-2026-53571); Die frühere Umgehung der Abfragezeichenfolge (CVE-2026-39364) betrifft nur Vite 7.1-7.3.1 und 8.0.0-8.0.4 |
+| `vite` (Gerüstprojekte) | 6.4.5 | `server.fs.deny` umgeht (CVE-2026-53571 auf alternativen Windows-Pfaden; GHSA-rq7h-c2jc-7f22, behoben in 6.4.4; GHSA-8g5g-mxqh-grgj, eine Abfrageumgehung, die 6.4.4 selbst mit sich brachte, behoben in 6.4.5) und die `launch-editor`-Hinweise, die in 6.4.4 behoben wurden |
+| `svelte` (Gerüstprojekte) | 5.55.7 | sechs Server-Rendering-XSS-Hinweise über Spread-Attribute, dynamische Tag-Namen und `bind:innerText` |
+| `esbuild` (Gerüstprojekte) | 0,28,1 | beliebige Datei über den Entwicklungsserver gelesen (GHSA-g7r4-m6w7-qqqr) |
 | `react`, `react-dom` | 19.2.5 | die 2026 React-Advisories betreffen die `react-server-dom-*`-Pakete, die Nexy nicht verwendet; Der Boden hält die Linie geflickt |
+
+`python scripts/audit_dependencies.py` prüft nach der Sperre jedes Stockwerk anhand des OSV, auch in CI: Ein neuer Hinweis auf einem Stockwerk besteht die Prüfung nicht.
 
 Überprüfen Sie Ihre gelösten Versionen:
 
@@ -24,10 +29,10 @@ npm ls vite
 ## Regeln, denen Nexy folgt
 
 - **Vertrauen Sie niemals dem Host-Header für Pfade.** Nexy liest `scope["path"]`, nicht `request.url.path`, in seiner eigenen Middleware (Verzeichnis-Middleware). Machen Sie dasselbe bei Ihnen.
-- **Escape, was HTML erreicht.** An Client-Komponenten übergebene Requisiten, `Link`-Attribute, `Image`-, `Audio`- und `Video`-Attribute, Inhaltsverzeichnis-Anker und `HTTPException`-Details werden alle HTML-escaped. Eine `.nexy`-Vorlage entkommt nicht von selbst: Schreiben Sie `{{ value | e }}` für jeden Wert, der von einem Besucher oder der Datenbank stammt, und niemals `| safe` für Benutzereingaben.
+- **Escape, was HTML erreicht.** Props an Client-Komponenten übergeben, `Link`-Attribute, `Image`-, `Audio`- und `Video`-Attribute, Inhaltsverzeichnis-Anker und `HTTPException`-Details sind alle HTML-escaped. Eine `.nexy`-Vorlage entkommt nicht von selbst: Schreiben Sie `{{ value | e }}` für jeden Wert, der von einem Besucher oder der Datenbank stammt, und niemals `| safe` für Benutzereingaben.
 - **Entwicklerendpunkte sind nur Loopback und eng.** Der Dev-Renderendpunkt (`/__nexy__/render`) akzeptiert nur Dateien unter `src/routes/` mit der Erweiterung `.tsx` oder `.jsx` und ist nur über den Dev-Server erreichbar, der fremde `Host`-Header ablehnt.
 - **Fehlerdetails gehen nicht verloren.** Eine Fehlerseite, die selbst fehlschlägt, zeigt nur den Statuscode an.
-- **Produktionsantworten tragen sichere Header.** `X-Content-Type-Options: nosniff` und `Referrer-Policy: strict-origin-when-cross-origin`, es sei denn, Ihr Code legt eigene fest. Der `Server`-Header wird nicht gesendet. Fügen Sie `Strict-Transport-Security` und ein `Content-Security-Policy` in Ihrem Proxy oder einer Middleware hinzu: Sie hängen von Ihrer Domain ab.
+- **Produktionsantworten tragen sichere Header.** `X-Content-Type-Options: nosniff` und `Referrer-Policy: strict-origin-when-cross-origin`, es sei denn, Ihr Code legt eigene fest. Der Header `Server` wird nicht gesendet. Fügen Sie `Strict-Transport-Security` und ein `Content-Security-Policy` in Ihrem Proxy oder einer Middleware hinzu: Sie hängen von Ihrer Domain ab.
 - **Ein Absturz zeigt eine Referenz, nicht den Fehler.** Siehe [Fehlerseiten](../routing/fbr/errors/README.md#unhandled-exceptions).
 - **Kein `eval` und kein `shell=True` im Python-Code von Nexy.** Externe Programme werden mit einer Argumentliste ausgeführt.
 
@@ -43,7 +48,7 @@ Nexys eigenes Repository führt bei seinen Prüfungen den ersten und den dritten
 
 ## Sichere Bereitstellung
 
-- Legen Sie `useTrustedHost` für Ihre Domains fest: Unerwartete `Host`-Header werden vor jeder Route abgelehnt.
+- Legen Sie `useTrustedHost` auf Ihre Domains fest: Unerwartete `Host`-Header werden vor jeder Route abgelehnt.
 - Machen Sie den Vite-Entwicklungsserver nicht verfügbar: `nx dev` hält ihn im Loopback hinter dem Nexy-Ursprung.
 - Legen Sie `useDocs = False` fest, wenn das API-Schema nicht öffentlich sein soll.
 

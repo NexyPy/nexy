@@ -36,6 +36,7 @@
     "count_client_only": "{count} 件クライアントのみ",
     "more": "ほか {count} 件",
     "not_rendered": "{path} にはサーバー HTML がありません: クライアントでのみレンダリングされます",
+    "not_rendered_because": "{path} にはサーバー HTML がありません: {reason}",
     "running_check": "{name} を実行中",
     "ran_check": "{name} を実行しました"
   },
@@ -60,7 +61,9 @@
       "new": "新しいディレクトリに新しいプロジェクトを作成する",
       "start": "本番サーバーを起動する",
       "test": "テストを実行する（--server / --client）",
-      "skills": "コーディングエージェント用のスキルと AGENTS.md を追加します"
+      "skills": "コーディングエージェント用のスキルと AGENTS.md を追加します",
+      "info": "Print environment and project versions in one block"
+     
     },
     "commands_header": "利用可能なコマンド:",
     "help": "Nexy CLI",
@@ -106,7 +109,8 @@
     "updating": "サーバーを更新",
     "vite_failed": "Vite を起動できませんでした。",
     "vite_failed_hint": "原因は上の Vite の出力を確認してください。",
-    "server_failed": "サーバーが停止しました（{reason}）：修正を待っています。"
+    "server_failed": "サーバーが停止しました（{reason}）：修正を待っています。",
+    "port_in_use": "ポート {asked} は使用中のため、{port} を使います。"
   },
   "format": {
     "failed": "{count} 件のファイルが失敗しました",
@@ -119,6 +123,20 @@
     "nexy": "{count} 個の .nexy ファイルを整形中",
     "nexy_done": "{count} 個の .nexy ファイルを整形しました"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "@、~、# または $ に続けて任意の文字を使います(例: ~ や @app)。",
     "already": "このディレクトリは既に初期化されています",
@@ -223,8 +241,10 @@
     "launch_failed": "サーバーを起動できませんでした",
     "local": "ローカル:",
     "network": "ネットワーク:",
+    "docs": "API 文書:",
     "ready": "準備完了:",
-    "stop": "Ctrl+C で停止"
+    "stop": "Ctrl+C で停止",
+    "missing_table": "テーブルがありません：nexy migrate --upgrade を実行してください。"
   },
   "start": {
     "broken": "{count} 個のルートファイルを読み込めませんでした。サーバーは起動していません。",

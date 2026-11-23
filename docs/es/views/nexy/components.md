@@ -95,7 +95,7 @@ from nexy import Audio, Video
 
 ## Un componente que escribes tú mismo.
 
-Un componente `.nexy` reutilizable es un archivo debajo de `src/components/`: Python accesorios en la parte superior, HTML debajo. Se importa como cualquier otro módulo Python.
+Un componente reutilizable `.nexy` es un archivo debajo de `src/components/`: Python props en la parte superior, HTML debajo. Se importa como cualquier otro módulo Python.
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -130,11 +130,11 @@ from "@/components/Card.nexy" import Card
 ```
 <!-- /router -->
 
-`title` no tiene ningún valor predeterminado, por lo que la página debe pasarlo; `tone` vuelve a `"neutral"`. El marcado entre las etiquetas llega dentro de `<Slot />` (S mayúscula). Consulte los [archivos .nexy](README.md#components) para conocer los accesorios, los espacios y las reglas del formulario de etiqueta.
+`title` no tiene ningún valor predeterminado, por lo que la página debe pasarlo; `tone` vuelve a `"neutral"`. El marcado entre las etiquetas llega dentro de `<Slot />` (S mayúscula). Consulte los [archivos .nexy](README.md#components) para props, las ranuras y las reglas del formulario de etiqueta.
 
 ## Importar un componente de cliente
 
-Desde un archivo `.nexy`, importe un componente del marco por ruta; el compilador lo monta en el cliente y pasa los atributos como accesorios:
+Desde un archivo `.nexy`, importe un componente del marco por ruta; el compilador lo monta en el cliente y pasa los atributos como props:
 
 ```nexy
 ---

@@ -56,7 +56,7 @@ export default defineConfig({
 
 | Pacote | Versão `nx new` escreve |
 |---|---|
-| `svelte` | `^5.20.2` |
+| `svelte` | `^5.55.7` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
 
 ## Regras
@@ -90,7 +90,7 @@ A página é o componente definido pelo bloco de script do arquivo `.svelte`.
 
 ### Segmentos dinâmicos
 
-Os parâmetros de URL chegam à página como acessórios por meio da runa `$props()`:
+Os parâmetros de URL chegam à página como props por meio da runa `$props()`:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -151,7 +151,7 @@ from "@/components/Counter.svelte" import Counter
 
 ### Diretrizes de hidratação
 
-Use a propriedade `directive` para controlar quando a ilha hidrata:
+Use o `directive` prop para controlar quando a ilha hidrata:
 
 - `client:load` (padrão): imediatamente
 - `client:idle`: quando o navegador está ocioso

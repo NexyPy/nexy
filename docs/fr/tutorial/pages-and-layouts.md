@@ -163,4 +163,4 @@ Tailwind, qu'utilise le starter, supprime les bordures des champs du formulaire 
 ## Prochaines étapes
 
 - [Partie 3 : routes dynamiques et API](dynamic-routes.md)
-- [Fichiers .nexy](../views/nexy/README.md) : accessoires, composants et styles
+- [Fichiers .nexy](../views/nexy/README.md) : props, composants et styles

@@ -28,15 +28,15 @@ from "@/components/Counter.tsx" import Counter
 ```
 <!-- /router -->
 
-Nexy 在构建时呈现组件、存储其 HTML 并将其放置在页面内。页面响应携带该 HTML 以及作为 JSON 属性的 props。在浏览器中， island 运行时加载组件并接管容器。
+Nexy 在构建时呈现组件、存储其 HTML 并将其放置在页面内。页面响应携带该 HTML 加上 `props` 作为 JSON 属性。在浏览器中， island 运行时加载组件并接管容器。
 
 `directive` 决定 **何时** 发生这种情况。如果没有水，岛上的水一旦准备好就会水化。
 
 ## 渲染生命周期
 
-1. 在构建时，每个客户端组件都会呈现为 HTML 并编写在 `__nexy__/client/static/` 下。
+1. 在构建时，每个客户端组件都会呈现为 HTML 并在 `__nexy__/client/static/` 下编写：一次具有自己的默认值，并且每组文字 `props` 一次由 `.nexy` 文件给出。
 2. 请求呈现 `.nexy` 页面；岛屿的 HTML 被插入来代替标签。
-3. 响应携带 HTML、props 和指令作为属性。
+3. 响应携带 HTML、`props` 和指令作为属性。
 4. 在浏览器中，运行时根据指令安排水合作用。
 5. Hydration 用实时组件替换了静态 HTML；页面的其余部分保持不变。
 
@@ -55,7 +55,7 @@ Nexy 在构建时呈现组件、存储其 HTML 并将其放置在页面内。页
 | 无，或 `client:load` | 立即 |
 | `client:idle` | 当浏览器空闲时（`requestIdleCallback`，2秒超时） |
 | `client:visible` | 当岛屿进入视口时，提前 200 px |
-| `client:media` | 当媒体查询匹配时；使用 `media` 属性设置它 |
+| `client:media` | 当媒体查询匹配时；用 `media` 设置 |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
@@ -98,12 +98,13 @@ from "@/components/Counter.tsx" import Counter
 
 ## 局限性
 
-- **`client:only` 永远不会水合。** 它被接受，但运行时会跳过它，因此服务器 HTML 保持惰性。当组件无法在服务器上呈现时，请使用客户端路由 ([CSR](csr.md))。
+- **`client:only` 永远不会水合。** 它被接受，但运行时会跳过它，因此服务器 HTML 保持惰性。当组件无法在服务器上呈现时，使用客户端路由 ([CSR](csr.md))。
 - **`client:manual` 没有公共触发器。** 它也会自动跳过，并且恢复它的句柄是内部的。
-- **Props 必须是 JSON。** 它们用 `json.dumps` 序列化；无法序列化的值被丢弃，并且岛会默默地接收 `{}`。
+- **`props` 必须是 JSON。** 它们用 `json.dumps` 序列化；无法序列化的值被丢弃，并且岛会默默地接收 `{}`。
 - **岛不是具有共享状态的客户端组件。** 如果没有您自己添加的机制，两个岛不会共享状态。
 - **该岛不会由服务器重新渲染。** 它的 HTML 是构建快照，加上组件在水合后执行的任何操作。
-- **岛屿页面是伪装的 CSR 页面。** 如果每个块都需要彼此通信，请选择客户端模式。
+- **只有文字 `props` 到达服务器 HTML。** `<Counter label="clicks" step="2" />` 获取使用这些 `props` 渲染的快照。在请求时 (`label="{{ name }}"`) 计算的 `prop`、扩展 (`{{ ...props }}`) 或标签之间的子级在构建时无法得知：该岛显示具有组件自身默认值的快照，直到它水合为止。
+- **岛屿页面是变相的 CSR 页面。** 如果每个块都需要彼此通信，请选择客户端模式。
 
 ## 后续步骤
 

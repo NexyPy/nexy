@@ -144,7 +144,7 @@ async def publish(post_id: int) -> bool:
 
 | الاسم | ما هو عليه |
 |---|---|
-| `render` | HTML لمكون `.nexy` لدعائم معينة، بدون خادم، راجع [اختبار](../guides/testing.md) |
+| `render` | HTML لمكون `.nexy` لـ props، بدون خادم، راجع [اختبار](../guides/testing.md) |
 
 ```python filename="الاختبارات/test_button.py"
 from nexy.testing import render

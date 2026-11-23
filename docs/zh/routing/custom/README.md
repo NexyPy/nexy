@@ -152,6 +152,23 @@ async def data():
     return {"data": 42}
 ```
 
+## 与 FastAPI 有何不同
+
+一旦路由器在 Nexy 内运行，有两件事会产生不同的结果：
+
+| 案例 | FastAPI | 内克西内部 |
+|---|---|---|
+| `raise HTTPException(404, "No such user.")` | `{"detail": "No such user."}` 致每一位客户 | 仅当请求发送 `Accept: application/json` 而不发送 `text/html` 时才使用该 JSON；任何其他客户端（包含默认 `Accept: */*` 的curl）都会获取 HTML 错误页面 |
+| `/api/users/one` 为 `id: int` | `422` 存在验证错误 | `404`：路径值类型错误的地址不存在 |
+
+因此 API 客户端发送 `Accept: application/json`：
+
+```bash
+curl -H "Accept: application/json" localhost:3000/api/users/one
+```
+
+错误类型的主体或查询值仍然会回答 `422` 错误，如 FastAPI 中所示。
+
 ## 测试一下
 
 ```python filename="测试/test_legacy.py"
@@ -166,6 +183,6 @@ def test_the_included_route_answers():
 
 ## 后续步骤
 
-- [从 FastAPI 到Nexy](../../coming-from/fastapi.md)：将路由一一移动到文件
+- [从 FastAPI 到Nexy](../../coming-from/fastapi.md)：将路线一一移动到文件
 - [基于文件的路由](../fbr/README.md)
 - [模块化路由](../modular/README.md)：`useRouter = AppModule`

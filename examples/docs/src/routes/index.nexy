@@ -1,0 +1,37 @@
+---
+from src.docs.nav import SECTIONS
+
+metadata = {
+    "title": "Back up a folder to object storage",
+    "description": "The documentation of Cairn: install it, make a first backup in five minutes, and look up every command and setting.",
+}
+
+blurbs = {
+    "Get started": "Install Cairn and make a first backup in five minutes.",
+    "Commands": "Every command, its options, and an example of each.",
+    "Guides": "Run backups on a schedule, and keep them encrypted.",
+    "Reference": "Exit codes for scripts, and the questions people ask.",
+}
+---
+<section class="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 sm:py-24">
+  <p class="text-sm font-medium text-accent">Cairn 1.4 documentation</p>
+  <h1 class="mt-3 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">Back up a folder to object storage, and get any version back.</h1>
+  <p class="mt-5 max-w-2xl text-lg text-foreground-second">Cairn is one command that encrypts on your machine, sends only what changed, and keeps the versions you ask for.</p>
+  <div class="mt-8 flex flex-wrap gap-3">
+    <a href="/docs/quick-start" class="inline-flex h-11 items-center rounded-lg bg-accent px-5 text-sm font-medium text-on-accent hover:opacity-90">Quick start</a>
+    <a href="/docs/installation" class="inline-flex h-11 items-center rounded-lg border border-border px-5 text-sm font-medium hover:border-foreground">Install</a>
+  </div>
+  <pre class="mt-10 overflow-x-auto rounded-xl border border-border bg-code p-5 font-mono text-sm text-code-text"><code>cairn init s3://my-backups/laptop
+cairn backup ~/Documents
+cairn restore latest --path Documents/notes.md</code></pre>
+
+  <div class="mt-16 grid gap-4 sm:grid-cols-2">
+    {% for section in SECTIONS %}
+    <a href="{{ section.pages[0].url }}" class="group rounded-xl border border-border p-6 transition-colors hover:border-accent">
+      <h2 class="font-semibold group-hover:text-accent">{{ section.title }}</h2>
+      <p class="mt-1 text-sm text-foreground-second">{{ blurbs[section.title] }}</p>
+      <p class="mt-4 text-xs text-foreground-second">{{ section.pages | map(attribute="title") | join(", ") }}</p>
+    </a>
+    {% endfor %}
+  </div>
+</section>

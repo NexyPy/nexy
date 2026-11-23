@@ -1,0 +1,77 @@
+---
+from "@/components/drag-and-drop.tsx" import DragAndDrop
+from src.board import store
+
+metadata = {
+    "title": "Quill 3.2",
+    "description": "The board of the Quill team: what is to do, in progress, in review and done for the 3.2 release.",
+}
+
+columns = store.board()
+names = store.COLUMNS
+tags = store.TAGS
+longest = store.LONGEST_TITLE
+---
+<section class="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-8 sm:px-6" data-board>
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="text-sm text-foreground-second">Quill notes, team board</p>
+      <h1 class="mt-1 text-3xl font-semibold tracking-tight">Release 3.2</h1>
+    </div>
+    <p class="max-w-md text-sm text-foreground-second">Drag a card to move it, or use the menu under it. With a card focused, Alt and an arrow key move it too.</p>
+  </div>
+
+  <DragAndDrop directive="client:load" />
+
+  <div class="mt-6 grid flex-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+    {% for key, cards in columns.items() %}
+    <section aria-labelledby="column-{{ key }}" class="group flex min-w-0 flex-col rounded-xl bg-background-second p-3">
+      <h2 id="column-{{ key }}" class="flex items-center justify-between px-1 pb-3 text-sm font-semibold">
+        {{ names[key] }}
+        <span class="rounded-full bg-background px-2 py-0.5 text-xs font-medium text-foreground-second" data-count="{{ key }}">{{ cards | length }}</span>
+      </h2>
+
+      {% if key == "todo" %}
+      <form method="post" action="{{ __actions_path['add_card'] }}" class="mb-3 flex flex-col gap-2 rounded-lg border border-border bg-background p-2">
+        <label for="new-card" class="sr-only">New card</label>
+        <input id="new-card" name="title" required maxlength="{{ longest }}" autocomplete="off" placeholder="Add a card" class="h-11 rounded-md border border-border bg-background px-3 text-sm placeholder:text-foreground-second focus:border-accent focus:outline-none">
+        <div class="flex gap-2">
+          <label for="new-card-tag" class="sr-only">Tag</label>
+          <select id="new-card-tag" name="tag" class="h-11 min-w-0 flex-1 rounded-md border border-border bg-background px-2 text-sm">
+            <option value="">No tag</option>
+            {% for tag in tags %}<option value="{{ tag }}">{{ tag | capitalize }}</option>{% endfor %}
+          </select>
+          <button type="submit" class="h-11 rounded-md bg-accent px-4 text-sm font-medium text-on-accent hover:opacity-90">Add</button>
+        </div>
+      </form>
+      {% endif %}
+
+      <ol class="flex min-h-24 flex-1 flex-col gap-2 rounded-lg transition-colors data-[over]:bg-accent-soft" data-column="{{ key }}">
+        {% for card in cards %}
+        <li data-card="{{ card.id }}" class="rounded-lg border border-border bg-background p-3 shadow-sm data-[dragging]:opacity-40">
+          {% if card.tag %}<span class="tag tag-{{ card.tag }}">{{ card.tag }}</span>{% endif %}
+          <p class="mt-1 text-sm leading-snug [overflow-wrap:anywhere]" data-title>{{ card.title | e }}</p>
+          <div class="mt-3 flex items-center gap-2">
+            <form method="post" action="{{ __actions_path['move_card'] }}" class="flex min-w-0 flex-1 gap-1" data-move>
+              <input type="hidden" name="card_id" value="{{ card.id }}">
+              <label for="move-{{ card.id }}" class="sr-only">Move "{{ card.title | e }}" to</label>
+              <select id="move-{{ card.id }}" name="column" class="h-11 min-w-0 flex-1 rounded-md border border-border bg-background px-2 text-xs">
+                {% for other, name in names.items() %}<option value="{{ other }}"{% if other == key %} selected{% endif %}>{{ name }}</option>{% endfor %}
+              </select>
+              <button type="submit" class="h-11 rounded-md border border-border px-3 text-xs font-medium hover:border-foreground">Move</button>
+            </form>
+            <form method="post" action="{{ __actions_path['delete_card'] }}" data-delete>
+              <input type="hidden" name="card_id" value="{{ card.id }}">
+              <button type="submit" aria-label="Delete &quot;{{ card.title | e }}&quot;" class="grid size-11 place-items-center rounded-md text-foreground-second hover:bg-background-second hover:text-down">
+                <svg viewBox="0 0 16 16" class="size-4" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 8.5h5.6l.7-8.5" /></svg>
+              </button>
+            </form>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+      <p class="mt-2 hidden px-1 text-sm text-foreground-second group-[&:not(:has(li))]:block">No cards here.</p>
+    </section>
+    {% endfor %}
+  </div>
+</section>

@@ -22,7 +22,7 @@
 | `nexy-principles` | 工作顺序、代码规则、编写规则 |
 | `nexy-ux-audit` | 在任何视图之前运行的体验和信息架构审核 |
 | `nexy-project` | 模式、文件夹、文件约定、配置、命令 |
-| `nexy-file` | `.nexy` 页面、道具、挂钩、岛屿 |
+| `nexy-file` | `.nexy` 页面，props，钩子，岛屿 |
 | `nexy-markdown` | `.md` 和 `.mdx` 内容 |
 | `nexy-react`、`nexy-preact`、`nexy-solid`、`nexy-vue`、`nexy-svelte` | 客户端框架的惯用代码 |
 | `nexy-styling` | Tailwind、UnoCSS 或纯 CSS，以及设计标记 |
@@ -32,7 +32,7 @@
 | `nexy-testing` | 测试优先循环和门 |
 | `nexy-framework-dev` | 改变 Nexy 本身，而不是用 Nexy 构建的项目 |
 
-他们执行的规则是：在构建视图之前审核体验，首先编写失败的测试，一个函数执行一种处理，一个类承载一种意图，一个文件夹包含一组相关意图，没有表情符号，真正的 SVG 图标，为人们编写的纯文本，并且 React、Vue、Svelte、Solid 或 Preact 中没有手写的 DOM 脚本。
+他们执行的规则是：在构建视图之前审核体验，首先编写失败的测试，一个函数执行一种处理，一个类承载一种意图，一个文件夹包含一组相关意图，没有表情符号，真正的SVG图标，为人们编写的纯文本，并且在 React，Vue，Svelte，Solid 或 Preact中没有手写的DOM脚本。
 
 ## 将它们添加到现有项目中
 
@@ -74,13 +74,13 @@ nx skills
 | 文件的 URL | [路由](../routing/README.md) |
 | 动态段、布局、错误页面 | [页数](../routing/fbr/pages/README.md) |
 | 当前路径、查询、cookies、会话 | [钩子](../routing/fbr/navigation/hooks.md) |
-| 编辑页面 | [.nexy 文件](../views/nexy/README.md) 或 [视图](../views/README.md) |
+| 编辑页面 | [.nexy 文件](../views/nexy/README.md) 或[视图](../views/README.md) |
 | Markdown 或 MDX | [降价](../views/nexy/markdown.md) |
 | 内置 HTML 帮助器 | [组件](../views/nexy/components.md) |
 | 渲染模式 | [SSR](../rendering/ssr.md)、[CSR](../rendering/csr.md)、[ISR](../rendering/isr.md) |
 | 一个 WebSocket | [网络套接字](../routing/fbr/realtime/websocket.md) |
 | 控制器和模块 | [模块化](../routing/modular/README.md) |
-| 添加端点 | [API](../routing/fbr/handlers/README.md) |
+| 添加端点 | [应用程序编程接口](../routing/fbr/handlers/README.md) |
 | 从页面发布的表单 | [行动](actions.md) |
 | 请求失败的原因以及哪个页面应答了该请求 | [例外情况](../reference/exceptions.md) |
 | 翻译 | [国际化](i18n.md) |
@@ -94,8 +94,8 @@ nx skills
 2. 每个 URL 一个文件。同一路径的 `index.nexy` 和 `index.py` 是一个错误，而不是优先级规则。
 3. `src/routes/` 内的保留名称：`layout.nexy`、`loading.nexy`、`errors.nexy`、`notfound.nexy`、`dependencies.py`、`__init__.py`。不要将它们用于内容。
 4. `.nexy` frontmatter 是根据请求运行的 Python。无模块级副作用：无文件句柄、无数据库连接、导入时无网络调用。
-5. `src/routes/` 中的 `.py` 是 API 处理程序。方法是函数名称（`GET`、`POST`、...）。
-6. 配置存在于 `nexyconfig.py` 中，而不是在环境变量中，也不在分散的常量中。
+5. `src/routes/` 中的 `.py` 是一个 API 处理程序。方法是函数名称（`GET`、`POST`、...）。
+6. 配置存在于 `nexyconfig.py`中，而不是在环境变量中，也不在分散的常量中。
 7. `.nexy` 模板中自动转义已关闭：使用 `| e` 转义不受信任的值。
 
 ```bash
@@ -112,4 +112,4 @@ nx test     # pytest, --client adds vitest
 - [CLI](../reference/cli.md)：`nx new` 和 `nx skills`
 - [文件约定](../reference/file-conventions.md)：保留名称和路由规则
 - [词汇表](../reference/glossary.md)：这些规则所依赖的单词
-- [安全](../reference/security.md)：安全技能指向的版本
+- [Security](../reference/security.md)：安全技能指向的版本

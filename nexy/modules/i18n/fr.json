@@ -36,6 +36,7 @@
     "count_client_only": "{count} côté client seulement",
     "more": "et {count} de plus",
     "not_rendered": "{path} n'a pas de HTML serveur : il est rendu côté client seulement",
+    "not_rendered_because": "{path} n'a pas de HTML serveur : {reason}",
     "running_check": "Exécution de {name}",
     "ran_check": "{name} exécuté"
   },
@@ -60,7 +61,9 @@
       "new": "Créer un nouveau projet dans un nouveau dossier",
       "start": "Lancer le serveur de production",
       "test": "Lancer les tests (--server / --client)",
-      "skills": "Ajouter les skills et AGENTS.md pour les agents de code"
+      "skills": "Ajouter les skills et AGENTS.md pour les agents de code",
+      "info": "Print environment and project versions in one block"
+    
     },
     "commands_header": "Commandes disponibles :",
     "help": "CLI de Nexy",
@@ -106,7 +109,8 @@
     "updating": "mise à jour du serveur",
     "vite_failed": "Vite n'a pas pu démarrer.",
     "vite_failed_hint": "Consultez la sortie de Vite ci-dessus pour en connaître la cause.",
-    "server_failed": "Le serveur s'est arrêté ({reason}) : en attente d'une correction."
+    "server_failed": "Le serveur s'est arrêté ({reason}) : en attente d'une correction.",
+    "port_in_use": "Le port {asked} est pris, utilisation du port {port}."
   },
   "format": {
     "failed": "{count} fichier(s) en échec",
@@ -119,6 +123,20 @@
     "nexy": "Formatage de {count} fichier(s) .nexy",
     "nexy_done": "{count} fichier(s) .nexy formaté(s)"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "Utilisez @, ~, # ou $, suivi éventuellement de lettres (par exemple ~ ou @app).",
     "already": "Le projet est déjà initialisé ici",
@@ -223,8 +241,10 @@
     "launch_failed": "Impossible de démarrer le serveur",
     "local": "Local :",
     "network": "Réseau :",
+    "docs": "Docs API :",
     "ready": "Prêt :",
-    "stop": "Ctrl+C pour arrêter"
+    "stop": "Ctrl+C pour arrêter",
+    "missing_table": "Une table manque : lancez nexy migrate --upgrade."
   },
   "start": {
     "broken": "{count} fichier(s) de route n'ont pas pu être chargés : le serveur n'a pas démarré.",

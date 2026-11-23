@@ -36,6 +36,7 @@
     "count_client_only": "{count} hanya klien",
     "more": "dan {count} lainnya",
     "not_rendered": "{path} tidak punya HTML server: hanya dirender di klien",
+    "not_rendered_because": "{path} tidak punya HTML server: {reason}",
     "running_check": "Menjalankan {name}",
     "ran_check": "{name} dijalankan"
   },
@@ -60,7 +61,9 @@
       "new": "Buat proyek baru di direktori baru",
       "start": "Jalankan server produksi",
       "test": "Jalankan pengujian (--server / --client)",
-      "skills": "Tambahkan skill dan AGENTS.md untuk agen pengodean"
+      "skills": "Tambahkan skill dan AGENTS.md untuk agen pengodean",
+      "info": "Print environment and project versions in one block"
+     
     },
     "commands_header": "Perintah yang tersedia:",
     "help": "CLI Nexy",
@@ -106,7 +109,8 @@
     "updating": "memperbarui server",
     "vite_failed": "Vite gagal dimulai.",
     "vite_failed_hint": "Baca keluaran Vite di atas untuk mengetahui penyebabnya.",
-    "server_failed": "Server berhenti ({reason}): menunggu perbaikan."
+    "server_failed": "Server berhenti ({reason}): menunggu perbaikan.",
+    "port_in_use": "Port {asked} sedang dipakai, memakai {port}."
   },
   "format": {
     "failed": "{count} berkas gagal",
@@ -119,6 +123,20 @@
     "nexy": "Memformat {count} berkas .nexy",
     "nexy_done": "{count} berkas .nexy diformat"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "Gunakan @, ~, # atau $, boleh diikuti huruf (misalnya ~ atau @app).",
     "already": "Proyek sudah diinisialisasi di sini",
@@ -223,8 +241,10 @@
     "launch_failed": "Tidak dapat memulai server",
     "local": "Lokal:",
     "network": "Jaringan:",
+    "docs": "Docs API:",
     "ready": "Siap:",
-    "stop": "tekan Ctrl+C untuk berhenti"
+    "stop": "tekan Ctrl+C untuk berhenti",
+    "missing_table": "Sebuah tabel tidak ada: jalankan nexy migrate --upgrade."
   },
   "start": {
     "broken": "{count} file rute gagal dimuat: server tidak dijalankan.",

@@ -76,7 +76,7 @@ from nexy import Link
 `Link(href, children="", class_name=None, prefetch=True, **attrs)` 呈现由客户端路由器处理的 `<a data-nexy-link>`。使用 `prefetch=True`，悬停或触摸链接会通过 `window.__nexy_prefetch` 温暖目标。
 
 > [!NOTE]
-> 标签形式将标签视为 `children`，而不是元素内容：`<Link href="/about" children="About" />`。要将标记放入链接内，请使用带有 `children=` 的调用表单或呈现 `<Slot />` 的 `.nexy` 组件。
+> 标签形式将标签视为 `children`，而不是元素内容：`<Link href="/about" children="About" />`。要将标记放入链接内，请使用带有 `children=` 或呈现 `<Slot />` 的 `.nexy` 组件的调用表单。
 
 ## 音频和视频
 
@@ -95,7 +95,7 @@ from nexy import Audio, Video
 
 ## 自己写的组件
 
-可重用的 `.nexy` 组件是 `src/components/`: Python 属性下的文件，上面是 HTML，下面是 HTML。它像任何其他 Python 模块一样导入。
+可重用的 `.nexy` 组件是 `src/components/` 下的文件：顶部是 Python props，下面是 HTML。它像任何其他 Python 模块一样导入。
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -130,11 +130,11 @@ from "@/components/Card.nexy" import Card
 ```
 <!-- /router -->
 
-`title` 没有默认值，因此页面必须通过它； `tone` 回落到 `"neutral"`。标签之间的标记到达 `<Slot />`（大写 S）内部。有关 props、slots 和标签形式的规则，请参阅 [.nexy 文件](README.md#components)。
+`title` 没有默认值，因此页面必须通过它； `tone` 回落到 `"neutral"`。标签之间的标记到达 `<Slot />`（大写 S）内部。请参阅 [.nexy 文件 ](README.md#components) 了解 props、插槽和标签形式的规则。
 
 ## 导入客户端组件
 
-从 `.nexy` 文件中，按路径导入框架组件；编译器将其安装在客户端并将属性作为 props 传递：
+从 `.nexy` 文件中，按路径导入框架组件；编译器将其安装在客户端上并将属性作为 props 传递：
 
 ```nexy
 ---

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import signal
 from types import SimpleNamespace
 from typing import Any
 
@@ -54,6 +55,8 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
         usePort=3000,
         WATCH_EXTENSIONS_GLOB=["*.py"],
         WATCH_EXCLUDE_PATTERNS=[],
+        useDocs="dev",
+        useDocsUrl="/docs",
     )
 
     class FakeServer:
@@ -115,6 +118,9 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
                 rec.routes_callback("src/routes/about.nexy")
             if step == "interrupt":
                 raise KeyboardInterrupt
+            if step == "terminate":
+                # What uvicorn does after a SIGTERM: it stops, then raises the signal again.
+                signal.raise_signal(signal.SIGTERM)
             if step == "cannot_start":
                 raise SystemExit(1)
             if step == "crash":
@@ -331,6 +337,29 @@ def test_ctrl_c_still_cleans_up(world):
     assert world.rec.events[-2:] == ["stop_observer", "stop_process"]
 
 
+def test_a_sigterm_cleans_up_like_ctrl_c(world):
+    world.serve_plan = ["terminate"]
+    dev_module.dev()
+    assert world.rec.events[-2:] == ["stop_observer", "stop_process"]
+
+
+def test_dev_gives_back_the_sigterm_handler_it_found(world):
+    before = signal.getsignal(signal.SIGTERM)
+    dev_module.dev()
+    assert signal.getsignal(signal.SIGTERM) is before
+
+
+def test_a_taken_port_is_named_with_the_one_used(world, monkeypatch, capsys):
+    monkeypatch.setattr(dev_module.Server, "resolve_ports", staticmethod(lambda h, p: (p + 1, 1)))
+    dev_module.dev()
+    assert "Port 3000 is in use, using 3001 instead." in capsys.readouterr().out
+
+
+def test_a_free_port_says_nothing_about_ports(world, capsys):
+    dev_module.dev()
+    assert "is in use" not in capsys.readouterr().out
+
+
 def test_the_observer_watches_what_the_config_says(world, monkeypatch):
     captured = {}
     original = dev_module.create_observer
@@ -401,3 +430,10 @@ class TestRestartAnnouncement:
         world.serve_plan = ["routes", "exit"]
         dev_module.dev()
         assert "update server" in capsys.readouterr().out
+
+
+def test_dev_says_where_the_api_reference_answers(world, monkeypatch):
+    shown: list[str] = []
+    monkeypatch.setattr(launcher, "entry", lambda _label, value: shown.append(value))
+    dev_module.dev()
+    assert "http://localhost:3000/docs" in shown

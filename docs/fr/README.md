@@ -26,21 +26,21 @@ Nouveau ici ? Lisez [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md), pui
 |---|---|
 | [Concepts de base](getting-started/core-concepts.md) | Obtenez le modèle mental : route, page, vue, composant, gestionnaire, point de terminaison |
 | [Structure du projet](getting-started/project-structure.md) | Savoir à quoi servent chaque dossier et fichier d'un projet |
-| [Choose a router](routing/README.md) | Choisissez le routeur basé sur des fichiers, modulaire ou personnalisé |
+| [Choisissez un routeur](routing/README.md) | Choisissez le routeur basé sur des fichiers, modulaire ou personnalisé |
 | [Choisissez un format d'affichage](views/README.md) | Choisissez `.nexy`, Markdown ou un framework client pour une page |
 
 ## Tutoriel
 
 ### Unité 1 : les bases
-| Pages | What you will build |
+| Pages | Ce que vous construirez |
 |---|---|
 | [1. Créez le projet](tutorial/create-the-project.md) | Créez le projet de notes et exécutez-le dans le navigateur |
 | [2. Pages et mises en page](tutorial/pages-and-layouts.md) | Ajoutez la page de notes et modifiez la mise en page autour d'elle |
 | [3. Des routes dynamiques et une API](tutorial/dynamic-routes.md) | Donnez à chaque note une URL et diffusez les notes au format JSON |
-| [4. Components](tutorial/components.md) | Transformez chaque note en un composant `.nexy` réutilisable |
+| [4. Composants](tutorial/components.md) | Transformez chaque note en un composant `.nexy` réutilisable |
 
 ### Unité 2 : données
-| Pages | What you will build |
+| Pages | Ce que vous construirez |
 |---|---|
 | [5. Stockez les notes dans SQLite](tutorial/store-the-notes.md) | Ajoutez un modèle, une migration et une graine, et lisez les notes de la base de données |
 | [6. Créez une note à partir d'un formulaire](tutorial/create-a-note.md) | Publier un formulaire dans une action qui enregistre la note |
@@ -49,14 +49,14 @@ Nouveau ici ? Lisez [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md), pui
 | [9. Paginez les notes](tutorial/paginate-the-notes.md) | Afficher cinq notes à la fois, avec des liens entre les pages |
 
 ### Unité 3 : utilisateurs
-| Pages | What you will build |
+| Pages | Ce que vous construirez |
 |---|---|
 | [10. Créez un compte et connectez-vous](tutorial/accounts.md) | Inscrivez-vous, connectez-vous et déconnectez-vous, avec un cookie de session |
 | [11. Donnez à chaque utilisateur ses propres notes](tutorial/own-notes.md) | Attachez chaque note à son utilisateur et protégez les pages, les actions et l'API |
 | [12. Réinitialiser un mot de passe oublié par email](tutorial/password-reset.md) | Envoyez par email un lien signé qui fonctionne une fois, pendant une heure |
 
 ### Unité 4 : interactivité
-| Pages | What you will build |
+| Pages | Ce que vous construirez |
 |---|---|
 | [13. Recherchez les notes au fur et à mesure que vous tapez](tutorial/search-the-notes.md) | Filtrez chaque note du navigateur avec un îlot React |
 | [14. Cochez une note sans recharger la page](tutorial/tick-a-note.md) | Marquer une note terminée avec un formulaire que quelques lignes de JavaScript envoient en place |
@@ -112,13 +112,13 @@ Contrôleurs et modules.
 ### Vues Nexy
 | Pages | Ce que tu feras |
 |---|---|
-| [Fichiers .nexy](views/nexy/README.md) | Écrivez une page avec Python, Jinja2 et des accessoires |
+| [Fichiers .nexy](views/nexy/README.md) | Écrivez une page avec Python, Jinja2 et props |
 | [Composants](views/nexy/components.md) | Utilisez `Image`, `Link`, `Audio`, `Video` et `Import` |
 
 ### Pages et mises en page dans des fichiers {fbr,custom}
 | Pages | Ce qu'il définit |
 |---|---|
-| [Pages frontales](views/frontend/pages.md) | Un fichier, une route : accessoires, rendu, métadonnées |
+| [Pages frontales](views/frontend/pages.md) | Un fichier, une route : props, rendu, métadonnées |
 | [Dispositions frontales](views/frontend/layouts.md) | Le shell du document, l'imbrication et ce qu'une mise en page ne peut pas faire |
 | [layout.nexy](views/nexy/layouts.md) | Écrire la disposition en mode serveur |
 | [Markdown et MDX](views/nexy/markdown.md) | Rédiger des pages de contenu |
@@ -166,7 +166,7 @@ Contrôleurs et modules.
 ### Construire et tester
 | Pages | Ce que tu feras |
 |---|---|
-| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la build client |
+| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la construction du client |
 | [Tests](guides/testing.md) | Testez avec pytest, `TestClient` et vitest |
 
 ### Outillage et aide
@@ -184,7 +184,7 @@ Contrôleurs et modules.
 |---|---|
 | [SQLite](databases/sqlite.md) | Utiliser un seul fichier, pas de serveur : moteur, pragmas, migrations et tests |
 | [PostgreSQL](databases/postgresql.md) | Connectez-vous avec psycopg, utilisez JSONB, les tableaux, la recherche et les upserts |
-| [Néon](databases/neon.md) | Utiliser sans serveur PostgreSQL : hôte mutualisé, suspension automatique et branches |
+| [Néon](databases/neon.md) | Utiliser un serveur sans serveur PostgreSQL : hôte mutualisé, suspension automatique et branches |
 | [MySQL et MariaDB](databases/mysql-mariadb.md) | Connectez-vous avec pymysql, utilisez utf8mb4, upserts et recherche en texte intégral |
 
 ## Venant de
@@ -207,14 +207,14 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 | Pages | Ce que tu feras |
 |---|---|
 | [Depuis Express](coming-from/express.md) | Traduire les routes, les middlewares et les `req`/`res` en Python gestionnaires |
-| [De Fastify](coming-from/fastify.md) | Transformez les schémas, plugins et hooks en modèles, dossiers et fichiers |
+| [Depuis Fastify](coming-from/fastify.md) | Transformez les schémas, plugins et hooks en modèles, dossiers et fichiers |
 | [D'Élysée](coming-from/elysia.md) | Mapper les schémas `t`, les gardes et l'Eden aux Pydantic et aux actions typées |
 | [De Hono](coming-from/hono.md) | Mapper les routes, le middleware et le client `hc` vers Nexy |
 
 ### Cadres Fullstack {fbr}
 | Pages | Ce que tu feras |
 |---|---|
-| [De Next.js](coming-from/nextjs.md) | Conservez vos pages React et déplacez le code du serveur vers Python |
+| [À partir de Next.js](coming-from/nextjs.md) | Conservez vos pages React et déplacez le code du serveur vers Python |
 | [De Remix](coming-from/remix.md) | Transformez les chargeurs et les actions en Python gestionnaires et actions |
 | [Depuis Nuxt](coming-from/nuxt.md) | Conservez vos pages Vue et déplacez `server/` vers Python |
 | [De SvelteKit](coming-from/sveltekit.md) | Conservez vos Svelte pages et déplacez les charges, actions et hooks vers Python |
@@ -222,11 +222,11 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 | [Depuis Laravel](coming-from/laravel.md) | Cartographier les itinéraires, les contrôleurs, Blade, Eloquent et les files d'attente vers Nexy |
 | [De Ruby sur Rails](coming-from/rails.md) | Cartographier les itinéraires, les contrôleurs, l'ERB, l'Active Record et les tâches vers Nexy |
 
-### Frameworks de contrôleurs {modular}
+### Cadres de contrôleurs {modular}
 | Pages | Ce que tu feras |
 |---|---|
 | [De NestJS](coming-from/nestjs.md) | Déplacez les contrôleurs, les modules, les fournisseurs et les gardes vers le routeur modulaire |
-| [Depuis Spring Boot](coming-from/spring-boot.md) | Déplacez les contrôleurs, les services et les filtres vers le routeur modulaire |
+| [À partir de Spring Boot](coming-from/spring-boot.md) | Déplacez les contrôleurs, les services et les filtres vers le routeur modulaire |
 
 ## Référence
 

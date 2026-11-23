@@ -73,7 +73,7 @@ export default function Counter(props: { start?: number }) {
 ```
 
 - قم باستدعاء الإشارة `count()` الموجودة داخل JSX، وليس في متغير فوقها.
-- اقرأ الدعائم كـ `props.start`. يؤدي التدمير `{ start }` إلى قراءة القيمة مرة واحدة ويفقد التحديثات.
+- اقرأ props كـ `props.start`. يؤدي التدمير `{ start }` إلى قراءة القيمة مرة واحدة ويفقد التحديثات.
 - Solid يكتب سمات HTML: `class`، `for`، `charset`، وليس `className`.
 
 ## القواعد
@@ -147,7 +147,7 @@ export default function RootLayout(props: { children: JSX.Element }) {
 
 ### استيراد
 
-قم باستيراد المكونات الموجودة في مقدمة الملف `.nexy`:
+استيراد المكونات في الجزء الأمامي من الملف `.nexy`:
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
@@ -169,7 +169,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### توجيهات الترطيب
 
-استخدم الدعامة `directive` للتحكم في وقت ترطيب الجزيرة:
+استخدم `directive` prop للتحكم في وقت ترطيب الجزيرة:
 
 - `client:load` (افتراضي): فورًا
 - `client:idle`: عندما يكون المتصفح خاملاً

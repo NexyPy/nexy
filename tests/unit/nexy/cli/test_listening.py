@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 from nexy.helpers.common import launcher
-from nexy.helpers.server.listening import Endpoint, print_listening
+from nexy.helpers.server.listening import Endpoint, print_listening, served_docs_path
 
 
 class TestEndpoint:
@@ -50,3 +50,29 @@ class TestPrintListening:
         endpoint = Endpoint("127.0.0.1", 3443, "k.pem", "c.pem")
         print_listening("dev", "1", endpoint, 0.1, lambda: "127.0.0.1")
         assert entries[0] == "https://localhost:3443"
+
+
+class TestApiDocsLine:
+    """The block names where the API reference answers, when the command serves it (#622)."""
+
+    def test_the_reference_is_shown_with_its_full_url(self, entries):
+        print_listening("dev", "1", Endpoint("127.0.0.1", 3000), 0.2, str, docs_path="/docs")
+        assert "http://localhost:3000/docs" in entries
+
+    def test_no_reference_line_when_it_is_not_served(self, entries):
+        print_listening("dev", "1", Endpoint("127.0.0.1", 3000), 0.2, str)
+        assert entries == ["http://localhost:3000", "0.20s"]
+
+
+class TestServedDocsPath:
+    @pytest.mark.parametrize(
+        ("use_docs", "dev", "path"),
+        [
+            ("dev", True, "/docs"),
+            ("dev", False, None),
+            (True, False, "/docs"),
+            (False, True, None),
+        ],
+    )
+    def test_the_reference_follows_use_docs_and_the_command(self, use_docs, dev, path):
+        assert served_docs_path(use_docs, "/docs", dev=dev) == path

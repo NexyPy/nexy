@@ -22,7 +22,7 @@ class NexyConfig(NexyConfigModel):
     useAliases = {"@": "src"}
 ```
 
-`nuxt.config.ts` menjadi file ini. Bagian di bawah ini menggunakan mode klien kecuali dinyatakan lain.
+`nuxt.config.ts` menjadi file ini. Bagian di bawah ini menggunakan mode klien kecuali dinyatakan sebaliknya.
 
 ## `pages/`
 
@@ -52,7 +52,7 @@ const route = useRoute();
 </template>
 ```
 
-Segmen mencapai halaman sebagai alat peraga:
+Segmen mencapai halaman sebagai props:
 
 ```vue filename="src/rute/blog/[siput].vue"
 <script setup lang="ts">
@@ -77,7 +77,7 @@ Di komponen lainnya, `useParams()` dari `@nexy/client` mengembalikannya sebagai 
 
 Tidak ada `<NuxtLayout>` dan tidak ada `app.vue`: root `layout.vue` memiliki dokumen dan membungkus setiap halaman, dan `layout.vue` dalam subfolder bersarang di dalamnya.
 
-```vue filename="src/routes/layout.vue"
+```vue filename="src/route/layout.vue"
 <template>
   <html>
     <body>

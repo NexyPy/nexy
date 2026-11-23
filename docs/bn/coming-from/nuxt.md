@@ -52,7 +52,7 @@ const route = useRoute();
 </template>
 ```
 
-অংশগুলি প্রপ হিসাবে পৃষ্ঠায় পৌঁছায়:
+অংশগুলি পৃষ্ঠায় props হিসাবে পৌঁছায়:
 
 ```vue filename="src/routes/blog/[slug].vue"
 <script setup lang="ts">
@@ -64,7 +64,7 @@ defineProps<{ slug: string }>();
 </template>
 ```
 
-অন্য কোনো উপাদানে, `useParams()` থেকে `@nexy/client` একটি গণনাকৃত রেফ হিসাবে তাদের প্রদান করে। `[...slug].vue` একটি ক্যাচ-অল, যেমন Nuxt-এ।
+অন্য কোনো উপাদানে, `useParams()` থেকে `@nexy/client` একটি গণনাকৃত রেফ হিসাবে প্রদান করে। `[...slug].vue` একটি ক্যাচ-অল, যেমন Nuxt-এ।
 
 ## `layouts/default.vue` এবং `app.vue`
 
@@ -88,7 +88,7 @@ defineProps<{ slug: string }>();
 </template>
 ```
 
-একটি নামযুক্ত লেআউট, `definePageMeta({ layout: "admin" })`, তার নিজস্ব `layout.vue`, বা একটি রুট গ্রুপ যেমন `(admin)/layout.vue` সহ একটি ফোল্ডারে পরিণত হয়।
+একটি নামযুক্ত লেআউট, `definePageMeta({ layout: "admin" })`, তার নিজস্ব `layout.vue` সহ একটি ফোল্ডারে পরিণত হয়, অথবা একটি রুট গ্রুপ যেমন `(admin)/layout.vue`।
 
 ## `<NuxtLink>` এবং `navigateTo`
 
@@ -235,7 +235,7 @@ users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
 </ul>
 ```
 
-## মিউটেশন: `$fetch` একটি সার্ভার রুটে
+## মিউটেশন: একটি সার্ভার রুটে `$fetch`
 
 ```vue filename="components/AddTodo.vue"
 <script setup lang="ts">
@@ -334,7 +334,7 @@ useSeoMeta({ title: "Blog", description: "Posts about Nexy" });
 </script>
 ```
 
-Nexy-এ একটি `.vue` পৃষ্ঠার কোনো মেটাডেটা API নেই: ট্যাগগুলিকে রুট লেআউটে রাখুন। সার্ভার মোডে একটি `.nexy` পৃষ্ঠা তাদের সেট করে এবং এর বিন্যাস তাদের `{{ useMetadata().html() }}` দিয়ে লেখে:
+Nexy-এ একটি `.vue` পৃষ্ঠার কোনো মেটাডেটা API নেই: ট্যাগগুলিকে রুট লেআউটে রাখুন। সার্ভার মোডে একটি `.nexy` পৃষ্ঠা তাদের সেট করে এবং এর বিন্যাস সেগুলিকে `{{ useMetadata().html() }}` দিয়ে লেখে:
 
 ```nexy filename="src/routes/blog.nexy"
 ---
@@ -430,4 +430,4 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///dev.db")
 - [সার্ভার মোড এবং ক্লায়েন্ট মোড](../routing/fbr/modes.md)
 - [Vue নেক্সিতে](../views/vue/differences.md)
 - [কর্ম](../guides/actions.md)
-- [থেকে Next.js Nexy থেকে](nextjs.md)
+- [থেকে Next.js নেক্সি থেকে](nextjs.md)

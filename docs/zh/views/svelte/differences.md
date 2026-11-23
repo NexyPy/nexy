@@ -56,7 +56,7 @@ export default defineConfig({
 
 | 套餐 | 版本 `nx new` 写道 |
 |---|---|
-| `svelte` | `^5.20.2` |
+| `svelte` | `^5.55.7` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
 
 ## 规则
@@ -90,7 +90,7 @@ export default defineConfig({
 
 ### 动态细分
 
-URL 参数通过 `$props()` 符文作为 props 到达页面：
+URL 参数通过 `$props()` 符文到达 props 页面：
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -151,7 +151,7 @@ from "@/components/Counter.svelte" import Counter
 
 ### 补水指令
 
-使用 `directive` 道具来控制岛屿何时水合：
+使用 `directive` prop 控制岛屿何时水合：
 
 - `client:load`（默认）：立即
 - `client:idle`：当浏览器空闲时

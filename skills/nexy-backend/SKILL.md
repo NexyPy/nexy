@@ -1,6 +1,6 @@
 ---
 name: nexy-backend
-description: Writing the Python side of a Nexy project - API handlers in src/routes, @Action functions, WebSocket SOCKET handlers, ISR, middleware.py, dependencies.py and error pages. Load it for any .py file in a project built with Nexy.
+description: Writing the Python side of a Nexy project - API handlers in src/routes, @Action functions, WebSocket SOCKET handlers, page caching, middleware.py, dependencies.py and errors. Load it for any .py file in a project built with Nexy.
 ---
 
 # Backend
@@ -62,10 +62,12 @@ async def create_user(name: str, age: int = 0) -> dict[str, str | int]:
 
 Define `async def SOCKET(websocket: WebSocket)` in a `.py` route file. The path is the file path.
 
+<!-- nexy:nexy -->
 ## Caching a page (ISR)
 
 In a `.nexy` page, `revalidate = 60` caches it per path with stale-while-revalidate. API handlers
 are not cached this way.
+<!-- /nexy:nexy -->
 
 ## Middleware and dependencies
 
@@ -74,8 +76,14 @@ are not cached this way.
 
 ## Error pages
 
-`notfound.nexy` renders 404 and `errors.nexy` renders 500, each scoped to its directory. A client
-that sends `Accept: application/json` receives `{"detail": "..."}` instead. Error text follows
+<!-- nexy:nexy -->
+`notfound.nexy` renders 404 and `errors.nexy` renders 500, each scoped to its directory.
+<!-- /nexy:nexy -->
+<!-- nexy:web -->
+With a client framework, `notfound.tsx` renders 404 and `errors.tsx` renders 500 (`.jsx`, `.vue`
+or `.svelte`: the extension of the framework), each scoped to its directory.
+<!-- /nexy:web -->
+A client that sends `Accept: application/json` receives `{"detail": "..."}`. Error text follows
 `nexy-principles`: what happened, what to do.
 
 ## Rules

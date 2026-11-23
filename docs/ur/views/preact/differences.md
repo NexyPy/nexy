@@ -85,7 +85,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 - **سرور موڈ پراجیکٹ میں کوئی `.tsx` صفحہ** نہیں ہوتا، اور کلائنٹ موڈ پروجیکٹ میں کوئی `.nexy` صفحہ نہیں ہوتا: Nexy شروع کرنے سے انکار کرتا ہے اور فائل کو نام دیتا ہے۔ دیکھیں [موڈز](../../routing/fbr/modes.md)۔
 <!-- /router -->
 <!-- router:modular -->
-- **اجزاء `src/components/`** میں رہتے ہیں، اور ایک منظر انہیں جزیروں کے طور پر درآمد کرتا ہے۔
+- **اجزاء `src/components/`** میں رہتے ہیں، اور ایک نظریہ انہیں جزیروں کے طور پر درآمد کرتا ہے۔
 <!-- /router -->
 - **ایک `.mdx` صفحہ سے درآمد کرتا ہے۔ `"preact"`.** Nexy ایک `.mdx` فائل کو Preact کے ساتھ مرتب کرتا ہے جب وہ اس درآمد کو دیکھتا ہے، مثال کے طور پر `import { h } from "preact"`، اور دوسری صورت میں React کے ساتھ۔ دیکھیں [Markdown اور MDX](../nexy/markdown.md)۔
 
@@ -141,7 +141,7 @@ export default function RootLayout({ children }: { children: ComponentChildren }
 
 ## جزائر
 
-سرور موڈ میں، ایک Preact جز میں درآمد کیا جاتا ہے۔ `.nexy` فائل ایک جزیرہ ہے۔
+سرور موڈ میں، ایک Preact جز ایک `.nexy` فائل میں درآمد کیا گیا جزیرہ ہے۔
 
 ### درآمد کرنا
 
@@ -167,7 +167,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### ہائیڈریشن کی ہدایات
 
-جزیرہ ہائیڈریٹ ہونے پر کنٹرول کرنے کے لیے `directive` سہارے کا استعمال کریں:
+جزیرہ ہائیڈریٹ ہونے پر کنٹرول کرنے کے لیے `directive` prop کا استعمال کریں:
 
 - `client:load` (پہلے سے طے شدہ): فوری طور پر
 - `client:idle`: جب براؤزر بیکار ہو۔
@@ -191,7 +191,7 @@ const { run, pending, error, data } = useAction(add_todo);
 
 ### نیویگیشن
 
-کلائنٹ سائڈ ٹرانزیشن کے لیے `Link` جز کا استعمال کریں۔ نوٹ کریں کہ Preact `className` کی بجائے `class` استعمال کرتا ہے:
+کلائنٹ سائڈ ٹرانزیشن کے لیے `Link` جز کا استعمال کریں۔ نوٹ کریں کہ Preact `className` کے بجائے `class` استعمال کرتا ہے:
 
 ```tsx
 import { Link } from "@nexy/client";

@@ -73,14 +73,14 @@ export default function Counter(props: { start?: number }) {
 ```
 
 - Llame a la señal, `count()`, dentro del JSX, no en una variable encima de él.
-- Lea los accesorios como `props.start`. La desestructuración `{ start }` lee el valor una vez y pierde las actualizaciones.
+- Lea props como `props.start`. La desestructuración `{ start }` lee el valor una vez y pierde las actualizaciones.
 - Solid escribe atributos HTML: `class`, `for`, `charset`, no `className`.
 
 ## Reglas
 
 - **Un marco por proyecto.** `useFF` toma exactamente un marco; `useFF = [solid(), react()]` detiene el servidor al inicio. Con `useFF = solid()`, cada archivo `.tsx` es Solid.
 <!-- router:fbr,custom -->
-- **Las páginas son `.tsx`.** Sólo un archivo `.tsx` bajo `src/routes/` se convierte en una página; `.jsx` está bien para un componente.
+- **Las páginas son `.tsx`.** Sólo un archivo `.tsx` debajo de `src/routes/` se convierte en una página; `.jsx` está bien para un componente.
 - **Los componentes se encuentran fuera de `src/routes/`**, generalmente en `src/components/`, por lo que no son páginas.
 - **Un proyecto en modo servidor no tiene `.tsx` página**, y un proyecto en modo cliente no tiene `.nexy` página: Nexy se niega a iniciar y nombra el archivo. Ver [modos](../../routing/fbr/modes.md).
 <!-- /router -->
@@ -169,7 +169,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### Directivas de hidratación
 
-Utilice el accesorio `directive` para controlar cuándo se hidrata la isla:
+Usa el `directive` prop para controlar cuando la isla se hidrata:
 
 - `client:load` (predeterminado): inmediatamente
 - `client:idle`: cuando el navegador está inactivo
@@ -180,7 +180,7 @@ Utilice el accesorio `directive` para controlar cuándo se hidrata la isla:
 
 ### Llamar a acciones
 
-Utilice el gancho `useAction` para administrar el estado de una llamada a la acción. En Solid, esto devuelve accesores (llámelos como funciones).
+Utilice el gancho `useAction` para administrar el estado de una llamada a la acción. En Solid, esto devuelve descriptores de acceso (llámelos como funciones).
 
 ```tsx
 import { useAction } from "@nexy/client";

@@ -38,12 +38,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
 Tata letak dirancang agar stabil. Dalam mode klien, saat bernavigasi di antara dua halaman yang berbagi tata letak yang sama, tata letak tersebut **tidak** dirender ulang; hanya konten anak yang berubah. Dalam mode server, setiap navigasi adalah dokumen baru.
 
-- **Slots**: Tata letak menyediakan slot tempat halaman bersarang dimasukkan: `children` di BEJ, dan prop `children` di tata letak `.nexy`.
+- **Slots**: Tata letak menyediakan slot tempat halaman bersarang dimasukkan: `children` di JSX, dan `children` prop di tata letak `.nexy`.
 - **Pelestarian Status**: Karena tata letak tetap terpasang, status apa pun yang ada di dalamnya (misalnya, kueri penelusuran di header) dipertahankan selama navigasi.
 
 Slot yang sama dalam tata letak `.nexy`:
 
-```nexy filename="src/routes/layout.nexy"
+```nexy filename="src/route/layout.nexy"
 ---
 children: prop[NexyElement]
 ---

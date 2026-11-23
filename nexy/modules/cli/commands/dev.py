@@ -1,4 +1,5 @@
 import os
+import signal
 import subprocess  # nosec B404
 import sys
 import threading
@@ -21,7 +22,7 @@ from nexy.helpers.common.vite_launch import vite_installed
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.fs.vfs import VFS
 from nexy.helpers.server.dev_mode import DEV_ENV_VAR
-from nexy.helpers.server.listening import Endpoint, print_listening
+from nexy.helpers.server.listening import Endpoint, print_listening, served_docs_path
 from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder, BuildResult
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
@@ -275,7 +276,8 @@ def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float
     try:
         observer = _watch(config, reloader)
         elapsed = time.perf_counter() - started
-        print_listening("dev", __version__, endpoint, elapsed, Server.get_network_ip)
+        docs = served_docs_path(config.useDocs, config.useDocsUrl, dev=True)
+        print_listening("dev", __version__, endpoint, elapsed, Server.get_network_ip, docs)
         reloader.serve(endpoint)
     except KeyboardInterrupt:
         console.print(f"\n  [dim]{t('dev.stopping', 'Stopping servers...')}[/dim]")
@@ -287,7 +289,28 @@ def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float
         _release(observer, session)
 
 
+def _interrupt(_signum: int, _frame: Any) -> None:
+    """A SIGTERM stops `nx dev` the way Ctrl+C does, so Vite is stopped with it."""
+    raise KeyboardInterrupt
+
+
+def _announce_port(asked: int, used: int) -> None:
+    if used != asked:
+        message = t("dev.port_in_use", "Port {asked} is in use, using {port} instead.")
+        warning(message.format(asked=asked, port=used))
+
+
 def dev(port: int | None = None, host: str | None = None) -> None:
+    # uvicorn raises a SIGTERM again once it has stopped: without this, the process would end
+    # there, before the clean-up that stops Vite.
+    previous = signal.signal(signal.SIGTERM, _interrupt)
+    try:
+        _dev(port, host)
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+
+
+def _dev(port: int | None, host: str | None) -> None:
     pycache()
     ensure_project_packages()
     abort_on_invalid_config()
@@ -298,7 +321,9 @@ def dev(port: int | None = None, host: str | None = None) -> None:
     if config.useVite:
         _require_vite_install()
     run_host = host or config.useHost
-    run_port, client_port = Server.resolve_ports(run_host, port or config.usePort)
+    asked = port or config.usePort
+    run_port, client_port = Server.resolve_ports(run_host, asked)
+    _announce_port(asked, run_port)
     Server.check_nexy_prod(delete=True)
 
     ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)

@@ -38,10 +38,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
 Los diseños están diseñados para ser estables. En el modo cliente, al navegar entre dos páginas que comparten el mismo diseño, el diseño **no** se vuelve a representar; sólo cambia el contenido secundario. En modo servidor cada navegación es un documento nuevo.
 
-- **Ranuras**: los diseños proporcionan una ranura donde se inyecta la página anidada: `children` en JSX y el accesorio `children` en un diseño `.nexy`.
+- **Ranuras**: los diseños proporcionan una ranura donde se inyecta la página anidada: `children` en JSX y `children` prop en un diseño `.nexy`.
 - **Preservación del estado**: debido a que el diseño permanece montado, cualquier estado que contenga (por ejemplo, una consulta de búsqueda en un encabezado) se conserva durante la navegación.
 
-La misma ranura en un diseño `.nexy`:
+El mismo espacio en un diseño `.nexy`:
 
 ```nexy filename="src/rutas/layout.nexy"
 ---

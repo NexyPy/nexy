@@ -1,0 +1,10 @@
+---
+from nexy import usePathname
+from src.i18n import DEFAULT, LANGUAGES, t
+
+first = usePathname().strip("/").split("/")[0]
+lang = first if first in LANGUAGES else DEFAULT
+metadata = {"title": "404", "robots": "noindex"}
+---
+<h1 class="text-3xl font-semibold">{{ t(lang, "notfound.title") }}</h1>
+<p class="mt-4"><a href="/{{ lang }}" class="inline-flex min-h-11 items-center">{{ t(lang, "notfound.back") }}</a></p>

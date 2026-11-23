@@ -36,6 +36,7 @@
     "count_client_only": "{count} client-only",
     "more": "and {count} more",
     "not_rendered": "{path} has no server HTML: it renders on the client only",
+    "not_rendered_because": "{path} has no server HTML: {reason}",
     "running_check": "Running {name}",
     "ran_check": "Ran {name}"
   },
@@ -53,6 +54,7 @@
     "cmd": {
       "build": "Compile project for production deployment",
       "check": "Run type checking across all project files",
+      "info": "Print environment and project versions in one block",
       "dev": "Start local development server with hot reload",
       "format": "Auto-format all project files",
       "init": "Initialize Nexy in the current directory",
@@ -106,7 +108,8 @@
     "updating": "update server",
     "vite_failed": "Vite failed to start.",
     "vite_failed_hint": "Read the Vite output above for the cause.",
-    "server_failed": "The server stopped ({reason}): waiting for a fix."
+    "server_failed": "The server stopped ({reason}): waiting for a fix.",
+    "port_in_use": "Port {asked} is in use, using {port} instead."
   },
   "format": {
     "failed": "{count} file(s) failed",
@@ -118,6 +121,19 @@
     "checked": "Checked the format of {scope} with {tool}",
     "nexy": "Formatting {count} .nexy file(s)",
     "nexy_done": "Formatted {count} .nexy file(s)"
+  },
+  "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
   },
   "init": {
     "alias_invalid": "Use @, ~, # or $, optionally followed by letters (for example ~ or @app).",
@@ -223,8 +239,10 @@
     "launch_failed": "Could not start the server",
     "local": "Local:",
     "network": "Network:",
+    "docs": "API docs:",
     "ready": "Ready:",
-    "stop": "press Ctrl+C to stop"
+    "stop": "press Ctrl+C to stop",
+    "missing_table": "A table is missing: run nexy migrate --upgrade."
   },
   "start": {
     "broken": "{count} route file(s) failed to load: the server was not started.",

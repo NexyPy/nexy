@@ -13,6 +13,7 @@ import {
   type SSGResult,
   c
 } from './utils'
+import { propsFor, readIslandProps, renderVariants } from './ssg.variants'
 
 async function loadModule(file: string): Promise<Record<string, any>> {
   const tempDir = path.resolve(process.cwd(), 'node_modules/.nexy-temp')
@@ -70,6 +71,7 @@ export async function run(): Promise<SSGResult> {
   if (!files.length) return result
 
   const snippets: Record<string, string> = {}
+  const islandProps = readIslandProps()
 
   for (const file of files) {
     const relativeDir = path.dirname(file)
@@ -79,30 +81,39 @@ export async function run(): Promise<SSGResult> {
     try {
       mod = await loadModule(file)
     } catch (err) {
-      result.entries.push({ file, component: '*', status: 'not_supported' })
+      const reason = err instanceof Error ? err.message : String(err)
+      result.entries.push({ file, component: '*', status: 'not_supported', reason })
       continue
     }
 
     const Component = mod.default
     if (!Component) {
-      result.entries.push({ file, component: '*', status: 'not_supported' })
+      const reason = 'it has no default export'
+      result.entries.push({ file, component: '*', status: 'not_supported', reason })
       continue
     }
 
     try {
-      const { renderToString } = await import('@vue/server-renderer')
+      const { renderToString } = await import('vue/server-renderer')
       const { createSSRApp } = await import('vue')
       const html = await renderToString(createSSRApp(Component))
       const entryId = getEntryId(fileName, 'Default', 'vue')
       const { css } = getAssetTags(manifest, fileName)
       writeComponent(relativeDir, entryId, `${css}${html}`, snippets)
+      const picked = propsFor(islandProps, file, 'default', ['default'])
+      const render = (props: Record<string, unknown>) =>
+        renderToString(createSSRApp(Component, props))
+      for (const [key, variant] of await renderVariants(file, render, picked)) {
+        writeComponent(relativeDir, `${entryId}.${key}`, `${css}${variant}`, snippets)
+      }
       result.entries.push({ file, component: 'Default', status: 'success' })
     } catch (e) {
       console.warn(`${c.yellow}warning:${c.reset} client-only: ${file} - SSR failed, using client placeholder (no server HTML)${c.reset}`)
       const entryId = getEntryId(fileName, 'Default', 'vue')
       const { css } = getAssetTags(manifest, fileName)
       writeComponent(relativeDir, entryId, `${css}<div id="${entryId}-root"></div>`, snippets)
-      result.entries.push({ file, component: 'Default', status: 'not_supported' })
+      const reason = e instanceof Error ? e.message : String(e)
+      result.entries.push({ file, component: 'Default', status: 'not_supported', reason })
     }
   }
 

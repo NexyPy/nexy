@@ -13,7 +13,7 @@ nx test --no-server --client  # vitest only
 
 | Parte | Comando | Condição |
 |---|---|---|
-| O servidor | `pytest` | é executado em `tests/` quando existe, caso contrário, na raiz do projeto; ignorado com um aviso quando pytest não está instalado |
+| Servidor | `pytest` | roda em `tests/` quando existe, caso contrário, na raiz do projeto; ignorado com um aviso quando pytest não está instalado |
 | Cliente | `npx vitest run` | somente com `--client`, e somente quando `vitest.config.ts` existir ou `vitest` aparecer em `package.json` |
 
 Não há corredor de ponta a ponta integrado. Dirija o servidor com `TestClient` e adicione Playwright ou Cypress você mesmo para comportamento do navegador.

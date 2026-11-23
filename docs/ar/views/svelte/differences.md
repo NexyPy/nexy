@@ -56,7 +56,7 @@ export default defineConfig({
 
 | الحزمة | النسخة `nx new` يكتب |
 |---|---|
-| `svelte` | `^5.20.2` |
+| `svelte` | `^5.55.7` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
 
 ## القواعد
@@ -90,7 +90,7 @@ export default defineConfig({
 
 ### القطاعات الديناميكية
 
-تصل معلمات URL إلى الصفحة كدعائم عبر `$props()` rune:
+تصل معلمات URL إلى الصفحة كـ props عبر الأمر `$props()`:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -129,7 +129,7 @@ export default defineConfig({
 
 ### استيراد
 
-قم باستيراد المكونات الموجودة في الجزء الأمامي من الملف `.nexy`:
+استيراد المكونات في الجزء الأمامي من الملف `.nexy`:
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
@@ -151,12 +151,12 @@ from "@/components/Counter.svelte" import Counter
 
 ### توجيهات الترطيب
 
-استخدم الدعامة `directive` للتحكم في وقت ترطيب الجزيرة:
+استخدم `directive` prop للتحكم في وقت ترطيب الجزيرة:
 
 - `client:load` (افتراضي): فورًا
 - `client:idle`: عندما يكون المتصفح خاملاً
 - `client:visible`: عند التمرير إلى العرض
-- `client:media`: عندما يتطابق استعلام الوسائط
+- `client:media`: عند تطابق استعلام الوسائط
 
 ## الإجراءات والملاحة
 

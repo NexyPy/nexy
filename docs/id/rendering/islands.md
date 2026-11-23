@@ -28,15 +28,15 @@ from "@/components/Counter.tsx" import Counter
 ```
 <!-- /router -->
 
-Nexy merender komponen pada waktu pembuatan, menyimpan HTML-nya, dan menempatkannya di dalam halaman. Respon halaman membawa HTML itu ditambah alat peraga sebagai atribut JSON. Di browser, runtime pulau memuat komponen dan mengambil alih container.
+Nexy merender komponen pada waktu pembuatan, menyimpan HTML-nya, dan menempatkannya di dalam halaman. Respon halaman membawa HTML tersebut ditambah `props` sebagai atribut JSON. Di browser, runtime pulau memuat komponen dan mengambil alih container.
 
 `directive` memutuskan **kapan** itu terjadi. Tanpanya, pulau akan terhidrasi segera setelah waktunya siap.
 
 ## Siklus hidup rendering
 
-1. Saat dibangun, setiap komponen klien dirender ke HTML dan ditulis di bawah `__nexy__/client/static/`.
+1. Saat membangun, setiap komponen klien dirender ke HTML dan ditulis di bawah `__nexy__/client/static/`: satu kali dengan defaultnya sendiri, dan satu kali per set `props` literal, file `.nexy` memberikannya.
 2. Permintaan merender halaman `.nexy`; HTML pulau disisipkan sebagai pengganti tag.
-3. Responsnya membawa HTML, props, dan direktif sebagai atribut.
+3. Responsnya membawa HTML, `props`, dan direktif sebagai atribut.
 4. Di browser, runtime menjadwalkan hidrasi sesuai dengan arahan.
 5. Hidrasi menggantikan HTML statis dengan komponen aktif; sisa halamannya tidak tersentuh.
 
@@ -55,13 +55,13 @@ Dalam pengembangan, tidak ada snapshot build: container kosong dan komponen dire
 | tidak ada, atau `client:load` | segera |
 | `client:idle` | saat browser dalam keadaan idle (`requestIdleCallback`, batas waktu 2 detik) |
 | `client:visible` | ketika pulau memasuki viewport, 200 px lebih awal |
-| `client:media` | ketika kueri media cocok; atur dengan prop `media` |
+| `client:media` | ketika kueri media cocok; atur dengan `media` |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
 ```
 
-`client:media` defaultnya adalah `(min-width: 768px)` ketika `media` tidak ada, dan terhidrasi satu kali. Pada browser tanpa `IntersectionObserver`, `client:visible` kembali ke siaga.
+`client:media` defaultnya adalah `(min-width: 768px)` ketika `media` tidak ada, dan terhidrasi satu kali. Pada browser tanpa `IntersectionObserver`, `client:visible` kembali ke idle.
 
 `directive` dan `media` digunakan oleh Nexy: keduanya tidak diteruskan ke komponen Anda.
 
@@ -100,9 +100,10 @@ from "@/components/Counter.tsx" import Counter
 
 - **`client:only` tidak pernah terhidrasi.** Diterima, tetapi runtime melewatkannya, sehingga HTML server tetap inert. Gunakan rute klien ([CSR](csr.md)) ketika komponen tidak dapat dirender di server.
 - **`client:manual` tidak memiliki pemicu publik.** Ini juga dilewati secara otomatis, dan pegangan yang melanjutkannya bersifat internal.
-- **Props harus berupa JSON.** Props tersebut diserialkan dengan `json.dumps`; nilai yang tidak dapat diserialkan akan dihilangkan, dan pulau menerima `{}` - secara diam-diam.
+- **`props` harus berupa JSON.** Mereka diserialkan dengan `json.dumps`; nilai yang tidak dapat diserialkan akan dihilangkan, dan pulau menerima `{}` - secara diam-diam.
 - **Sebuah pulau bukanlah komponen klien dengan negara bersama.** Dua pulau tidak berbagi negara tanpa mekanisme yang Anda tambahkan sendiri.
 - **Pulau ini tidak dirender ulang oleh server.** HTML-nya adalah snapshot build, ditambah apa pun yang dilakukan komponen setelah terhidrasi.
+- **Hanya `props` literal yang menjangkau HTML server.** `<Counter label="clicks" step="2" />` mendapatkan snapshot yang dirender dengan `props` tersebut. `prop` yang dihitung pada waktu permintaan (`label="{{ name }}"`), spread (`{{ ...props }}`) atau turunan di antara tag tidak dapat diketahui saat build: pulau tersebut menampilkan snapshot dengan default komponen sendiri hingga terhidrasi.
 - **Halaman pulau adalah halaman CSR yang menyamar.** Jika setiap blok perlu berkomunikasi satu sama lain, pilih mode klien saja.
 
 ## Langkah selanjutnya

@@ -56,11 +56,11 @@ Lokasi tersedia di setiap framework, dalam idiom framework tersebut. Selama taha
 | | React, Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
 | Jalan | `usePathname()` | `usePathname()` mengembalikan pengakses | `usePathname()` mengembalikan referensi | `$pathname` toko |
-| Parameter rute | `useParams()` | `useParams()` pengakses | `useParams()` referensi | `$params` toko |
+| Parameter rute | `useParams()` | `useParams()` pengakses | `useParams()` rujukan | `$params` toko |
 | Pertanyaan | `useSearchParams()` | `useSearchParams()` pengakses | `useSearchParams()` rujukan | `$searchParams` toko |
 | Semuanya | `useLocation()` | `useLocation()` pengakses | `useLocation()` rujukan | `$location` toko |
 | Navigasi | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
-| Navigasi dalam penerbangan | `useTransition()` | `useTransition()` pengakses | `useTransition()` rujukan | `useTransition()` toko |
+| Navigasi dalam penerbangan | `useTransition()` | `useTransition()` pengakses | `useTransition()` referensi | `useTransition()` toko |
 | Cocokkan jalan | `useMatch(path?)` | `useMatch(path?)` pengakses | `useMatch(path?)` rujukan | `useMatch(path?)` toko |
 | Tanyakan sebelum pergi | `useBlocker(dirty)` | `useBlocker(dirty())` di `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` di `$effect` |
 
@@ -110,7 +110,7 @@ export default function Breadcrumb() {
 | Kerangka | Impor | Penggantian |
 |---|---|---|
 | React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
-| Vue | `import { ErrorBoundary } from "@nexy/client"` | sebuah penyangga fungsi `fallback`; anak-anak masuk ke slot default |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | fungsi `fallback` prop; anak-anak masuk ke slot default |
 | Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | cuplikan `fallback` |
 
 ```tsx
@@ -188,7 +188,7 @@ Suatu fungsi tidak bertanya dengan sendirinya dan tidak memuat ulang; panggil `c
 
 - `alt` diperlukan; gunakan `alt=""` untuk gambar dekoratif. Nexy memperingatkan sekali jika hilang.
 - Dengan `width` dan `height`, atribut memberikan rasio aspek pada browser dan gambar tetap lancar (`height: auto; max-width: 100%`).
-- `priority` sekarang memuat gambar dengan prioritas tinggi, untuk gambar yang terlihat pada saat kedatangan.
+- `priority` sekarang memuat gambar dengan prioritas tinggi, untuk gambar yang terlihat saat tiba.
 - `fill` membuat gambar menutupi posisi induknya, mengabaikan `width` dan `height`.
 - `sizes` dan `srcSet` melewatinya. Nexy tidak mengubah ukuran atau mengonversi gambar.
 
@@ -201,7 +201,7 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` merender `<a href="/about" data-nexy-link="true">`. Setiap atribut dan `href` di-escape dengan HTML.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` menerjemahkan `<a href="/about" data-nexy-link="true">`. Setiap atribut dan `href` di-escape dengan HTML.
 
 ## Apa yang dilakukan router
 

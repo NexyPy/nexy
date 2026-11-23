@@ -1,0 +1,1185 @@
+
+
+
+
+
+
+
+:root {
+  color-scheme: light;
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+  --accent: #00D084;
+  /* Black and white: paper and ink, with greys between. */
+  --background: light-dark(#fafafa, #0e0e10);
+  --background-second: light-dark(#ffffff, #17171a);
+  --foreground: light-dark(#0a0a0b, #f4f4f5);
+  --foreground-second: light-dark(#5c5c63, #a1a1aa);
+  --border: light-dark(#e4e4e7, #26262b);
+  --border-second: light-dark(#d1d1d6, #3a3a41);
+  --brand: var(--foreground);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+
+
+
+/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */
+@layer properties;
+@layer theme, base, components, utilities;
+@layer theme {
+  :root, :host {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+      "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol", "Noto Color Emoji";
+    --font-mono: "Geist Mono", ui-monospace, monospace;
+    --spacing: 0.25rem;
+    --container-sm: 24rem;
+    --container-md: 28rem;
+    --container-xl: 36rem;
+    --container-2xl: 42rem;
+    --container-5xl: 64rem;
+    --text-xs: 0.75rem;
+    --text-xs--line-height: calc(1 / 0.75);
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
+    --text-base: 1rem;
+    --text-base--line-height: calc(1.5 / 1);
+    --text-2xl: 1.5rem;
+    --text-2xl--line-height: calc(2 / 1.5);
+    --text-4xl: 2.25rem;
+    --text-4xl--line-height: calc(2.5 / 2.25);
+    --text-5xl: 3rem;
+    --text-5xl--line-height: 1;
+    --text-6xl: 3.75rem;
+    --text-6xl--line-height: 1;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --tracking-tight: -0.025em;
+    --radius-md: 0.375rem;
+    --radius-xl: 0.75rem;
+    --default-transition-duration: 150ms;
+    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    --default-font-family: var(--font-sans);
+    --default-mono-font-family: var(--font-mono);
+    --color-background: var(--background);
+    --color-background-second: var(--background-second);
+    --color-foreground: var(--foreground);
+    --color-foreground-second: var(--foreground-second);
+    --color-border: var(--border);
+    --color-border-second: var(--border-second);
+    --color-accent: var(--accent);
+  }
+}
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+  }
+  html, :host {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: var(--default-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    font-feature-settings: var(--default-font-feature-settings, normal);
+    font-variation-settings: var(--default-font-variation-settings, normal);
+    -webkit-tap-highlight-color: transparent;
+  }
+  hr {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+  }
+  abbr:where([title]) {
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline dotted;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+  a {
+    color: inherit;
+    -webkit-text-decoration: inherit;
+    text-decoration: inherit;
+  }
+  b, strong {
+    font-weight: bolder;
+  }
+  code, kbd, samp, pre {
+    font-family: var(--default-mono-font-family, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+    font-feature-settings: var(--default-mono-font-feature-settings, normal);
+    font-variation-settings: var(--default-mono-font-variation-settings, normal);
+    font-size: 1em;
+  }
+  small {
+    font-size: 80%;
+  }
+  sub, sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+  sub {
+    bottom: -0.25em;
+  }
+  sup {
+    top: -0.5em;
+  }
+  table {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+  :-moz-focusring:where(:not(iframe)) {
+    outline: auto;
+  }
+  progress {
+    vertical-align: baseline;
+  }
+  summary {
+    display: list-item;
+  }
+  ol, ul, menu {
+    list-style: none;
+  }
+  img, svg, video, canvas, audio, iframe, embed, object {
+    display: block;
+    vertical-align: middle;
+  }
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+  button, input, select, optgroup, textarea, ::file-selector-button {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    border-radius: 0;
+    background-color: transparent;
+    opacity: 1;
+  }
+  :where(select:is([multiple], [size])) optgroup {
+    font-weight: bolder;
+  }
+  :where(select:is([multiple], [size])) optgroup option {
+    padding-inline-start: 20px;
+  }
+  ::file-selector-button {
+    margin-inline-end: 4px;
+  }
+  ::placeholder {
+    opacity: 1;
+  }
+  @supports (not (-webkit-appearance: -apple-pay-button))  or (contain-intrinsic-size: 1px) {
+    ::placeholder {
+      color: currentcolor;
+      @supports (color: color-mix(in lab, red, red)) {
+        color: color-mix(in oklab, currentcolor 50%, transparent);
+      }
+    }
+  }
+  textarea {
+    resize: vertical;
+  }
+  ::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+  ::-webkit-date-and-time-value {
+    min-height: 1lh;
+    text-align: inherit;
+  }
+  ::-webkit-datetime-edit {
+    display: inline-flex;
+  }
+  ::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+  ::-webkit-datetime-edit, ::-webkit-datetime-edit-year-field, ::-webkit-datetime-edit-month-field, ::-webkit-datetime-edit-day-field, ::-webkit-datetime-edit-hour-field, ::-webkit-datetime-edit-minute-field, ::-webkit-datetime-edit-second-field, ::-webkit-datetime-edit-millisecond-field, ::-webkit-datetime-edit-meridiem-field {
+    padding-block: 0;
+  }
+  ::-webkit-calendar-picker-indicator {
+    line-height: 1;
+  }
+  :-moz-ui-invalid {
+    box-shadow: none;
+  }
+  button, input:where([type="button"], [type="reset"], [type="submit"]), ::file-selector-button {
+    appearance: button;
+  }
+  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+    height: auto;
+  }
+  [hidden]:where(:not([hidden="until-found"])) {
+    display: none !important;
+  }
+}
+@layer utilities {
+  .table {
+    display: table;
+  }
+  .border {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+  }
+  .capitalize {
+    text-transform: capitalize;
+  }
+}
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+  ::selection {
+    background-color: var(--accent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--accent) 28%, transparent);
+    }
+  }
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-border-style: solid;
+    }
+  }
+}
+
+
+/* The look of the starter pages, in the colours of Nexy: deep emerald in the dark, mint mist in the
+   light. Plain CSS on the design tokens above, so the same file serves Tailwind, UnoCSS and
+   plain-CSS projects. In a layer, so a utility class still wins. */
+
+/* Moving between two pages feels like switching a tab: the header stays, the content slides. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: nx-leave 0.16s ease-in both;
+}
+::view-transition-new(root) {
+  animation: nx-enter 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+::view-transition-group(nx-header),
+::view-transition-group(nx-current) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+@keyframes nx-leave {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@keyframes nx-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+/* The mobile menu is a sheet: the scrim fades and the panel comes in from the left edge. */
+@keyframes nx-sheet-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes nx-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+/* Closing plays the way back: the script hides the sheet once these have finished. */
+@keyframes nx-sheet-out {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes nx-scrim-out {
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+  .nx-sheet,
+  .nx-sheet-scrim {
+    animation: none !important;
+  }
+}
+
+@layer components {
+  .nx-page {
+    --btn-bg: var(--foreground);
+    --btn-bg-hover: light-dark(#27272a, #ffffff);
+    --btn-fg: var(--background);
+    --grid: light-dark(rgb(0 0 0 / 0.05), rgb(255 255 255 / 0.05));
+    --ring: light-dark(rgb(0 0 0 / 0.45), rgb(255 255 255 / 0.55));
+    --glow-a: light-dark(rgb(0 0 0 / 0.07), rgb(255 255 255 / 0.08));
+    --glow-b: light-dark(rgb(0 0 0 / 0.04), rgb(255 255 255 / 0.04));
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: "Geist", "Inter", system-ui, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .nx-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .nx-container {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+  :where(.nx-page) :where(a, button, summary):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+  .nx-page code {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 0.875em;
+  }
+  .nx-page :where(p code, li code) {
+    padding: 0.1em 0.4em;
+    border-radius: 0.375rem;
+    background: color-mix(in oklab, var(--foreground) 8%, transparent);
+  }
+
+  /* Header */
+  .nx-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    view-transition-name: nx-header;
+    background: color-mix(in oklab, var(--background) 80%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+  }
+  .nx-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 4rem;
+  }
+  .nx-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+  }
+  .nx-brand img {
+    display: block;
+    height: 1.25rem;
+    width: auto;
+  }
+  :root.dark .nx-brand img,
+  :root.dark .nx-sheet-head img {
+    filter: brightness(0) invert(1);
+  }
+  .nx-nav-links {
+    display: flex;
+    gap: 0.25rem;
+  }
+  .nx-nav-link {
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--foreground-second);
+    text-decoration: none;
+    transition: color 0.15s, background-color 0.15s;
+  }
+  .nx-nav-link:hover {
+    color: var(--foreground);
+    background: color-mix(in oklab, var(--foreground) 6%, transparent);
+  }
+  .nx-nav-link[aria-current="page"] {
+    color: var(--foreground);
+    background: color-mix(in oklab, var(--foreground) 10%, transparent);
+    view-transition-name: nx-current;
+  }
+  .nx-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* The mobile menu: a sheet from the left edge, so the thumb reaches it. It is a
+     layer of its own, outside the header, because the header blurs its backdrop and
+     that would anchor a fixed panel to the bar instead of the screen. */
+  .nx-menu-button {
+    display: none;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: -0.25rem;
+    padding: 0;
+    border: 1px solid var(--border-second);
+    border-radius: 0.625rem;
+    background: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+  }
+  .nx-menu-icon {
+    display: grid;
+    place-items: center;
+  }
+  .nx-menu-icon svg {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .nx-sheet-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+  }
+  .nx-sheet-scrim {
+    position: absolute;
+    inset: 0;
+    background: light-dark(rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.6));
+    animation: nx-scrim-in 0.2s ease both;
+  }
+  .nx-sheet-scrim[data-state="closed"] {
+    animation: nx-scrim-out 0.2s ease both;
+  }
+  .nx-sheet {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+    max-width: 24rem;
+    background: var(--background);
+    border-right: 1px solid var(--border);
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.55);
+    animation: nx-sheet-in 0.24s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .nx-sheet[data-state="closed"] {
+    animation: nx-sheet-out 0.2s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+  .nx-sheet:focus {
+    outline: none;
+  }
+  /* The head of the sheet: the logo and the title that names the dialog. The close button sits
+     over its right end. */
+  .nx-sheet-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 4rem 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .nx-sheet-head img {
+    display: block;
+    height: 1.25rem;
+  }
+  .nx-sheet-title {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--foreground-second);
+  }
+  .nx-sheet-links {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    overflow-y: auto;
+  }
+  .nx-sheet-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 2.75rem;
+    padding: 0 0.85rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--foreground-second);
+    text-decoration: none;
+    transition: color 0.15s, background-color 0.15s;
+  }
+  .nx-sheet-link:hover,
+  .nx-sheet-link[aria-current="page"] {
+    color: var(--foreground);
+    background: color-mix(in oklab, var(--foreground) 8%, transparent);
+  }
+  /* The bar keeps its links on a wide screen and trades them for the button on a phone.
+     Only a header that carries a sheet does this, so a client-routed page, where no
+     script runs, keeps the links it has always shown. */
+  @media (max-width: 47.99rem) {
+    .nx-header[data-menu] .nx-nav-links {
+      display: none;
+    }
+    .nx-header[data-menu] .nx-menu-button {
+      display: grid;
+    }
+  }
+  /* The close button of the sheet is always visible, unlike the one in the bar. */
+  .nx-menu-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: grid;
+    margin: 0;
+    border-color: transparent;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+  .nx-menu-close:hover,
+  .nx-menu-close:focus-visible {
+    opacity: 1;
+  }
+  .nx-sheet-link svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* The light/dark switch: the thumb holds the icon of the current mode. */
+  .nx-switch {
+    position: relative;
+    flex: none;
+    width: 3.25rem;
+    height: 1.875rem;
+    padding: 0;
+    border: 1px solid var(--border-second);
+    border-radius: 999px;
+    background: var(--background-second);
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .nx-switch:hover {
+    border-color: var(--brand);
+  }
+  .nx-switch-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(1.875rem - 6px);
+    height: calc(1.875rem - 6px);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    transition: transform 0.3s cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+  :root.dark .nx-switch-thumb {
+    transform: translateX(1.375rem);
+  }
+  .nx-switch-thumb svg {
+    grid-area: 1 / 1;
+    transition: opacity 0.2s, transform 0.3s cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+  .nx-switch-moon,
+  :root.dark .nx-switch-sun {
+    opacity: 0;
+    transform: rotate(-60deg) scale(0.6);
+  }
+  :root.dark .nx-switch-moon {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Buttons */
+  .btn-primary,
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding-inline: 1.25rem;
+    border-radius: 0.875rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.18s, border-color 0.18s, transform 0.12s;
+  }
+  .btn-primary {
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    border: 1px solid transparent;
+  }
+  .btn-primary:hover {
+    background: var(--btn-bg-hover);
+  }
+  .btn-ghost {
+    color: var(--foreground);
+    border: 1px solid var(--border-second);
+    background: color-mix(in oklab, var(--background-second) 70%, transparent);
+  }
+  .btn-ghost:hover {
+    border-color: var(--brand);
+  }
+  .btn-primary:active,
+  .btn-ghost:active {
+    transform: translateY(1px);
+  }
+
+  /* Sections */
+  .nx-section {
+    padding-block: 4.5rem 1rem;
+  }
+  .nx-h2 {
+    font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+    font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .nx-sub {
+    margin-top: 0.875rem;
+    max-width: 36rem;
+    font-size: 1.0625rem;
+    color: var(--foreground-second);
+  }
+
+  /* Footer */
+  .nx-footer {
+    border-top: 1px solid var(--border);
+  }
+  .nx-footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 2rem;
+    font-size: 0.9375rem;
+    color: var(--foreground-second);
+  }
+  .nx-footer-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+  .nx-footer-links a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nx-footer-links a:hover {
+    color: var(--foreground);
+  }
+}
+
+/* The blog: its pages, in the colours and fonts of the starter above. */
+.blog-brand {
+  font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--foreground);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.blog-icon-link {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  color: var(--foreground-second);
+  transition: color 0.15s, background-color 0.15s;
+}
+.blog-icon-link:hover {
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--foreground) 6%, transparent);
+}
+.blog-icon-link svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* The head of a page: a small line above, the title, one sentence below. */
+.blog-intro {
+  padding-block: 4.5rem 2.5rem;
+}
+.blog-eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--foreground-second);
+}
+.blog-title {
+  margin-top: 0.75rem;
+  font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  font-size: clamp(2.5rem, 7vw, 4.25rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.blog-lead {
+  margin-top: 1.25rem;
+  max-width: 38rem;
+  font-size: 1.125rem;
+  color: var(--foreground-second);
+  text-wrap: pretty;
+}
+.blog-lead a,
+.blog-footer-link {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-decoration-color: var(--border-second);
+  text-underline-offset: 3px;
+}
+.blog-lead a:hover,
+.blog-footer-link:hover {
+  text-decoration-color: var(--foreground);
+}
+.blog-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--foreground-second);
+  text-decoration: none;
+}
+.blog-back:hover {
+  color: var(--foreground);
+}
+.blog-back svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Date and reading time: a thin line parts them, never a character. */
+.blog-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--foreground-second);
+  font-variant-numeric: tabular-nums;
+}
+.blog-meta > * + * {
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--border-second);
+}
+
+/* Tags */
+.blog-tags,
+.blog-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+}
+.blog-tag {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 1.875rem;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--border-second);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--foreground-second);
+  text-decoration: none;
+  transition: color 0.15s, border-color 0.15s;
+}
+.blog-tag:hover {
+  color: var(--foreground);
+  border-color: var(--foreground);
+}
+.blog-cloud {
+  gap: 0.75rem;
+}
+.blog-cloud .blog-tag {
+  height: 2.75rem;
+  padding-inline: 1.125rem;
+  font-size: 1rem;
+  color: var(--foreground);
+}
+.blog-tag-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground-second);
+}
+
+/* The latest post: a card the whole of which opens the post. */
+.blog-feature {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.5rem, 5vw, 2.75rem);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  background: var(--background-second);
+  transition: border-color 0.18s;
+}
+.blog-feature:hover {
+  border-color: var(--foreground-second);
+}
+.blog-feature-title {
+  max-width: 44rem;
+  font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.blog-feature-title a {
+  color: inherit;
+  text-decoration: none;
+}
+.blog-feature-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.blog-feature-summary {
+  max-width: 40rem;
+  font-size: 1.0625rem;
+  color: var(--foreground-second);
+  text-wrap: pretty;
+}
+.blog-feature-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* A list of posts: date, title and summary, reading time. Each row opens its post. */
+.blog-section {
+  padding-block: 3.5rem 5rem;
+}
+.blog-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.blog-section-title {
+  font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.blog-section-link {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--foreground-second);
+  text-underline-offset: 3px;
+}
+.blog-section-link:hover {
+  color: var(--foreground);
+}
+.blog-list {
+  list-style: none;
+}
+.blog-row {
+  position: relative;
+  display: grid;
+  gap: 0.25rem;
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+@media (min-width: 48rem) {
+  .blog-row {
+    grid-template-columns: 10rem minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 2rem;
+  }
+}
+.blog-row-date,
+.blog-row-time {
+  font-size: 0.875rem;
+  color: var(--foreground-second);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.blog-row-title {
+  font-size: 1.1875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.blog-row-title a {
+  color: inherit;
+  text-decoration: none;
+}
+.blog-row-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.blog-row:hover .blog-row-title a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.blog-row p {
+  margin-top: 0.375rem;
+  max-width: 42rem;
+  font-size: 0.9375rem;
+  color: var(--foreground-second);
+}
+
+/* One post: its head, then the text with the table of contents beside it on a wide screen. */
+.blog-post {
+  padding-block: 3rem 5rem;
+}
+.blog-post-head {
+  display: grid;
+  justify-items: start;
+  gap: 1.25rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.blog-post-head .blog-back {
+  margin-bottom: 0.5rem;
+}
+.blog-post-title {
+  max-width: 48rem;
+  font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  font-size: clamp(2.25rem, 6vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.blog-post-summary {
+  max-width: 42rem;
+  font-size: 1.1875rem;
+  color: var(--foreground-second);
+  text-wrap: pretty;
+}
+.blog-post-body {
+  display: grid;
+  gap: 2.5rem;
+  padding-top: 2.5rem;
+}
+.blog-toc {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--background-second);
+}
+.blog-toc-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--foreground-second);
+}
+.blog-toc ol {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  list-style: none;
+}
+.blog-toc a {
+  font-size: 0.9375rem;
+  color: var(--foreground-second);
+  text-decoration: none;
+}
+.blog-toc a:hover {
+  color: var(--foreground);
+}
+@media (min-width: 64rem) {
+  .blog-post-body {
+    grid-template-columns: minmax(0, 44rem) 15rem;
+    justify-content: space-between;
+    gap: 4rem;
+  }
+  .blog-toc {
+    position: sticky;
+    top: 6rem;
+    order: 2;
+    align-self: start;
+    padding: 0 0 0 1.5rem;
+    border: 0;
+    border-left: 1px solid var(--border);
+    border-radius: 0;
+    background: none;
+  }
+}
+
+/* Text written in Markdown: a post, and the pages of (pages)/. */
+.blog-prose {
+  min-width: 0;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+/* Siblings at any depth: Nexy hands a layout its page inside a slot element. */
+.blog-prose :where(h1, h2, h3, p, ul, ol, pre, table, blockquote) + * {
+  margin-top: 1.25em;
+}
+.blog-prose :where(p, li, td) code {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.blog-prose h1 {
+  font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  font-size: clamp(2.25rem, 6vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.blog-prose h2 {
+  margin-top: 2.25em;
+  font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  font-size: 1.625rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  scroll-margin-top: 5.5rem;
+}
+.blog-prose h3 {
+  margin-top: 1.75em;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.blog-prose a {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-decoration-color: var(--border-second);
+  text-underline-offset: 3px;
+}
+.blog-prose a:hover {
+  text-decoration-color: var(--foreground);
+}
+.blog-prose :where(ul, ol) {
+  padding-left: 1.25rem;
+}
+.blog-prose ul {
+  list-style: disc;
+}
+.blog-prose ol {
+  list-style: decimal;
+}
+.blog-prose li + li {
+  margin-top: 0.5em;
+}
+.blog-prose li::marker {
+  color: var(--foreground-second);
+}
+.blog-prose strong {
+  font-weight: 600;
+}
+.blog-prose pre {
+  overflow-x: auto;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 0.875rem;
+  background: var(--background-second);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+.blog-prose pre code {
+  font-size: inherit;
+}
+.blog-prose td code {
+  padding: 0.1em 0.4em;
+  border-radius: 0.375rem;
+  background: color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+.blog-prose table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+.blog-prose :where(th, td) {
+  padding: 0.625rem 1.25rem 0.625rem 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.blog-prose th {
+  font-weight: 600;
+}
+.blog-prose blockquote {
+  padding-left: 1rem;
+  border-left: 2px solid var(--border-second);
+  color: var(--foreground-second);
+}
+.blog-page {
+  max-width: 48rem;
+  padding-block: 4.5rem 5rem;
+}
+
+/* The posts around the one being read. */
+.blog-pager {
+  display: grid;
+  gap: 1rem;
+  margin-top: 4rem;
+}
+@media (min-width: 48rem) {
+  .blog-pager {
+    grid-template-columns: 1fr 1fr;
+  }
+  .blog-older {
+    grid-column: 2;
+    text-align: right;
+  }
+}
+.blog-pager a {
+  display: grid;
+  gap: 0.375rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.18s;
+}
+.blog-pager a:hover {
+  border-color: var(--foreground);
+}
+.blog-pager span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--foreground-second);
+}
+.blog-pager strong {
+  font-weight: 600;
+  text-wrap: balance;
+}

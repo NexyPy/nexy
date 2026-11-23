@@ -162,7 +162,7 @@ children: prop[NexyElement]
 {% endmacro %}
 ```
 
-Un composant est un fichier `.nexy` avec des accessoires, importé dans le frontmatter :
+Un composant est un fichier `.nexy` avec props, importé dans le frontmatter :
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -267,7 +267,7 @@ def add_note():
     return redirect(url_for("notes"))
 ```
 
-Une action est une fonction Python dans laquelle le formulaire est publié. Nexy lui donne un chemin, lit les champs du formulaire comme paramètres et renvoie le visiteur vers la page avec un `303` :
+Une action est une fonction Python sur laquelle le formulaire est publié. Nexy lui donne un chemin, lit les champs du formulaire comme paramètres et renvoie le visiteur vers la page avec un `303` :
 
 ```python filename="src/actions/notes.py"
 from nexy.decorators import Action

@@ -165,11 +165,20 @@ export function createRouter(options: RouterOptions) {
   /** Run `render` inside a view transition when the browser has them and the visitor allows motion. */
   async function transition(render: () => Promise<void>): Promise<void> {
     const doc = win.document as Document & {
-      startViewTransition?: (update: () => Promise<void>) => { updateCallbackDone: Promise<void> }
+      startViewTransition?: (update: () => Promise<void>) => {
+        updateCallbackDone: Promise<void>
+        ready?: Promise<void>
+        finished?: Promise<void>
+      }
     }
     const calm = win.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     if (!doc.startViewTransition || calm) return render()
-    await doc.startViewTransition(render).updateCallbackDone
+    const shown = doc.startViewTransition(render)
+    // A navigation that starts before this one is shown skips it: `ready` and `finished` then
+    // reject. The page is still right, so the skip is not an error worth a line in the console.
+    shown.ready?.catch(() => {})
+    shown.finished?.catch(() => {})
+    await shown.updateCallbackDone
   }
 
   /** Show `url` without touching history; resolves false when the server has to take over. */

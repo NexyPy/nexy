@@ -44,13 +44,13 @@ export default function NoteSearch({ notes }: { notes: Note[] }) {
 
 React schreibt `{note.text}` als Text: Eine Notiz `<b>x</b>` zeigt ihre Klammern, ohne `| e` zum Hinzufügen.
 
-`found` wird erst berechnet, wenn etwas eingegeben wurde, und das ist für den Build wichtig: `nx build` rendert jede Insel einmal in HTML, mit Platzhaltern anstelle ihrer Requisiten. Eine Komponente, die beim ersten Rendern eine Listen-Requisite liest, erhält einen Platzhalter anstelle einer Liste und liefert kein HTML. Dieser liest `notes` erst nach einem Tastendruck, sodass der Build sein Suchfeld rendert und die Seite es anzeigt, bevor JavaScript ausgeführt wird.
+`found` wird erst berechnet, wenn etwas eingegeben wurde, und das ist für den Build wichtig: `nx build` rendert jede Insel einmal in HTML, mit Platzhaltern anstelle ihrer props. Eine Komponente, die beim ersten Rendern eine Liste prop liest, erhält einen Platzhalter anstelle einer Liste und liefert kein HTML. Dieser liest `notes` erst nach einem Tastendruck, sodass der Build sein Suchfeld rendert und die Seite es anzeigt, bevor JavaScript ausgeführt wird.
 
 `aria-live="polite"` lässt einen Bildschirmleser die Ergebnisse vorlesen, wenn sie sich ändern, ohne sie zu unterbrechen.
 
 ## Bringen Sie die Insel auf die Seite
 
-Die Seite übergibt die Notizen als Requisite: eine Liste von Wörterbüchern, die Nexy für den Browser in JSON umwandelt. Jede Notiz geht ein, nicht nur die fünf der aktuellen Seite, daher deckt die Suche alle ab:
+Die Seite übergibt die Notizen als prop: eine Liste von Wörterbüchern, die Nexy für den Browser in JSON umwandelt. Jede Notiz geht ein, nicht nur die fünf der aktuellen Seite, daher deckt die Suche alle ab:
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/routes/notes/index.nexy"
@@ -154,20 +154,20 @@ searchable = [{"id": note.id, "text": note.text} for note in all_notes(user_id)]
 ```
 <!-- /router -->
 
-`from "@/components/NoteSearch.tsx" import NoteSearch` importiert eine React-Komponente in eine `.nexy`-Seite; Das Tag übergibt seine Attribute als Requisiten. `notes="{{ searchable }}"` übergibt die Python-Liste selbst, keine Zeichenfolge. `directive="client:idle"` macht die Insel interaktiv, sobald der Browser nichts Dringenderes zu tun hat.
+`from "@/components/NoteSearch.tsx" import NoteSearch` importiert eine React-Komponente in eine `.nexy`-Seite; Das Tag übergibt seine Attribute als props. `notes="{{ searchable }}"` übergibt die Python-Liste selbst, keine Zeichenfolge. `directive="client:idle"` macht die Insel interaktiv, sobald der Browser nichts Dringenderes zu tun hat.
 
 Öffnen Sie <http://localhost:3000/notes> und geben Sie einige Buchstaben einer Notiz ein: Die entsprechenden Notizen werden bei jedem Tastendruck unter dem Feld angezeigt. Leeren Sie das Kästchen und die Ergebnisse verschwinden.
 
 > [!NOTE]
-> Die Requisiten einer Insel wandern auf der Seite als JSON. Das Versenden jeder Notiz passt zu ein paar Hundert von ihnen; Suchen Sie für Tausende stattdessen auf dem Server mit einer Abfrage und einem `LIKE`-Filter.
+> Die props einer Inselreise auf der Seite als JSON. Das Versenden jeder Notiz passt zu ein paar Hundert von ihnen; Suchen Sie für Tausende stattdessen auf dem Server mit einer Abfrage und einem `LIKE`-Filter.
 
 ## Was du gelernt hast
 
 - Eine Insel ist eine Client-Komponente innerhalb einer Serverseite: hier React nur für das Suchfeld.
-- Eine `.nexy`-Seite importiert sie nach Pfad und übergibt Python-Werte als Requisiten, serialisiert in JSON.
-- Der Build rendert eine Insel einmal mit Platzhaltern für ihre Requisiten: Listen Sie die Requisiten nach dem ersten Rendern auf, und die Insel liefert HTML aus.
+- Eine `.nexy`-Seite importiert sie nach Pfad und übergibt Python-Werte als props, serialisiert in JSON.
+- Der Build rendert eine Insel einmal, mit Platzhaltern für ihre props: Leseliste props nach dem ersten Rendern, und die Insel liefert HTML.
 
 ## Nächste Schritte
 
 - [Teil 14: Eine Notiz ankreuzen, ohne die Seite neu zu laden](tick-a-note.md)
-- [Inseln und Flüssigkeitszufuhr](../rendering/islands.md): Richtlinien, Requisiten und Einschränkungen
+- [Inseln und Flüssigkeitszufuhr](../rendering/islands.md): Richtlinien, props und Einschränkungen

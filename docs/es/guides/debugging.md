@@ -24,7 +24,7 @@ Un archivo `.nexy` se compila en un módulo Python en `__nexy__/`, en la misma r
 | `src/apps/users/user_controller.py` | el archivo en sí |
 <!-- /router -->
 
-El texto frontal de un archivo `.nexy` (el Python entre las dos `---` líneas) se convierte en el cuerpo de una función de ese módulo. `__nexy__/` se escribe nuevamente en cada cambio: nunca lo edites.
+El frontmatter de un archivo `.nexy` (el Python entre las dos `---` líneas) se convierte en el cuerpo de una función de ese módulo. `__nexy__/` se escribe nuevamente en cada cambio: nunca lo edites.
 
 ## Para en la terminal con `breakpoint()`
 
@@ -112,4 +112,4 @@ debugpy puede advertir que "se están utilizando módulos congelados". Comience 
 
 - [Solución de problemas](troubleshooting.md): los primeros problemas que encuentra la gente
 - [Pruebas](testing.md): reproduce el error en una prueba una vez que lo hayas encontrado
-- [Archivos .nexy](../views/nexy/README.md): frontmatter, accesorios y plantillas
+- [Archivos .nexy](../views/nexy/README.md): frontmatter, props y plantillas

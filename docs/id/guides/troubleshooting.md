@@ -28,7 +28,7 @@ from "@/components/LivePanel.nexy" import LivePanel
 
 Komponen `.nexy` menempatkan turunannya dengan `<Slot />`, dengan huruf kapital S. Huruf kecil `<slot />` dibiarkan apa adanya di halaman. Vue, yang memiliki `<slot />` sendiri, tidak terpengaruh.
 
-## Prop menunjukkan nama variabel
+## A prop menunjukkan nama variabel
 
 ```nexy
 <Icon path=icon />          renders: icon

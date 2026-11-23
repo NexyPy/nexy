@@ -1,0 +1,9 @@
+---
+metadata = {"title": "Page not found", "robots": "noindex"}
+---
+<section class="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-4 py-24 sm:px-6">
+  <p class="font-display text-2xl italic text-accent">404</p>
+  <h1 class="mt-2 font-display text-[clamp(3rem,8vw,5.5rem)] leading-none">This page is not in the portfolio.</h1>
+  <p class="mt-6 max-w-lg text-lg text-foreground-second">The address may be mistyped, or the project has moved. Every case study is on the work page.</p>
+  <a href="/work" class="mt-10 inline-flex h-12 w-fit items-center rounded-full bg-foreground px-6 text-sm font-medium text-background hover:opacity-85">See the work</a>
+</section>
