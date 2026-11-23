@@ -16,7 +16,20 @@
 | `nx check` | `nx c` | 类型检查：mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | 格式 Python（ruff）、JS/TS（更漂亮）、`.nexy` 文件 |
 | `nx test` | - | 运行 pytest； `--client` 添加 vitest |
+| `nx routes` | - | 列出应用程序路由、HTTP 方法、路径和源文件 |
 | `nx skills` | - | 添加或刷新编码代理的技能 `AGENTS.md` 和 `CLAUDE.md` |
+
+## `nx routes`
+
+在表中列出应用程序的路由、它们的 HTTP 方法、路径和源文件。路线按路径排序。框架的 favicon 路径被排除在外。
+
+在项目环境中运行它：
+
+```bash
+nx routes
+```
+
+如果未找到应用程序路径，则会打印 `No routes found.`。
 
 ## 旗帜
 
@@ -39,7 +52,7 @@
 
 ## 输出
 
-长步骤（安装包、编译、捆绑）会显示一个旋转器，其中包含经过的时间和命令打印的最后一行，然后留下一行，如 uv 所做的那样：`Synced .venv with uv in 1.4s`。一组步骤（`nx new` 的安装）还显示进度条和已完成的步骤数 `2/5`。失败的步骤是 `error:` 行及其原因 `cause: exit 1 after 2.1s`，后跟命令输出的最后几行，而不是隐藏它。需要注意的是 `warning: ...`，以及接下来要做什么 `hint: ...`。开发日志对于请求读取 `GET » /about 200 in 12ms`，对于 Vite 读取 `vite » ...`。
+长步骤（安装包、编译、捆绑）会显示一个旋转器，其中包含经过的时间和命令打印的最后一行，然后留下一行，如 uv 所做的那样：`Synced .venv with uv in 1.4s`。一组步骤（`nx new` 的安装）还显示进度条和已完成步骤的数量 `2/5`。失败的步骤是 `error:` 行及其原因 `cause: exit 1 after 2.1s`，后跟命令输出的最后几行，而不是隐藏它。需要注意的内容是 `warning: ...`，以及接下来要做什么 `hint: ...`。开发日志对于请求读取 `GET » /about 200 in 12ms`，对于 Vite 读取 `vite » ...`。
 
 ## `nx dev` 运行时出错
 
@@ -63,7 +76,7 @@
 
 ## `nx new`的问题
 
-`nx new` 按此顺序询问：基于文件的路由器、项目类型（Web 或 API）、客户端路由、客户端框架、如何设置应用程序样式、导入别名、ORM、数据库和数据库 URL。每个选项都有一个简短的描述，并且当前选项会突出显示。不适用的问题将被跳过（API 项目没有框架或样式；选择 **无数据库**，因为 ORM 会跳过数据库和 URL）。使用箭头键（或 `j`/`k`或数字）移动，使用 `enter`确认，使用 `←` 或 `esc`返回上一题，使用 `ctrl+c`退出。
+`nx new` 按此顺序询问：基于文件的路由器、项目类型（Web 或 API）、客户端路由、客户端框架、如何设置应用程序样式、导入别名、ORM、数据库和数据库 URL。每个选项都有一个简短的描述，并且当前选项会突出显示。不适用的问题将被跳过（API 项目没有框架或样式；选择 **无数据库**，因为 ORM 会跳过数据库和 URL）。使用箭头键（或 `j`/`k`或数字）移动，使用 `enter`确认，使用 `←` 或 `esc`返回上一个问题，使用 `ctrl+c`退出。
 
 | 问题 | 选择 |
 |---|---|
@@ -72,7 +85,7 @@
 | ORM | SQLModel，SQLAlchemy，Tortoise-ORM，无数据库 |
 | 数据库（带有 ORM） | SQLite、PostgreSQL、Neon、MySQL / MariaDB、其他（您输入 URL） |
 
-所选 ORM 的数据库驱动程序随其一起安装（`psycopg`、`pymysql`、`asyncpg` 或 `aiomysql`），并且 URL 写入 `.env`。
+所选 ORM 的数据库驱动程序随其安装（`psycopg`、`pymysql`、`asyncpg` 或 `aiomysql`），并且 URL 写入 `.env`。
 
 在安装软件包之前，`nx new` 检查连接。如果没有，它会跳过安装并告诉您稍后运行 `uv sync` 和包管理器的安装。使用其中之一时，它会打印延迟和下载速度，并在连接速度较慢（超过 400 毫秒或低于 100 KB/s）时发出警告。每个安装行都会命名该工具及其填充的文件夹，例如 `pnpm install node_modules` 或 `uv sync .venv`。
 

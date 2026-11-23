@@ -16,7 +16,20 @@ Binernya adalah `nx` (juga dipasang sebagai `nexy`). `uvx nexy new` membuat proy
 | `nx check` | `nx c` | ketik-periksa: mypy di Python, `tsc` di TypeScript |
 | `nx format` | `nx f` | format file Python (ruff), JS/TS (lebih cantik), `.nexy` |
 | `nx test` | - | jalankan pytest; `--client` menambahkan vitest |
+| `nx routes` | - | daftar rute aplikasi, metode HTTP, jalur dan file sumber |
 | `nx skills` | - | menambah atau menyegarkan keterampilan, `AGENTS.md` dan `CLAUDE.md` untuk agen pengkodean |
+
+## `nx routes`
+
+Mencantumkan rute aplikasi, metode HTTP, jalur, dan file sumbernya dalam sebuah tabel. Rute diurutkan berdasarkan jalur. Rute favicon kerangka tidak termasuk.
+
+Jalankan di dalam lingkungan proyek:
+
+```bash
+nx routes
+```
+
+Jika tidak ada rute aplikasi yang ditemukan, ia akan mencetak `No routes found.`.
 
 ## Bendera
 
@@ -27,7 +40,7 @@ Binernya adalah `nx` (juga dipasang sebagai `nexy`). `uvx nexy new` membuat proy
 | `build` | `--check` | off - menjalankan ruff dan mypy setelah build |
 | `format` | `--check` | mati - laporkan alih-alih menulis ulang |
 | `test` | `--client` | off - jalankan juga vitest alih-alih pytest saja |
-| `test` | `--no-server` | aktif - lewati pytest bila Anda hanya menginginkan pengujian klien |
+| `test` | `--no-server` | aktif - lewati pytest bila Anda hanya ingin pengujian klien |
 | `new` | `--template`, `-t` | tidak ada - mengkloning templat terdaftar tanpa diminta |
 | `new` | `--no-agents` | agen aktif - lewati `AGENTS.md` dan keterampilan agen |
 | `add` | `--ui`, `--url` | off - memaksakan nama registri atau URL jika tidak jelas |
@@ -39,7 +52,7 @@ Binernya adalah `nx` (juga dipasang sebagai `nexy`). `uvx nexy new` membuat proy
 
 ## Keluaran
 
-Langkah-langkah panjang (menginstal paket, kompilasi, bundling) menunjukkan spinner dengan waktu yang telah berlalu dan baris terakhir perintah dicetak, kemudian meninggalkan satu baris, seperti yang dilakukan uv: `Synced .venv with uv in 1.4s`. Sekelompok langkah (penginstalan `nx new`) juga menunjukkan bilah kemajuan dan jumlah langkah yang diselesaikan, `2/5`. Langkah yang gagal adalah baris `error:` dengan penyebabnya, `cause: exit 1 after 2.1s`, diikuti dengan baris terakhir keluaran perintah alih-alih menyembunyikannya. Sesuatu untuk dilihat berbunyi `warning: ...`, dan apa yang harus dilakukan selanjutnya `hint: ...`. Log pengembang dibaca `GET » /about 200 in 12ms` untuk permintaan dan `vite » ...` untuk Vite.
+Langkah-langkah panjang (menginstal paket, kompilasi, bundling) menunjukkan spinner dengan waktu yang telah berlalu dan baris terakhir perintah dicetak, kemudian meninggalkan satu baris, seperti yang dilakukan uv: `Synced .venv with uv in 1.4s`. Sekelompok langkah (penginstalan `nx new`) juga menunjukkan bilah kemajuan dan jumlah langkah yang diselesaikan, `2/5`. Langkah yang gagal adalah baris `error:` dengan penyebabnya, `cause: exit 1 after 2.1s`, diikuti dengan baris terakhir keluaran perintah alih-alih menyembunyikannya. Sesuatu untuk dilihat berbunyi `warning: ...`, dan apa yang harus dilakukan selanjutnya `hint: ...`. Log pengembang membaca `GET » /about 200 in 12ms` untuk permintaan dan `vite » ...` untuk Vite.
 
 ## Kesalahan saat `nx dev` berjalan
 
@@ -63,7 +76,7 @@ File yang diurai tetapi gagal ketika aplikasi dimuat (impor hilang, kesalahan pa
 
 ## Pertanyaan dari `nx new`
 
-`nx new` bertanya, dalam urutan ini: router berbasis file, jenis proyek (web atau API), perutean sisi klien, kerangka klien, cara menata gaya aplikasi, alias impor, ORM, basis data, dan URL basis data. Setiap opsi memiliki deskripsi singkat dan opsi terkini disorot. Pertanyaan yang tidak berlaku akan dilewati (proyek API tidak memiliki kerangka kerja atau gaya; memilih **Tidak ada database** karena ORM melewatkan database dan URL). Bergerak dengan tombol panah (atau `j`/`k`, atau angka), konfirmasi dengan `enter`, kembali ke pertanyaan sebelumnya dengan `←` atau `esc`, keluar dengan `ctrl+c`.
+`nx new` menanyakan, dalam urutan ini: router berbasis file, jenis proyek (web atau API), perutean sisi klien, kerangka klien, cara menata gaya aplikasi, alias impor, ORM, basis data, dan URL basis data. Setiap opsi memiliki deskripsi singkat dan opsi terkini disorot. Pertanyaan yang tidak berlaku akan dilewati (proyek API tidak memiliki kerangka kerja atau gaya; memilih **Tidak ada database** karena ORM melewatkan database dan URL). Bergerak dengan tombol panah (atau `j`/`k`, atau angka), konfirmasi dengan `enter`, kembali ke pertanyaan sebelumnya dengan `←` atau `esc`, keluar dengan `ctrl+c`.
 
 | Pertanyaan | Pilihan |
 |---|---|
@@ -88,14 +101,14 @@ Baris perintah berbicara bahasa Inggris, Cina, Hindi, Spanyol, Portugis, Prancis
 2. variabel lokal shell Anda (`LC_ALL`, `LC_MESSAGES`, `LANG`, lalu `LANGUAGE`);
 3. bahasa sistem operasi Anda.
 
-Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimiliki bahasa tersebut. Hanya apa yang `nx` cetak yang diterjemahkan: kesalahan kompiler, penelusuran balik, dan keluaran alat yang dijalankannya tetap sebagaimana adanya. Terjemahannya belum ditinjau oleh penutur asli: koreksi dipersilakan sebagai permintaan penarikan ke `nexy/modules/i18n/<language>.json`.
+Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimiliki bahasa tersebut. Hanya apa yang `nx` cetak yang diterjemahkan: kesalahan kompiler, penelusuran balik, dan keluaran alat yang dijalankannya tetap sebagaimana adanya. Terjemahannya belum ditinjau oleh penutur asli: koreksi dipersilahkan sebagai permintaan tarik ke `nexy/modules/i18n/<language>.json`.
 
 ## Membangun perilaku
 
 `nx build` mengkompilasi rute, lalu menggabungkan klien ketika `useVite` aktif.
 
 > [!NOTE]
-> tidak ada bendera `--static`. Hosting statis adalah pilihan penerapan, bukan mode build - lihat [Penerapan](../deployment/README.md).
+> tidak ada bendera `--static` . Hosting statis adalah pilihan penerapan, bukan mode build - lihat [Penerapan](../deployment/README.md).
 
 ## Mengerjakan Nexy itu sendiri
 

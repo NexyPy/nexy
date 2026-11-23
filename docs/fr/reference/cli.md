@@ -16,7 +16,20 @@ Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` cr
 | `nx check` | `nx c` | type-check : mypy sur Python, `tsc` sur TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (plus joli), `.nexy` fichiers |
 | `nx test` | - | exécuter pytest ; `--client` ajoute vitest |
+| `nx routes` | - | répertorier les routes d'application, les méthodes HTTP, les chemins et les fichiers sources |
 | `nx skills` | - | ajouter ou rafraîchir les compétences, `AGENTS.md` et `CLAUDE.md` pour les agents de codage |
+
+## `nx routes`
+
+Répertorie les routes de l'application, leurs méthodes HTTP, leurs chemins et leurs fichiers source dans un tableau. Les itinéraires sont triés par chemin. La route favicon du framework est exclue.
+
+Exécutez-le dans l'environnement du projet :
+
+```bash
+nx routes
+```
+
+Si aucune route d'application n'est trouvée, il imprime `No routes found.`.
 
 ## Drapeaux
 
@@ -78,7 +91,7 @@ Avant d'installer les packages, `nx new` vérifie la connexion. Sans cela, il ig
 
 ## Ce que `dev`, `build` et `start` créent
 
-Avant de s'exécuter, les trois commandes créent un `__init__.py` vide dans `src/` et dans chaque dossier situé en dessous contenant un fichier `.py` ou `.nexy`, donc une route telle que `src/routes/users.py` est importée de la même manière dans chacun d'eux. Les fichiers existants ne sont jamais modifiés et `nx dev` fait de même lorsque vous ajoutez un dossier. Le bytecode Python va à `__nexy__/__pycache__`, donc aucun dossier `__pycache__` n'apparaît à côté de vos sources.
+Avant de s'exécuter, les trois commandes créent un `__init__.py` vide dans `src/` et dans chaque dossier en dessous contenant un fichier `.py` ou `.nexy`, donc une route telle que `src/routes/users.py` est importée de la même manière dans chacun d'eux. Les fichiers existants ne sont jamais modifiés et `nx dev` fait de même lorsque vous ajoutez un dossier. Le bytecode Python va à `__nexy__/__pycache__`, donc aucun dossier `__pycache__` n'apparaît à côté de vos sources.
 
 ## Langue
 
@@ -88,7 +101,7 @@ La ligne de commande parle anglais, chinois, hindi, espagnol, portugais, frança
 2. les variables locales de votre shell (`LC_ALL`, `LC_MESSAGES`, `LANG`, puis `LANGUAGE`) ;
 3. la langue de votre système d'exploitation.
 
-Tout le reste est en anglais, tout comme tout message qu'une langue n'a pas encore. Seul ce que `nx` imprime est traduit : les erreurs du compilateur, les traces et les résultats des outils qu'il exécute restent tels quels. Les traductions n'ont pas encore été révisées par des locuteurs natifs : les corrections sont les bienvenues sous forme de pull request vers `nexy/modules/i18n/<language>.json`.
+Tout le reste est en anglais, tout comme tout message qu'une langue n'a pas encore. Seul ce que `nx` imprime est traduit : les erreurs du compilateur, les traces et les résultats des outils qu'il exécute restent tels quels. Les traductions n'ont pas encore été révisées par des locuteurs natifs : les corrections sont les bienvenues sous forme de pull request à `nexy/modules/i18n/<language>.json`.
 
 ## Construire un comportement
 

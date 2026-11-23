@@ -23,8 +23,7 @@ def test_routes_lists_the_project_routes(
     (routes_dir / "index.nexy").write_text("<h1>Home</h1>", encoding="utf-8")
 
     (routes_dir / "users.py").write_text(
-        "async def GET():\n"
-        "    return {'users': []}\n",
+        "async def GET():\n    return {'users': []}\n",
         encoding="utf-8",
     )
 
@@ -47,14 +46,12 @@ def test_routes_are_sorted_by_path(nexy_project, tmp_path: Path) -> None:
     (routes_dir / "__init__.py").touch()
 
     (routes_dir / "zebra.py").write_text(
-        "async def GET():\n"
-        "    return {'ok': True}\n",
+        "async def GET():\n    return {'ok': True}\n",
         encoding="utf-8",
     )
 
     (routes_dir / "alpha.py").write_text(
-        "async def GET():\n"
-        "    return {'ok': True}\n",
+        "async def GET():\n    return {'ok': True}\n",
         encoding="utf-8",
     )
 

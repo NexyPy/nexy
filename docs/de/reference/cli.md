@@ -16,7 +16,20 @@ Die Binärdatei ist `nx` (auch als `nexy` installiert). `uvx nexy new` erstellt 
 | `nx check` | `nx c` | Typprüfung: mypy auf Python, `tsc` auf TypeScript |
 | `nx format` | `nx f` | Formatieren Sie Python (Ruff), JS/TS (hübscher), `.nexy` Dateien |
 | `nx test` | - | führe pytest aus; `--client` fügt vitest hinzu |
+| `nx routes` | - | Listen Sie Anwendungsrouten, HTTP-Methoden, Pfade und Quelldateien auf |
 | `nx skills` | - | Fügen Sie die Fähigkeiten `AGENTS.md` und `CLAUDE.md` für Codierungsagenten hinzu oder aktualisieren Sie sie |
+
+## `nx routes`
+
+Listet die Routen der Anwendung, ihre HTTP-Methoden, Pfade und Quelldateien in einer Tabelle auf. Routen sind nach Pfad sortiert. Die Favicon-Route des Frameworks ist ausgeschlossen.
+
+Führen Sie es in der Projektumgebung aus:
+
+```bash
+nx routes
+```
+
+Wenn keine Anwendungsrouten gefunden werden, wird `No routes found.` gedruckt.
 
 ## Flaggen
 
@@ -27,7 +40,7 @@ Die Binärdatei ist `nx` (auch als `nexy` installiert). `uvx nexy new` erstellt 
 | `build` | `--check` | off – führt ruff und mypy nach dem Build aus |
 | `format` | `--check` | aus – melden statt umschreiben |
 | `test` | `--client` | off - Führen Sie auch vitest anstelle von pytest allein aus |
-| `test` | `--no-server` | on – Überspringen Sie pytest, wenn Sie nur Clienttests wünschen |
+| `test` | `--no-server` | on – Überspringen Sie pytest, wenn Sie nur Client-Tests wünschen |
 | `new` | `--template`, `-t` | none – Klonen Sie eine registrierte Vorlage ohne Eingabeaufforderungen |
 | `new` | `--no-agents` | Agenten ein – überspringen Sie `AGENTS.md` und die Agentenfähigkeiten |
 | `add` | `--ui`, `--url` | off – erzwingt einen Registrierungsnamen oder eine URL, wenn diese nicht eindeutig ist |
@@ -43,7 +56,7 @@ Bei langen Schritten (Pakete installieren, kompilieren, bündeln) wird ein Kreis
 
 ## Fehler beim Ausführen von `nx dev`
 
-Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Datei mit einem Syntaxfehler wird mit ihrer Datei und Zeile gemeldet, und der Server stellt weiterhin die letzte funktionierende Version bereit, bis Sie den Fehler beheben:
+Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Datei mit einem Syntaxfehler wird mit ihrer Datei und Zeile gemeldet und der Server stellt weiterhin die letzte funktionierende Version bereit, bis Sie den Fehler beheben:
 
 ```text
   nexy » error  src/routes/users.py:3

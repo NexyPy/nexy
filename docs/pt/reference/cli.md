@@ -16,7 +16,20 @@ O binário é `nx` (também instalado como `nexy`). `uvx nexy new` cria um proje
 | `nx check` | `nx c` | verificação de tipo: mypy em Python, `tsc` em TypeScript |
 | `nx format` | `nx f` | formato Python (ruff), JS/TS (mais bonito), `.nexy` arquivos |
 | `nx test` | - | execute pytest; `--client` adiciona vitest |
+| `nx routes` | - | listar rotas de aplicativos, métodos HTTP, caminhos e arquivos de origem |
 | `nx skills` | - | adicione ou atualize as habilidades `AGENTS.md` e `CLAUDE.md` para agentes de codificação |
+
+## `nx routes`
+
+Lista as rotas da aplicação, seus métodos HTTP, caminhos e arquivos de origem em uma tabela. As rotas são classificadas por caminho. A rota favicon da estrutura está excluída.
+
+Execute-o dentro do ambiente do projeto:
+
+```bash
+nx routes
+```
+
+Se nenhuma rota de aplicação for encontrada, ele imprime `No routes found.`.
 
 ## Bandeiras
 
@@ -59,7 +72,7 @@ Salvar um arquivo quebrado nunca para o servidor. Um arquivo `.py` com erro de s
   Fix it and save: the server keeps its last working version.
 ```
 
-Um arquivo que analisa, mas falha quando o aplicativo é carregado (uma importação ausente, um erro no nível do módulo) é relatado da mesma maneira e `nx dev` aguarda seu próximo salvamento; nada é servido até que o aplicativo seja carregado novamente. Um salvamento válido lê `nexy » update <file>` enquanto o servidor é recarregado. Markdown arquivos fora de `src/routes`, como `README.md`, não são páginas e não acionam nada. `nx start` é mais rigoroso: sai com o código 1 e não inicia nada, se um arquivo de rota não puder ser carregado ou se `nx build` ainda não tiver compilado o projeto.
+Um arquivo que analisa, mas falha quando o aplicativo é carregado (uma importação ausente, um erro no nível do módulo) é relatado da mesma maneira e `nx dev` aguarda seu próximo salvamento; nada é servido até que o aplicativo seja carregado novamente. Um salvamento válido lê `nexy » update <file>` enquanto o servidor recarrega. Markdown arquivos fora de `src/routes`, como `README.md`, não são páginas e não acionam nada. `nx start` é mais rigoroso: sai com o código 1 e não inicia nada, se um arquivo de rota não puder ser carregado ou se `nx build` ainda não tiver compilado o projeto.
 
 ## Perguntas de `nx new`
 
@@ -74,11 +87,11 @@ Um arquivo que analisa, mas falha quando o aplicativo é carregado (uma importa�
 
 O driver de banco de dados para o ORM escolhido é instalado com ele (`psycopg`, `pymysql`, `asyncpg` ou `aiomysql`), e a URL é gravada em `.env`.
 
-Antes de instalar os pacotes, `nx new` verifica a conexão. Sem ele, ele ignora as instalações e solicita que você execute `uv sync` e a instalação do seu gerenciador de pacotes mais tarde. Com um, ele imprime a latência e velocidade de download, e avisa quando a conexão está lenta (acima de 400 ms, ou abaixo de 100 KB/s). Cada linha de instalação nomeia a ferramenta e a pasta que ela preenche, por exemplo `pnpm install node_modules` ou `uv sync .venv`.
+Antes de instalar pacotes, `nx new` verifica a conexão. Sem ele, ele ignora as instalações e solicita que você execute `uv sync` e a instalação do seu gerenciador de pacotes mais tarde. Com um, ele imprime a latência e velocidade de download, e avisa quando a conexão está lenta (acima de 400 ms, ou abaixo de 100 KB/s). Cada linha de instalação nomeia a ferramenta e a pasta que ela preenche, por exemplo `pnpm install node_modules` ou `uv sync .venv`.
 
 ## O que `dev`, `build` e `start` criam
 
-Antes de serem executados, os três comandos criam um `__init__.py` vazio em `src/` e em cada pasta abaixo dele que contém um arquivo `.py` ou `.nexy`, então uma rota como `src/routes/users.py` importa da mesma maneira em todos eles. Os arquivos existentes nunca são tocados e `nx dev` faz o mesmo novamente quando você adiciona uma pasta. O bytecode Python vai para `__nexy__/__pycache__`, então nenhuma pasta `__pycache__` aparece ao lado de suas fontes.
+Antes de serem executados, os três comandos criam um `__init__.py` vazio em `src/` e em cada pasta abaixo dele que contém um arquivo `.py` ou `.nexy`, então uma rota como `src/routes/users.py` importa da mesma maneira em todos eles. Os arquivos existentes nunca são alterados e `nx dev` faz o mesmo novamente quando você adiciona uma pasta. O bytecode Python vai para `__nexy__/__pycache__`, então nenhuma pasta `__pycache__` aparece ao lado de suas fontes.
 
 ## Idioma
 
