@@ -1,5 +1,5 @@
 // Runs the hooks of the Nexy Vite plugin the way Vite calls them, with no Vite installed.
-//   node vite_plugin.mjs <serve|build|build-failed|warmup>
+//   node vite_plugin.mjs <serve|build|build-failed|warmup|log>
 // `vite`, `esbuild` and `child_process` are stubs: the scenario prints what the plugin logged
 // and the commands it ran when the server, or the build, closed.
 import fs from "node:fs";
@@ -10,7 +10,7 @@ import { pathToFileURL } from "node:url";
 
 // `build-failed` is a build whose bundle was never written: Vite still closes it.
 const scenario = process.argv[2];
-const command = scenario === "serve" || scenario === "warmup" ? "serve" : "build";
+const command = ["serve", "warmup", "log"].includes(scenario) ? "serve" : "build";
 const SOURCES = new URL("../../nexy/modules/frontend/", import.meta.url);
 const ran = [];
 globalThis.__nexyRan = ran;
@@ -42,25 +42,44 @@ fs.writeFileSync(path.join(nexyDir, "src", "deps.auto.ts"), "export const __NEXY
 process.chdir(project);
 
 const logged = [];
+const infos = [];
 const log = console.log;
-console.log = (...args) => logged.push(args.join(" ").replace(/\x1b\[\d+m/g, ""));
+const info = console.info;
+const plain = (args) => args.join(" ").replace(/\x1b\[\d+m/g, "");
+console.log = (...args) => logged.push(plain(args));
+console.info = (...args) => infos.push(plain(args));
 let error = null;
 let warmup = null;
 try {
   const { default: nexy } = await import(pathToFileURL(path.join(nexyDir, "vite.ts")).href);
-  const plugin = [nexy()].flat().find((p) => p.name === "nexy");
-  const mode = command === "build" ? "production" : "development";
-  const config = await plugin.config?.({ mode }, { command, mode });
-  warmup = config?.server?.warmup?.clientFiles ?? null;
-  plugin.configResolved?.({ command, mode, build: {} });
-  if (scenario === "build") plugin.writeBundle?.();
-  plugin.closeBundle?.();
+  if (scenario === "log") {
+    const logger = nexy.log();
+    logger.info(
+      "hmr update /src/components/templates/services-section.tsx, " +
+      "/src/components/templates/products-section.tsx, /src/globale.css"
+    );
+    logger.info("page reload /src/i18n/dictionaries.ts");
+    logger.info("hmr update /src/unique.css");
+    logger.info("hmr update /src/unique.css");
+  } else {
+    const plugin = [nexy()].flat().find((p) => p.name === "nexy");
+    const mode = command === "build" ? "production" : "development";
+    const config = await plugin.config?.({ mode }, { command, mode });
+    warmup = config?.server?.warmup?.clientFiles ?? null;
+    plugin.configResolved?.({ command, mode, build: {} });
+    if (scenario === "build") plugin.writeBundle?.();
+    plugin.closeBundle?.();
+  }
 } catch (caught) {
   error = String(caught?.message ?? caught);
 } finally {
   console.log = log;
+  console.info = info;
   fs.rmSync(project, { recursive: true, force: true });
 }
-// `warmup` prints the files the dev server transforms ahead of a request, and nothing else.
-const report = scenario === "warmup" ? { warmup, error } : { logged, ran, error };
+// `warmup` prints transformed files, `log` prints the formatted HMR lines, other scenarios print
+// what the plugin logged and the commands it ran.
+const report = scenario === "warmup" ? { warmup, error }
+  : scenario === "log" ? { infos, error }
+  : { logged, ran, error };
 process.stdout.write("@@" + JSON.stringify(report) + "@@");
