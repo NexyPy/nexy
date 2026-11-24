@@ -248,7 +248,8 @@
   "start": {
     "broken": "{count} route file(s) failed to load: the server was not started.",
     "exited": "exited",
-    "no_build": "No production build: run `nexy build`, then `nexy start`."
+    "no_build": "No production build: run `nexy build`, then `nexy start`.",
+    "help_open": "Open the browser once the server answers"
   },
   "test": {
     "failed": "{count} test run(s) failed",

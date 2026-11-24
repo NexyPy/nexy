@@ -24,11 +24,11 @@ Die Binärdatei ist `nx` (auch als `nexy` installiert). `uvx nexy new` erstellt 
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
-| `dev` | `--open`, `-o` | aus – Öffnen Sie den Browser auf der lokalen Adresse, sobald der Server antwortet |
+| `dev`, `start` | `--open`, `-o` | aus – Öffnen Sie den Browser auf der lokalen Adresse, sobald der Server antwortet |
 | `build` | `--check` | off – führt ruff und mypy nach dem Build aus |
 | `format` | `--check` | aus – melden statt umschreiben |
 | `test` | `--client` | off - Führen Sie auch vitest anstelle von pytest allein aus |
-| `test` | `--no-server` | on – Überspringen Sie pytest, wenn Sie nur Clienttests wünschen |
+| `test` | `--no-server` | on – Überspringen Sie pytest, wenn Sie nur Client-Tests wünschen |
 | `new` | `--template`, `-t` | none – Klonen Sie eine registrierte Vorlage ohne Eingabeaufforderungen |
 | `new` | `--no-agents` | Agenten ein – überspringen Sie `AGENTS.md` und die Agentenfähigkeiten |
 | `add` | `--ui`, `--url` | off – erzwingt einen Registrierungsnamen oder eine URL, wenn diese nicht eindeutig ist |
@@ -40,7 +40,7 @@ Die Binärdatei ist `nx` (auch als `nexy` installiert). `uvx nexy new` erstellt 
 
 ## Ausgabe
 
-Bei langen Schritten (Pakete installieren, kompilieren, bündeln) wird ein Kreisel mit der verstrichenen Zeit und der letzten Zeile angezeigt, die der Befehl ausgegeben hat. Lassen Sie dann eine Zeile stehen, wie es uv tut: `Synced .venv with uv in 1.4s`. Eine Gruppe von Schritten (die Installationen von `nx new`) zeigt auch einen Fortschrittsbalken und die Anzahl der abgeschlossenen Schritte an, `2/5`. Ein fehlgeschlagener Schritt ist eine `error:`-Zeile mit ihrer Ursache, `cause: exit 1 after 2.1s`, gefolgt von den letzten Zeilen der Befehlsausgabe, anstatt sie auszublenden. Etwas, das Sie sich ansehen sollten, lautet `warning: ...` und was als nächstes zu tun ist `hint: ...`. Entwicklungsprotokolle lauten `GET » /about 200 in 12ms` für Anfragen und `vite » ...` für Vite.
+Bei langen Schritten (Pakete installieren, kompilieren, bündeln) wird ein Spinner mit der verstrichenen Zeit und der letzten Zeile angezeigt, die der Befehl ausgegeben hat. Lassen Sie dann eine Zeile stehen, wie es uv tut: `Synced .venv with uv in 1.4s`. Eine Gruppe von Schritten (die Installationen von `nx new`) zeigt auch einen Fortschrittsbalken und die Anzahl der abgeschlossenen Schritte an, `2/5`. Ein fehlgeschlagener Schritt ist eine `error:`-Zeile mit ihrer Ursache, `cause: exit 1 after 2.1s`, gefolgt von den letzten Zeilen der Befehlsausgabe, anstatt sie auszublenden. Etwas, das Sie sich ansehen sollten, lautet `warning: ...` und was als nächstes zu tun ist `hint: ...`. Entwicklungsprotokolle lauten `GET » /about 200 in 12ms` für Anfragen und `vite » ...` für Vite.
 
 ## Fehler beim Ausführen von `nx dev`
 

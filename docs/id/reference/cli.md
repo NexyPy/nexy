@@ -24,11 +24,11 @@ Binernya adalah `nx` (juga dipasang sebagai `nexy`). `uvx nexy new` membuat proy
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
-| `dev` | `--open`, `-o` | mati - buka browser di alamat lokal setelah server menjawab |
+| `dev`, `start` | `--open`, `-o` | mati - buka browser di alamat lokal setelah server menjawab |
 | `build` | `--check` | off - menjalankan ruff dan mypy setelah build |
 | `format` | `--check` | mati - laporkan alih-alih menulis ulang |
 | `test` | `--client` | off - jalankan juga vitest alih-alih pytest saja |
-| `test` | `--no-server` | aktif - lewati pytest bila Anda hanya menginginkan pengujian klien |
+| `test` | `--no-server` | aktif - lewati pytest bila Anda hanya ingin pengujian klien |
 | `new` | `--template`, `-t` | tidak ada - mengkloning templat terdaftar tanpa diminta |
 | `new` | `--no-agents` | agen aktif - lewati `AGENTS.md` dan keterampilan agen |
 | `add` | `--ui`, `--url` | off - memaksakan nama registri atau URL jika tidak jelas |
@@ -40,7 +40,7 @@ Binernya adalah `nx` (juga dipasang sebagai `nexy`). `uvx nexy new` membuat proy
 
 ## Keluaran
 
-Langkah-langkah panjang (menginstal paket, kompilasi, bundling) menunjukkan spinner dengan waktu yang telah berlalu dan baris terakhir perintah dicetak, kemudian meninggalkan satu baris, seperti yang dilakukan uv: `Synced .venv with uv in 1.4s`. Sekelompok langkah (penginstalan `nx new`) juga menunjukkan bilah kemajuan dan jumlah langkah yang diselesaikan, `2/5`. Langkah yang gagal adalah baris `error:` dengan penyebabnya, `cause: exit 1 after 2.1s`, diikuti dengan baris terakhir keluaran perintah alih-alih menyembunyikannya. Sesuatu untuk dilihat berbunyi `warning: ...`, dan apa yang harus dilakukan selanjutnya `hint: ...`. Log pengembang dibaca `GET » /about 200 in 12ms` untuk permintaan dan `vite » ...` untuk Vite.
+Langkah-langkah panjang (menginstal paket, kompilasi, bundling) menunjukkan spinner dengan waktu yang telah berlalu dan baris terakhir perintah dicetak, kemudian meninggalkan satu baris di belakang, seperti yang dilakukan uv: `Synced .venv with uv in 1.4s`. Sekelompok langkah (penginstalan `nx new`) juga menunjukkan bilah kemajuan dan jumlah langkah yang diselesaikan, `2/5`. Langkah yang gagal adalah baris `error:` dengan penyebabnya, `cause: exit 1 after 2.1s`, diikuti dengan baris terakhir keluaran perintah alih-alih menyembunyikannya. Sesuatu untuk dilihat berbunyi `warning: ...`, dan apa yang harus dilakukan selanjutnya `hint: ...`. Log pengembang dibaca `GET » /about 200 in 12ms` untuk permintaan dan `vite » ...` untuk Vite.
 
 ## Kesalahan saat `nx dev` berjalan
 
@@ -64,7 +64,7 @@ File yang diurai tetapi gagal ketika aplikasi dimuat (impor hilang, kesalahan pa
 
 ## Pertanyaan dari `nx new`
 
-`nx new` bertanya, dalam urutan ini: router berbasis file, jenis proyek (web atau API), perutean sisi klien, kerangka klien, cara menata gaya aplikasi, alias impor, ORM, basis data, dan URL basis data. Setiap opsi memiliki deskripsi singkat dan opsi terkini disorot. Pertanyaan yang tidak berlaku akan dilewati (proyek API tidak memiliki kerangka kerja atau gaya; memilih **Tidak ada database** karena ORM melewatkan database dan URL). Bergerak dengan tombol panah (atau `j`/`k`, atau angka), konfirmasi dengan `enter`, kembali ke pertanyaan sebelumnya dengan `←` atau `esc`, keluar dengan `ctrl+c`.
+`nx new` menanyakan, dalam urutan ini: router berbasis file, jenis proyek (web atau API), perutean sisi klien, kerangka klien, cara menata gaya aplikasi, alias impor, ORM, basis data, dan URL basis data. Setiap opsi memiliki deskripsi singkat dan opsi terkini disorot. Pertanyaan yang tidak berlaku akan dilewati (proyek API tidak memiliki kerangka kerja atau gaya; memilih **Tidak ada database** karena ORM melewatkan database dan URL). Bergerak dengan tombol panah (atau `j`/`k`, atau angka), konfirmasi dengan `enter`, kembali ke pertanyaan sebelumnya dengan `←` atau `esc`, keluar dengan `ctrl+c`.
 
 | Pertanyaan | Pilihan |
 |---|---|
@@ -79,7 +79,7 @@ Sebelum menginstal paket, `nx new` memeriksa koneksi. Tanpa satu pun, ia akan me
 
 ## Apa yang `dev`, `build` dan `start` ciptakan
 
-Sebelum dijalankan, ketiga perintah tersebut membuat `__init__.py` kosong di `src/` dan di setiap folder di bawahnya yang menyimpan file `.py` atau `.nexy`, sehingga rute seperti `src/routes/users.py` mengimpor dengan cara yang sama ke semuanya. File yang ada tidak pernah disentuh, dan `nx dev` melakukan hal yang sama lagi saat Anda menambahkan folder. Python bytecode masuk ke `__nexy__/__pycache__`, jadi tidak ada folder `__pycache__` yang muncul di sebelah sumber Anda.
+Sebelum dijalankan, ketiga perintah tersebut membuat `__init__.py` kosong di `src/` dan di setiap folder di bawahnya yang menyimpan file `.py` atau `.nexy`, sehingga rute seperti `src/routes/users.py` mengimpor dengan cara yang sama ke semuanya. File yang sudah ada tidak pernah disentuh, dan `nx dev` melakukan hal yang sama lagi saat Anda menambahkan folder. Python bytecode masuk ke `__nexy__/__pycache__`, jadi tidak ada folder `__pycache__` yang muncul di sebelah sumber Anda.
 
 ## Bahasa
 
@@ -89,7 +89,7 @@ Baris perintah berbicara bahasa Inggris, Cina, Hindi, Spanyol, Portugis, Prancis
 2. variabel lokal shell Anda (`LC_ALL`, `LC_MESSAGES`, `LANG`, lalu `LANGUAGE`);
 3. bahasa sistem operasi Anda.
 
-Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimiliki bahasa tersebut. Hanya apa yang `nx` cetak yang diterjemahkan: kesalahan kompiler, penelusuran balik, dan keluaran alat yang dijalankannya tetap sebagaimana adanya. Terjemahannya belum ditinjau oleh penutur asli: koreksi dipersilakan sebagai permintaan penarikan ke `nexy/modules/i18n/<language>.json`.
+Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimiliki bahasa tersebut. Hanya apa yang `nx` cetak yang diterjemahkan: kesalahan kompiler, penelusuran balik, dan keluaran alat yang dijalankannya tetap sebagaimana adanya. Terjemahannya belum ditinjau oleh penutur asli: koreksi dipersilahkan sebagai permintaan tarik ke `nexy/modules/i18n/<language>.json`.
 
 ## Membangun perilaku
 

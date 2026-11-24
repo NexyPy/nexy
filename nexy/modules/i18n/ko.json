@@ -63,7 +63,6 @@
       "test": "테스트 실행(--server / --client)",
       "skills": "코딩 에이전트용 스킬과 AGENTS.md를 추가합니다",
       "info": "Print environment and project versions in one block"
-
     },
     "commands_header": "사용 가능한 명령:",
     "help": "Nexy CLI",
@@ -124,7 +123,7 @@
     "nexy": ".nexy 파일 {count}개 포맷 중",
     "nexy_done": ".nexy 파일 {count}개 포맷 완료"
   },
-    "info": {
+  "info": {
     "label": {
       "frameworks": "Frameworks",
       "nexy": "Nexy",
@@ -137,7 +136,6 @@
     "not_found": "not found",
     "router_file_based": "file-based"
   },
-
   "init": {
     "alias_invalid": "@, ~, # 또는 $ 뒤에 선택적으로 문자를 붙이세요(예: ~ 또는 @app).",
     "already": "이 위치는 이미 초기화되어 있습니다",
@@ -250,7 +248,8 @@
   "start": {
     "broken": "라우트 파일 {count}개를 불러오지 못했습니다. 서버를 시작하지 않았습니다.",
     "exited": "종료됨",
-    "no_build": "프로덕션 빌드가 없습니다. `nexy build`를 실행한 다음 `nexy start`를 실행하세요."
+    "no_build": "프로덕션 빌드가 없습니다. `nexy build`를 실행한 다음 `nexy start`를 실행하세요.",
+    "help_open": "서버가 응답하면 브라우저 열기"
   },
   "test": {
     "failed": "테스트 실행 {count}건 실패",

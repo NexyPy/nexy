@@ -63,7 +63,6 @@
       "test": "Executar os testes (--server / --client)",
       "skills": "Adicionar skills e AGENTS.md para agentes de código",
       "info": "Print environment and project versions in one block"
-
     },
     "commands_header": "Comandos disponíveis:",
     "help": "CLI do Nexy",
@@ -124,7 +123,7 @@
     "nexy": "Formatando {count} arquivo(s) .nexy",
     "nexy_done": "{count} arquivo(s) .nexy formatado(s)"
   },
-    "info": {
+  "info": {
     "label": {
       "frameworks": "Frameworks",
       "nexy": "Nexy",
@@ -137,7 +136,6 @@
     "not_found": "not found",
     "router_file_based": "file-based"
   },
-
   "init": {
     "alias_invalid": "Use @, ~, # ou $, seguido opcionalmente de letras (por exemplo ~ ou @app).",
     "already": "O projeto já foi inicializado aqui",
@@ -250,7 +248,8 @@
   "start": {
     "broken": "{count} arquivo(s) de rota não puderam ser carregados: o servidor não foi iniciado.",
     "exited": "encerrado",
-    "no_build": "Nenhum build de produção: execute `nexy build` e depois `nexy start`."
+    "no_build": "Nenhum build de produção: execute `nexy build` e depois `nexy start`.",
+    "help_open": "Abrir o navegador assim que o servidor responder"
   },
   "test": {
     "failed": "{count} execução(ões) de testes com falha",
