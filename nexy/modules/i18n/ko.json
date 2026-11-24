@@ -249,6 +249,7 @@
     "launch_failed": "서버를 시작할 수 없습니다",
     "local": "로컬:",
     "network": "네트워크:",
+    "docs": "API 문서:",
     "ready": "준비됨:",
     "stop": "중지하려면 Ctrl+C",
     "missing_table": "테이블이 없습니다: nexy migrate --upgrade을(를) 실행하세요."

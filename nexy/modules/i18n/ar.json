@@ -250,6 +250,7 @@
     "launch_failed": "تعذّر تشغيل الخادم",
     "local": "محلي:",
     "network": "الشبكة:",
+    "docs": "وثائق API:",
     "ready": "جاهز:",
     "stop": "اضغط Ctrl+C للإيقاف",
     "missing_table": "جدول مفقود: شغّل nexy migrate --upgrade."

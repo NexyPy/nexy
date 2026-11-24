@@ -22,7 +22,7 @@ from nexy.helpers.common.vite_launch import vite_installed
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.fs.vfs import VFS
 from nexy.helpers.server.dev_mode import DEV_ENV_VAR
-from nexy.helpers.server.listening import Endpoint, print_listening
+from nexy.helpers.server.listening import Endpoint, print_listening, served_docs_path
 from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder, BuildResult
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
@@ -276,7 +276,8 @@ def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float
     try:
         observer = _watch(config, reloader)
         elapsed = time.perf_counter() - started
-        print_listening("dev", __version__, endpoint, elapsed, Server.get_network_ip)
+        docs = served_docs_path(config.useDocs, config.useDocsUrl, dev=True)
+        print_listening("dev", __version__, endpoint, elapsed, Server.get_network_ip, docs)
         reloader.serve(endpoint)
     except KeyboardInterrupt:
         console.print(f"\n  [dim]{t('dev.stopping', 'Stopping servers...')}[/dim]")

@@ -249,6 +249,7 @@
     "launch_failed": "无法启动服务器",
     "local": "本地：",
     "network": "网络：",
+    "docs": "API 文档：",
     "ready": "就绪：",
     "stop": "按 Ctrl+C 停止",
     "missing_table": "缺少一个表：请运行 nexy migrate --upgrade。"

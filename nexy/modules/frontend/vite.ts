@@ -186,7 +186,9 @@ function nexyPlugin(): Plugin {
               '__nexy__/main.ts',
               '__nexy__/src/runtime.ts',
               '__nexy__/src/ff.auto.ts',
-              'src/**/*.{tsx,jsx,vue,svelte,ts,js}'
+              'src/**/*.{tsx,jsx,vue,svelte,ts,js}',
+              // A declaration only types code: esbuild reads `export const X: T;` as an error.
+              '!src/**/*.d.ts'
             ]
           },
           watch: {

@@ -55,6 +55,8 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
         usePort=3000,
         WATCH_EXTENSIONS_GLOB=["*.py"],
         WATCH_EXCLUDE_PATTERNS=[],
+        useDocs="dev",
+        useDocsUrl="/docs",
     )
 
     class FakeServer:
@@ -428,3 +430,10 @@ class TestRestartAnnouncement:
         world.serve_plan = ["routes", "exit"]
         dev_module.dev()
         assert "update server" in capsys.readouterr().out
+
+
+def test_dev_says_where_the_api_reference_answers(world, monkeypatch):
+    shown: list[str] = []
+    monkeypatch.setattr(launcher, "entry", lambda _label, value: shown.append(value))
+    dev_module.dev()
+    assert "http://localhost:3000/docs" in shown

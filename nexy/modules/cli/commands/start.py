@@ -7,7 +7,7 @@ from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
 from nexy.helpers.common.messages import error
 from nexy.helpers.fs.packages import ensure_project_packages
-from nexy.helpers.server.listening import Endpoint, print_listening
+from nexy.helpers.server.listening import Endpoint, print_listening, served_docs_path
 from nexy.helpers.server.markers import has_build
 from nexy.helpers.server.server import Server
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
@@ -76,5 +76,7 @@ def start(port: int | None = None, host: str | None = None) -> None:
     _refuse_broken_project(_route_failures())
     endpoint = _endpoint(port, host)
     elapsed = time.perf_counter() - started
-    print_listening("start", __version__, endpoint, elapsed, Server.get_network_ip)
+    config = Config()
+    docs = served_docs_path(config.useDocs, config.useDocsUrl, dev=False)
+    print_listening("start", __version__, endpoint, elapsed, Server.get_network_ip, docs)
     _serve(endpoint)

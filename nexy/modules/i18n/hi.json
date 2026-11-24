@@ -249,6 +249,7 @@
     "launch_failed": "सर्वर शुरू नहीं हो सका",
     "local": "लोकल:",
     "network": "नेटवर्क:",
+    "docs": "API डॉक्स:",
     "ready": "तैयार:",
     "stop": "रोकने के लिए Ctrl+C दबाएँ",
     "missing_table": "एक टेबल नहीं है: nexy migrate --upgrade चलाएँ।"

@@ -247,6 +247,7 @@
     "launch_failed": "Could not start the server",
     "local": "Local:",
     "network": "Network:",
+    "docs": "API docs:",
     "ready": "Ready:",
     "stop": "press Ctrl+C to stop",
     "missing_table": "A table is missing: run nexy migrate --upgrade."
