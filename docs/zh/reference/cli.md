@@ -16,7 +16,20 @@
 | `nx check` | `nx c` | 类型检查：mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | 格式 Python（ruff）、JS/TS（更漂亮）、`.nexy` 文件 |
 | `nx test` | - | 运行 pytest； `--client` 添加 vitest |
+| `nx routes` | - | 列出应用程序路由、HTTP 方法、路径和源文件 |
 | `nx skills` | - | 添加或刷新编码代理的技能 `AGENTS.md` 和 `CLAUDE.md` |
+
+## `nx routes`
+
+在表中列出应用程序的路由、它们的 HTTP 方法、路径和源文件。路线按路径排序。框架的 favicon 路径被排除在外。
+
+在项目环境中运行它：
+
+```bash
+nx routes
+```
+
+如果未找到应用程序路径，则会打印 `No routes found.`。
 
 ## 旗帜
 
@@ -40,7 +53,7 @@
 
 ## 输出
 
-长步骤（安装包、编译、捆绑）会显示一个旋转器，其中包含经过的时间和命令打印的最后一行，然后留下一行，如 uv 所做的那样：`Synced .venv with uv in 1.4s`。一组步骤（`nx new` 的安装）还显示进度条和已完成步骤的数量 `2/5`。失败的步骤是 `error:` 行及其原因 `cause: exit 1 after 2.1s`，后跟命令输出的最后几行，而不是隐藏它。需要注意的是 `warning: ...`，以及接下来要做什么 `hint: ...`。开发日志对于请求读取 `GET » /about 200 in 12ms`，对于 Vite 读取 `vite » ...`。
+长步骤（安装包、编译、捆绑）会显示一个旋转器，其中包含经过的时间和命令打印的最后一行，然后留下一行，如 uv 所做的那样：`Synced .venv with uv in 1.4s`。一组步骤（`nx new` 的安装）还显示进度条和已完成的步骤数 `2/5`。失败的步骤是 `error:` 行及其原因 `cause: exit 1 after 2.1s`，后跟命令输出的最后几行，而不是隐藏它。需要注意的内容是 `warning: ...`，以及接下来要做什么 `hint: ...`。开发日志对于请求读取 `GET » /about 200 in 12ms`，对于 Vite 读取 `vite » ...`。
 
 ## `nx dev` 运行时出错
 
@@ -60,7 +73,7 @@
   Fix it and save: the server keeps its last working version.
 ```
 
-当应用程序加载时解析但失败的文件（缺少导入、模块级别的错误）会以相同的方式报告，并且 `nx dev` 等待您的下一次保存；在应用程序再次加载之前不会提供任何服务。当服务器重新加载时，有效的保存读取 `nexy » update <file>`。 `src/routes` 之外的 Markdown 文件，例如 `README.md`，不是页面，不会触发任何内容。 `nx start` 更严格：如果无法加载路由文件或 `nx build` 尚未构建项目，它会以代码 1 退出，并且不启动任何内容。
+当应用程序加载时解析但失败的文件（缺少导入、模块级别的错误）会以相同的方式报告，并且 `nx dev` 等待您的下一次保存；在应用程序再次加载之前不会提供任何服务。当服务器重新加载时，有效的保存读取 `nexy » update <file>`。 `src/routes` 之外的 Markdown 文件（例如 `README.md`）不是页面，不会触发任何内容。 `nx start` 更严格：如果无法加载路由文件或 `nx build` 尚未构建项目，它会以代码 1 退出，并且不启动任何内容。
 
 ## `nx new`的问题
 
@@ -73,11 +86,11 @@
 | ORM | SQLModel，SQLAlchemy，Tortoise-ORM，无数据库 |
 | 数据库（带有 ORM） | SQLite、PostgreSQL、Neon、MySQL / MariaDB、其他（您输入 URL） |
 
-所选 ORM 的数据库驱动程序随其一起安装（`psycopg`、`pymysql`、`asyncpg` 或 `aiomysql`），并且 URL 写入 `.env`。
+所选 ORM 的数据库驱动程序随其安装（`psycopg`、`pymysql`、`asyncpg` 或 `aiomysql`），并且 URL 写入 `.env`。
 
 在安装软件包之前，`nx new` 检查连接。如果没有，它会跳过安装并告诉您稍后运行 `uv sync` 和包管理器的安装。使用其中之一时，它会打印延迟和下载速度，并在连接速度较慢（超过 400 毫秒或低于 100 KB/s）时发出警告。每个安装行都会命名该工具及其填充的文件夹，例如 `pnpm install node_modules` 或 `uv sync .venv`。
 
-## `dev`、`build` 和 `start` 创建了什么
+## `dev`、`build` 和 `start` 创建什么
 
 在运行之前，这三个命令会在 `src/` 及其下的每个包含 `.py` 或 `.nexy` 文件的文件夹中创建一个空的 `__init__.py`，因此诸如 `src/routes/users.py` 之类的路由在所有这些路径中都会以相同的方式导入。现有文件永远不会被触及，并且当您添加文件夹时 `nx dev` 会再次执行相同的操作。 Python 字节码转到 `__nexy__/__pycache__`，因此源旁边不会出现 `__pycache__` 文件夹。
 
@@ -89,7 +102,7 @@
 2. shell 的语言环境变量（`LC_ALL`、`LC_MESSAGES`、`LANG`，然后是 `LANGUAGE`）；
 3. 您的操作系统的语言。
 
-其他任何东西都是英语，任何一种语言还没有的信息也是英语。仅翻译 `nx` 打印的内容：编译器错误、回溯及其运行的工具的输出保持原样。这些翻译尚未经过母语人士的审核：欢迎更正，作为 `nexy/modules/i18n/<language>.json` 的拉取请求。
+其他任何东西都是英语，任何一种语言还没有的信息也是英语。仅翻译 `nx` 打印的内容：编译器错误、回溯及其运行的工具的输出保持原样。这些翻译尚未经过母语人士的审核：欢迎更正，作为对 `nexy/modules/i18n/<language>.json` 的拉取请求。
 
 ## 建立行为
 

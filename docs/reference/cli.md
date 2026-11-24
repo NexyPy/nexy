@@ -18,7 +18,20 @@ example `uv run nexy dev`: that is where your own packages are.
 | `nx check` | `nx c` | type-check: mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (prettier), `.nexy` files |
 | `nx test` | - | run pytest; `--client` adds vitest |
+| `nx routes` | - | list application routes, HTTP methods, paths and source files |
 | `nx skills` | - | add or refresh the skills, `AGENTS.md` and `CLAUDE.md` for coding agents |
+
+## `nx routes`
+
+Lists the application's routes, their HTTP methods, paths and source files in a table. Routes are sorted by path. The framework's favicon route is excluded.
+
+Run it inside the project environment:
+
+```bash
+nx routes
+```
+
+If no application routes are found, it prints `No routes found.`.
 
 ## Flags
 
