@@ -26,7 +26,7 @@ example `uv run nexy dev`: that is where your own packages are.
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
-| `dev` | `--open`, `-o` | off - open the browser on the local address once the server answers |
+| `dev`, `start` | `--open`, `-o` | off - open the browser on the local address once the server answers |
 | `build` | `--check` | off - runs ruff and mypy after the build |
 | `format` | `--check` | off - report instead of rewriting |
 | `test` | `--client` | off - also run vitest instead of pytest alone |

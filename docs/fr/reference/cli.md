@@ -16,7 +16,7 @@ Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` cr
 | `nx check` | `nx c` | type-check : mypy sur Python, `tsc` sur TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (plus joli), `.nexy` fichiers |
 | `nx test` | - | exécuter pytest ; `--client` ajoute vitest |
-| `nx skills` | - | ajouter ou rafraîchir les compétences, `AGENTS.md` et `CLAUDE.md` pour les agents de codage |
+| `nx skills` | - | ajouter ou actualiser les compétences, `AGENTS.md` et `CLAUDE.md` pour les agents de codage |
 
 ## Drapeaux
 
@@ -24,7 +24,7 @@ Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` cr
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
-| `dev` | `--open`, `-o` | off - ouvre le navigateur sur l'adresse locale une fois que le serveur répond |
+| `dev`, `start` | `--open`, `-o` | off - ouvre le navigateur sur l'adresse locale une fois que le serveur répond |
 | `build` | `--check` | off - exécute ruff et mypy après la construction |
 | `format` | `--check` | off - rapport au lieu de réécrire |
 | `test` | `--client` | off - exécute également Vitest au lieu de pytest seul |
@@ -60,7 +60,7 @@ L'enregistrement d'un fichier cassé n'arrête jamais le serveur. Un fichier `.p
   Fix it and save: the server keeps its last working version.
 ```
 
-Un fichier qui analyse mais échoue au chargement de l'application (une importation manquante, une erreur au niveau du module) est signalé de la même manière et `nx dev` attend votre prochaine sauvegarde ; rien n'est servi jusqu'à ce que l'application se charge à nouveau. Une sauvegarde valide indique `nexy » update <file>` pendant le rechargement du serveur. Les fichiers Markdown en dehors de `src/routes`, tels que `README.md`, ne sont pas des pages et ne déclenchent rien. `nx start` est plus strict : il se termine avec le code 1, et ne démarre rien, si un fichier de route ne peut pas se charger ou si `nx build` n'a pas encore construit le projet.
+Un fichier qui analyse mais échoue au chargement de l'application (une importation manquante, une erreur au niveau du module) est signalé de la même manière et `nx dev` attend votre prochaine sauvegarde ; rien n'est servi jusqu'à ce que l'application se charge à nouveau. Une sauvegarde valide lit `nexy » update <file>` pendant le rechargement du serveur. Les fichiers Markdown en dehors de `src/routes`, tels que `README.md`, ne sont pas des pages et ne déclenchent rien. `nx start` est plus strict : il se termine avec le code 1, et ne démarre rien, si un fichier de route ne peut pas se charger ou si `nx build` n'a pas encore construit le projet.
 
 ## Questions de `nx new`
 
@@ -89,7 +89,7 @@ La ligne de commande parle anglais, chinois, hindi, espagnol, portugais, frança
 2. les variables locales de votre shell (`LC_ALL`, `LC_MESSAGES`, `LANG`, puis `LANGUAGE`) ;
 3. la langue de votre système d'exploitation.
 
-Tout le reste est en anglais, tout comme tout message qu'une langue n'a pas encore. Seul ce que `nx` imprime est traduit : les erreurs du compilateur, les traces et les résultats des outils qu'il exécute restent tels quels. Les traductions n'ont pas encore été révisées par des locuteurs natifs : les corrections sont les bienvenues sous forme de pull request vers `nexy/modules/i18n/<language>.json`.
+Tout le reste est en anglais, tout comme tout message qu'une langue n'a pas encore. Seul ce que `nx` imprime est traduit : les erreurs du compilateur, les traces et les résultats des outils qu'il exécute restent tels quels. Les traductions n'ont pas encore été révisées par des locuteurs natifs : les corrections sont les bienvenues sous forme de pull request à `nexy/modules/i18n/<language>.json`.
 
 ## Construire un comportement
 

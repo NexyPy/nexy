@@ -16,7 +16,7 @@ O binário é `nx` (também instalado como `nexy`). `uvx nexy new` cria um proje
 | `nx check` | `nx c` | verificação de tipo: mypy em Python, `tsc` em TypeScript |
 | `nx format` | `nx f` | formato Python (ruff), JS/TS (mais bonito), `.nexy` arquivos |
 | `nx test` | - | execute pytest; `--client` adiciona vitest |
-| `nx skills` | - | adicione ou atualize as habilidades `AGENTS.md` e `CLAUDE.md` para agentes de codificação |
+| `nx skills` | - | adicione ou atualize as habilidades, `AGENTS.md` e `CLAUDE.md` para agentes de codificação |
 
 ## Bandeiras
 
@@ -24,7 +24,7 @@ O binário é `nx` (também instalado como `nexy`). `uvx nexy new` cria um proje
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
-| `dev` | `--open`, `-o` | off - abra o navegador no endereço local assim que o servidor responder |
+| `dev`, `start` | `--open`, `-o` | off - abra o navegador no endereço local assim que o servidor responder |
 | `build` | `--check` | off - executa ruff e mypy após a compilação |
 | `format` | `--check` | off - relatar em vez de reescrever |
 | `test` | `--client` | off - execute também o vitest em vez de pytest sozinho |
@@ -64,7 +64,7 @@ Um arquivo que analisa, mas falha quando o aplicativo é carregado (uma importa�
 
 ## Perguntas de `nx new`
 
-`nx new` pergunta, nesta ordem: roteador baseado em arquivo, tipo de projeto (web ou API), roteamento do lado do cliente, estrutura do cliente, como estilizar o aplicativo, alias de importação, ORM, banco de dados e URL do banco de dados. Cada opção possui uma breve descrição e a atual é destacada. As perguntas que não se aplicam são ignoradas (um projeto de API não tem estrutura ou estilo; escolha **Sem banco de dados** pois o ORM ignora o banco de dados e a URL). Mova-se com as setas (ou `j`/`k`, ou um número), confirme com `enter`, volte à pergunta anterior com `←` ou `esc`, saia com `ctrl+c`.
+`nx new` pergunta, nesta ordem: roteador baseado em arquivo, tipo de projeto (web ou API), roteamento do lado do cliente, estrutura do cliente, como estilizar o aplicativo, alias de importação, ORM, banco de dados e URL do banco de dados. Cada opção possui uma breve descrição e a atual é destacada. As perguntas que não se aplicam são ignoradas (um projeto de API não tem estrutura ou estilo; escolha **Sem banco de dados** pois o ORM ignora o banco de dados e a URL). Mova-se com as setas (ou `j`/`k`, ou um número), confirme com `enter`, volte para a pergunta anterior com `←` ou `esc`, saia com `ctrl+c`.
 
 | Pergunta | Escolhas |
 |---|---|
@@ -75,7 +75,7 @@ Um arquivo que analisa, mas falha quando o aplicativo é carregado (uma importa�
 
 O driver de banco de dados para o ORM escolhido é instalado com ele (`psycopg`, `pymysql`, `asyncpg` ou `aiomysql`), e a URL é gravada em `.env`.
 
-Antes de instalar os pacotes, `nx new` verifica a conexão. Sem ele, ele ignora as instalações e solicita que você execute `uv sync` e a instalação do seu gerenciador de pacotes mais tarde. Com um, ele imprime a latência e velocidade de download, e avisa quando a conexão está lenta (acima de 400 ms, ou abaixo de 100 KB/s). Cada linha de instalação nomeia a ferramenta e a pasta que ela preenche, por exemplo `pnpm install node_modules` ou `uv sync .venv`.
+Antes de instalar pacotes, `nx new` verifica a conexão. Sem ele, ele ignora as instalações e solicita que você execute `uv sync` e a instalação do seu gerenciador de pacotes mais tarde. Com um, ele imprime a latência e velocidade de download, e avisa quando a conexão está lenta (acima de 400 ms, ou abaixo de 100 KB/s). Cada linha de instalação nomeia a ferramenta e a pasta que ela preenche, por exemplo `pnpm install node_modules` ou `uv sync .venv`.
 
 ## O que `dev`, `build` e `start` criam
 
