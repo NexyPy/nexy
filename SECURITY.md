@@ -77,7 +77,7 @@ has a matching entry in the register below.
 | B112 `except: continue` | `translate.py`, `fbrouter/dependencies.py`, `_cli.py` | Narrowed to typed exceptions with the same rationale |
 | B310 `urlopen` readiness probe | `utils/server/server.py` | Probe replaced by a TCP connect (`socket.create_connection`); no URL is built or fetched |
 | B324 weak MD5 (4 sites) | `frontend_route.py`, `vite_entry.py`, `ncc.py` | `usedforsecurity=False`: deterministic non-cryptographic IDs, digest unchanged |
-| B607 partial-path executables | `check.py`, `test.py`, `template_setup.py`, `server.py`, `port_owner.py` | `shutil.which` resolution before every spawn (tsc, npx, git, uv, taskkill, netstat) |
+| B607 partial-path executables | `check.py`, `test.py`, `template_setup.py`, `server.py`, `port_owner.py` | `shutil.which` resolution before every spawn (tsc, npx, git, uv, lsof) |
 
 ### Residual risk register (`# nosec` sites)
 
