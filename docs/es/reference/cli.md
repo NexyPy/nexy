@@ -24,6 +24,7 @@ El binario es `nx` (también instalado como `nexy`). `uvx nexy new` crea un proy
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
+| `dev` | `--open`, `-o` | desactivado: abra el navegador en la dirección local una vez que el servidor responda |
 | `build` | `--check` | off: ejecuta ruff y mypy después de la compilación. |
 | `format` | `--check` | apagado - informar en lugar de reescribir |
 | `test` | `--client` | off - también ejecuta vitest en lugar de pytest solo |

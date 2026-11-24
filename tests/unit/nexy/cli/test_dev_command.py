@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import signal
+import threading
 from types import SimpleNamespace
 from typing import Any
 
@@ -107,9 +108,11 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
         def __init__(self, uvicorn_config: Any) -> None:
             self.config = uvicorn_config
             self.should_exit = False
+            self.started = False
             rec("uvicorn_new")
 
         def run(self) -> None:
+            self.started = True
             rec("uvicorn_run")
             step = state.serve_plan.pop(0) if state.serve_plan else "exit"
             if step == "restart":
@@ -437,3 +440,83 @@ def test_dev_says_where_the_api_reference_answers(world, monkeypatch):
     monkeypatch.setattr(launcher, "entry", lambda _label, value: shown.append(value))
     dev_module.dev()
     assert "http://localhost:3000/docs" in shown
+
+
+def test_open_opens_the_local_address_once_the_server_answers(world, monkeypatch):
+    opened: list[str] = []
+    done = threading.Event()
+
+    def fake_open(url: str) -> bool:
+        opened.append(url)
+        done.set()
+        return True
+
+    monkeypatch.setattr(dev_module.webbrowser, "open", fake_open)
+    dev_module.dev(open_browser=True)
+    assert done.wait(2), "the browser was never opened"
+    assert opened == ["http://localhost:3000"]
+
+
+def test_without_open_no_browser_is_opened(world, monkeypatch):
+    opened: list[str] = []
+    monkeypatch.setattr(dev_module.webbrowser, "open", lambda url: opened.append(url) or True)
+    dev_module.dev()
+    assert opened == []
+
+
+def test_open_does_not_open_the_browser_again_after_a_reload(world, monkeypatch):
+    opened: list[str] = []
+    done = threading.Event()
+
+    def fake_open(url: str) -> bool:
+        opened.append(url)
+        done.set()
+        return True
+
+    monkeypatch.setattr(dev_module.webbrowser, "open", fake_open)
+    world.serve_plan = ["restart", "exit"]
+    dev_module.dev(open_browser=True)
+    assert done.wait(2), "the browser was never opened"
+    assert world.rec.count("uvicorn_run") == 2
+    assert opened == ["http://localhost:3000"]
+
+
+class TestBrowserOpener:
+    def test_a_server_that_stops_before_listening_opens_nothing(self, monkeypatch):
+        opened: list[str] = []
+        monkeypatch.setattr(dev_module.webbrowser, "open", lambda url: opened.append(url) or True)
+        opener = dev_module._BrowserOpener("http://localhost:3000")
+        server = SimpleNamespace(started=False)
+        opener.open_once_started(server, lambda: False)
+        assert opened == []
+
+    def test_the_address_waits_for_the_next_server_that_listens(self, monkeypatch):
+        opened: list[str] = []
+        monkeypatch.setattr(dev_module.webbrowser, "open", lambda url: opened.append(url) or True)
+        opener = dev_module._BrowserOpener("http://localhost:3000")
+        opener.open_once_started(SimpleNamespace(started=False), lambda: False)
+        opener.open_once_started(SimpleNamespace(started=True), lambda: True)
+        opener.open_once_started(SimpleNamespace(started=True), lambda: True)
+        assert opened == ["http://localhost:3000"]
+
+    def test_the_address_opens_once_a_waiting_server_listens(self, monkeypatch):
+        opened: list[str] = []
+        naps: list[float] = []
+        monkeypatch.setattr(dev_module.webbrowser, "open", lambda url: opened.append(url) or True)
+        monkeypatch.setattr(dev_module.time, "sleep", naps.append)
+        opener = dev_module._BrowserOpener("http://localhost:3000")
+        server = SimpleNamespace(started=False)
+
+        def still_running() -> bool:
+            server.started = True  # the server listens while the opener waits
+            return True
+
+        opener.open_once_started(server, still_running)
+        assert naps == [0.05]
+        assert opened == ["http://localhost:3000"]
+
+    def test_without_an_address_no_watch_starts(self, monkeypatch):
+        started: list[object] = []
+        monkeypatch.setattr(dev_module.threading, "Thread", lambda *a, **k: started.append(k))
+        dev_module._BrowserOpener(None).watch(SimpleNamespace(started=True), lambda: True)
+        assert started == []

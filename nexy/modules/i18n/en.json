@@ -109,7 +109,8 @@
     "vite_failed": "Vite failed to start.",
     "vite_failed_hint": "Read the Vite output above for the cause.",
     "server_failed": "The server stopped ({reason}): waiting for a fix.",
-    "port_in_use": "Port {asked} is in use, using {port} instead."
+    "port_in_use": "Port {asked} is in use, using {port} instead.",
+    "help_open": "Open the browser once the server answers"
   },
   "format": {
     "failed": "{count} file(s) failed",

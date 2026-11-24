@@ -110,7 +110,8 @@
     "vite_failed": "Vite を起動できませんでした。",
     "vite_failed_hint": "原因は上の Vite の出力を確認してください。",
     "server_failed": "サーバーが停止しました（{reason}）：修正を待っています。",
-    "port_in_use": "ポート {asked} は使用中のため、{port} を使います。"
+    "port_in_use": "ポート {asked} は使用中のため、{port} を使います。",
+    "help_open": "サーバーが応答したらブラウザを開く"
   },
   "format": {
     "failed": "{count} 件のファイルが失敗しました",
