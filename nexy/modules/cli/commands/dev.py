@@ -26,6 +26,7 @@ from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.fs.vfs import VFS
 from nexy.helpers.server.dev_mode import DEV_ENV_VAR
 from nexy.helpers.server.listening import Endpoint, print_listening, served_docs_path
+from nexy.helpers.server.port_owner import OccupiedPort
 from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder, BuildResult
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
@@ -293,11 +294,15 @@ def _watch(config: Config, reloader: _Reloader) -> Any:
     )
 
 
-def _release(observer: Any, session: _Session) -> None:
-    """Stop what `nx dev` started: the watcher and Vite."""
+def _release(observer: Any, session: _Session, occupied: OccupiedPort) -> None:
+    """Stop what `nx dev` started: the watcher, Vite and the port another process held."""
     console.print(f"  [dim]{t('dev.cleaning', 'Cleaning up...')}[/dim]")
     stop_observer(observer)
     Server.stop_process(session.vite)
+    freed = occupied.free()
+    if freed is not None:
+        message = t("dev.port_freed", "Freed port {port}: stopped process {pid}.")
+        console.print(tagged("nexy", message.format(port=occupied.asked, pid=freed), "yellow"))
     console.print(tagged("nexy", t("dev.exited", "exited"), "red"))
 
 
@@ -306,6 +311,7 @@ def _serve(
     endpoint: Endpoint,
     session: _Session,
     started: float,
+    occupied: OccupiedPort,
     open_browser: bool = False,
 ) -> None:
     """Watch the project and serve it until Ctrl+C; always release what was started."""
@@ -324,7 +330,7 @@ def _serve(
     except Exception as problem:
         error(escape(str(problem) or type(problem).__name__))
     finally:
-        _release(observer, session)
+        _release(observer, session, occupied)
 
 
 def _interrupt(_signum: int, _frame: Any) -> None:
@@ -373,10 +379,11 @@ def _dev(port: int | None, host: str | None, open_browser: bool) -> None:
     asked = port or config.usePort
     run_port, client_port = Server.resolve_ports(run_host, asked)
     _announce_port(asked, run_port)
+    occupied = OccupiedPort(asked, run_port)
     Server.check_nexy_prod(delete=True)
 
     ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)
     endpoint = Endpoint(run_host, run_port, ssl_keyfile, ssl_certfile)
     started = time.perf_counter()
     session = _initialise(config, client_port, endpoint.protocol == "https")
-    _serve(config, endpoint, session, started, open_browser)
+    _serve(config, endpoint, session, started, occupied, open_browser)

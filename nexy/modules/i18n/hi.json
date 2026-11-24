@@ -110,7 +110,8 @@
     "vite_failed_hint": "कारण जानने के लिए ऊपर Vite का आउटपुट देखें।",
     "server_failed": "सर्वर रुक गया ({reason}): सुधार की प्रतीक्षा है।",
     "port_in_use": "पोर्ट {asked} उपयोग में है, इसके बजाय {port} का उपयोग हो रहा है।",
-    "help_open": "सर्वर के जवाब देते ही ब्राउज़र खोलें"
+    "help_open": "सर्वर के जवाब देते ही ब्राउज़र खोलें",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "format": {
     "failed": "{count} फ़ाइलें विफल रहीं",
@@ -249,7 +250,8 @@
     "broken": "{count} रूट फ़ाइल लोड नहीं हो सकीं: सर्वर शुरू नहीं किया गया।",
     "exited": "बंद हो गया",
     "no_build": "कोई प्रोडक्शन बिल्ड नहीं है: पहले `nexy build` चलाएँ, फिर `nexy start`।",
-    "help_open": "सर्वर के जवाब देते ही ब्राउज़र खोलें"
+    "help_open": "सर्वर के जवाब देते ही ब्राउज़र खोलें",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "test": {
     "failed": "{count} टेस्ट रन विफल रहे",

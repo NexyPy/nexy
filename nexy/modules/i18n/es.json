@@ -110,7 +110,8 @@
     "vite_failed_hint": "Consulte la salida de Vite más arriba para conocer la causa.",
     "server_failed": "El servidor se detuvo ({reason}): esperando una corrección.",
     "port_in_use": "El puerto {asked} está en uso, se usa el {port}.",
-    "help_open": "Abrir el navegador en cuanto el servidor responda"
+    "help_open": "Abrir el navegador en cuanto el servidor responda",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "format": {
     "failed": "{count} archivo(s) con error",
@@ -249,7 +250,8 @@
     "broken": "{count} archivo(s) de ruta no se pudieron cargar: el servidor no se inició.",
     "exited": "detenido",
     "no_build": "No hay build de producción: ejecuta `nexy build` y luego `nexy start`.",
-    "help_open": "Abrir el navegador en cuanto el servidor responda"
+    "help_open": "Abrir el navegador en cuanto el servidor responda",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "test": {
     "failed": "{count} ejecución(es) de pruebas con error",

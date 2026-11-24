@@ -110,7 +110,8 @@
     "vite_failed_hint": "Baca keluaran Vite di atas untuk mengetahui penyebabnya.",
     "server_failed": "Server berhenti ({reason}): menunggu perbaikan.",
     "port_in_use": "Port {asked} sedang dipakai, memakai {port}.",
-    "help_open": "Buka browser setelah server merespons"
+    "help_open": "Buka browser setelah server merespons",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "format": {
     "failed": "{count} berkas gagal",
@@ -249,7 +250,8 @@
     "broken": "{count} file rute gagal dimuat: server tidak dijalankan.",
     "exited": "berhenti",
     "no_build": "Belum ada build produksi: jalankan `nexy build`, lalu `nexy start`.",
-    "help_open": "Buka browser setelah server merespons"
+    "help_open": "Buka browser setelah server merespons",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "test": {
     "failed": "{count} proses pengujian gagal",

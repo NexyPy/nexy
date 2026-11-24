@@ -73,5 +73,33 @@ def test_dev_a_server_that_crashes_is_a_uv_error(monkeypatch, capsys):
 
     monkeypatch.setattr(dev, "_watch", crash)
     monkeypatch.setattr(dev, "_release", lambda *_args: None)
-    dev._serve(SimpleNamespace(), None, dev._Session(), 0.0)
+    dev._serve(SimpleNamespace(), None, dev._Session(), 0.0, dev.OccupiedPort(3000, 3000))
     assert capsys.readouterr().out == "error: socket closed\n"
+
+
+class _FreedPort:
+    asked = 3000
+
+    def free(self):
+        return 4242
+
+
+class _KeptPort:
+    asked = 3000
+
+    def free(self):
+        return None
+
+
+def test_dev_reports_the_port_it_freed_on_stop(monkeypatch, capsys):
+    monkeypatch.setattr(dev, "stop_observer", lambda _observer: None)
+    monkeypatch.setattr(dev.Server, "stop_process", lambda _process: None)
+    dev._release(None, dev._Session(), _FreedPort())
+    assert "Freed port 3000: stopped process 4242." in capsys.readouterr().out
+
+
+def test_dev_says_nothing_when_no_port_was_freed(monkeypatch, capsys):
+    monkeypatch.setattr(dev, "stop_observer", lambda _observer: None)
+    monkeypatch.setattr(dev.Server, "stop_process", lambda _process: None)
+    dev._release(None, dev._Session(), _KeptPort())
+    assert "Freed port" not in capsys.readouterr().out

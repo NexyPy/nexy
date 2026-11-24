@@ -58,7 +58,7 @@ def _start_shows(monkeypatch, use_docs: bool | str) -> list[str]:
     monkeypatch.setattr(start_module, "_route_failures", list)
     monkeypatch.setattr(start_module, "_endpoint", lambda *_: Endpoint("127.0.0.1", 8000))
     monkeypatch.setattr(start_module, "_serve", lambda *_args, **_kwargs: None)
-    config = SimpleNamespace(useDocs=use_docs, useDocsUrl="/docs")
+    config = SimpleNamespace(useDocs=use_docs, useDocsUrl="/docs", usePort=8000)
     monkeypatch.setattr(start_module, "Config", lambda: config)
     monkeypatch.setattr(launcher, "banner", lambda *_: None)
     monkeypatch.setattr(launcher, "entry", lambda _label, value: shown.append(value))
@@ -124,6 +124,38 @@ def test_without_open_no_browser_is_opened(monkeypatch):
     start_module.start()
 
     assert opened == []
+
+
+class _FreedPort:
+    asked = 3000
+
+    def free(self):
+        return 4242
+
+
+class _KeptPort:
+    asked = 3000
+
+    def free(self):
+        return None
+
+
+def test_start_reports_the_port_it_freed_on_stop(monkeypatch, capsys):
+    from nexy.helpers.server.listening import Endpoint
+
+    monkeypatch.setattr(start_module.Server, "check_nexy_prod", lambda **_kwargs: None)
+    monkeypatch.setattr(start_module.Server, "uvicorn", lambda **_kwargs: None)
+    start_module._serve(Endpoint("127.0.0.1", 8000), _FreedPort())
+    assert "Freed port 3000: stopped process 4242." in capsys.readouterr().out
+
+
+def test_start_says_nothing_when_no_port_was_freed(monkeypatch, capsys):
+    from nexy.helpers.server.listening import Endpoint
+
+    monkeypatch.setattr(start_module.Server, "check_nexy_prod", lambda **_kwargs: None)
+    monkeypatch.setattr(start_module.Server, "uvicorn", lambda **_kwargs: None)
+    start_module._serve(Endpoint("127.0.0.1", 8000), _KeptPort())
+    assert "Freed port" not in capsys.readouterr().out
 
 
 def test_open_retries_while_the_port_refuses(monkeypatch):
