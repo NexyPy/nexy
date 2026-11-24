@@ -124,3 +124,24 @@ def test_without_open_no_browser_is_opened(monkeypatch):
     start_module.start()
 
     assert opened == []
+
+
+def test_open_retries_while_the_port_refuses(monkeypatch):
+    from nexy.helpers.server.listening import Endpoint
+
+    attempts = []
+
+    def refuse_once(*_args, **_kwargs):
+        attempts.append(1)
+        if len(attempts) == 1:
+            raise OSError("not listening yet")
+        return type("C", (), {"__enter__": lambda self: self, "__exit__": lambda *_: None})()
+
+    monkeypatch.setattr(start_module.socket, "create_connection", refuse_once)
+    monkeypatch.setattr(start_module.time, "sleep", lambda *_: None)
+    monkeypatch.setattr(start_module.webbrowser, "open", lambda _url: True)
+
+    endpoint = Endpoint("127.0.0.1", 8000)
+    start_module._open_once_listening(endpoint, endpoint.url("localhost"))
+
+    assert len(attempts) == 2
