@@ -5,6 +5,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [Unreleased]
 
+## [2.10.0] - 2026-11-24
+
+### Added
+
+- **`nx start --open` opens the browser once the server answers** (`-o`), on the local address and
+  only once, like `nx dev --open` (#631, #632).
+- **Stopping `nx dev` or `nx start` frees the port another process held.** When the requested port
+  is busy, Nexy records its owner and stops it at shutdown if it still holds that port, then reports
+  the freed port and PID. PID 0, PID 1 and Nexy itself are never stopped (#636, #637).
+
+### Fixed
+
+- **Vite lists the files it rebuilt on separate lines.** HMR messages no longer merge paths such as
+  `srci18n` or add `__nexy__` to them (#633, #634).
+
+### Documentation
+
+- **The CLI reference lists `--open` for both `dev` and `start`** (#632).
+
 ## [2.9.0] - 2026-11-24
 
 ### Added
