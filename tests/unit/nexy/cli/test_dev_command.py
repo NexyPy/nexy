@@ -462,3 +462,20 @@ def test_without_open_no_browser_is_opened(world, monkeypatch):
     monkeypatch.setattr(dev_module.webbrowser, "open", lambda url: opened.append(url) or True)
     dev_module.dev()
     assert opened == []
+
+
+def test_open_does_not_open_the_browser_again_after_a_reload(world, monkeypatch):
+    opened: list[str] = []
+    done = threading.Event()
+
+    def fake_open(url: str) -> bool:
+        opened.append(url)
+        done.set()
+        return True
+
+    monkeypatch.setattr(dev_module.webbrowser, "open", fake_open)
+    world.serve_plan = ["restart", "exit"]
+    dev_module.dev(open_browser=True)
+    assert done.wait(2), "the browser was never opened"
+    assert world.rec.count("uvicorn_run") == 2
+    assert opened == ["http://localhost:3000"]

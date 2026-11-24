@@ -110,7 +110,8 @@
     "vite_failed": "Vite konnte nicht gestartet werden.",
     "vite_failed_hint": "Die Ursache steht in der Vite-Ausgabe oben.",
     "server_failed": "Der Server wurde beendet ({reason}): wartet auf eine Korrektur.",
-    "port_in_use": "Port {asked} ist belegt, verwende stattdessen {port}."
+    "port_in_use": "Port {asked} ist belegt, verwende stattdessen {port}.",
+    "help_open": "Den Browser öffnen, sobald der Server antwortet"
   },
   "format": {
     "failed": "{count} Datei(en) fehlgeschlagen",

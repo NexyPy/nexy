@@ -4,10 +4,12 @@ import subprocess  # nosec B404
 import sys
 import threading
 import time
+import webbrowser
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
-from typing import Any
+from typing import Annotated, Any
 
+import typer
 from rich.markup import escape
 
 from nexy.__version__ import __version__
@@ -153,13 +155,16 @@ def _import_app() -> None:
 class _Reloader:
     """Runs uvicorn and restarts it whenever the watcher asks."""
 
-    def __init__(self) -> None:
+    def __init__(self, open_url: str | None = None) -> None:
         self.restart_requested = False
         self.regenerate_requested = False
         self._started = False
         self._server: Any = None
         self._changed = threading.Event()
         self._announced = False
+        # The address `--open` opens once the server first answers; None once it is opened.
+        self._open_url = open_url
+        self._open_lock = threading.Lock()
 
     def request_restart(self) -> None:
         """A Python file changed: the watcher already named it."""
@@ -247,8 +252,24 @@ class _Reloader:
                 ssl_certfile=endpoint.ssl_certfile,
             )
         )
+        if self._open_url:
+            opener = threading.Thread(target=self._open_once_started, args=(self._server,))
+            opener.daemon = True
+            opener.start()
         self._server.run()
         self._server = None
+
+    def _open_once_started(self, server: Any) -> None:
+        """Open the browser once *server* listens; a run that ends before leaves it for the next."""
+        while not server.started:
+            if self._server is not server:
+                return
+            time.sleep(0.05)
+        with self._open_lock:
+            url, self._open_url = self._open_url, None
+        if url:
+            # False when no browser can be found (over SSH): the address is already on screen.
+            webbrowser.open(url)
 
 
 def _watch(config: Config, reloader: _Reloader) -> Any:
@@ -269,9 +290,15 @@ def _release(observer: Any, session: _Session) -> None:
     console.print(tagged("nexy", t("dev.exited", "exited"), "red"))
 
 
-def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float) -> None:
+def _serve(
+    config: Config,
+    endpoint: Endpoint,
+    session: _Session,
+    started: float,
+    open_browser: bool = False,
+) -> None:
     """Watch the project and serve it until Ctrl+C; always release what was started."""
-    reloader = _Reloader()
+    reloader = _Reloader(endpoint.url("localhost") if open_browser else None)
     observer = None
     try:
         observer = _watch(config, reloader)
@@ -300,17 +327,28 @@ def _announce_port(asked: int, used: int) -> None:
         warning(message.format(asked=asked, port=used))
 
 
-def dev(port: int | None = None, host: str | None = None) -> None:
+def dev(
+    port: int | None = None,
+    host: str | None = None,
+    open_browser: Annotated[
+        bool,
+        typer.Option(
+            "--open",
+            "-o",
+            help=t("dev.help_open", "Open the browser once the server answers"),
+        ),
+    ] = False,
+) -> None:
     # uvicorn raises a SIGTERM again once it has stopped: without this, the process would end
     # there, before the clean-up that stops Vite.
     previous = signal.signal(signal.SIGTERM, _interrupt)
     try:
-        _dev(port, host)
+        _dev(port, host, open_browser)
     finally:
         signal.signal(signal.SIGTERM, previous)
 
 
-def _dev(port: int | None, host: str | None) -> None:
+def _dev(port: int | None, host: str | None, open_browser: bool) -> None:
     pycache()
     ensure_project_packages()
     abort_on_invalid_config()
@@ -330,4 +368,4 @@ def _dev(port: int | None, host: str | None) -> None:
     endpoint = Endpoint(run_host, run_port, ssl_keyfile, ssl_certfile)
     started = time.perf_counter()
     session = _initialise(config, client_port, endpoint.protocol == "https")
-    _serve(config, endpoint, session, started)
+    _serve(config, endpoint, session, started, open_browser)
