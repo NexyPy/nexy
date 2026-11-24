@@ -74,6 +74,7 @@ def test_owner_uses_netstat_on_windows(monkeypatch):
 
 
 def test_owner_uses_lsof_on_unix(monkeypatch):
+    monkeypatch.setattr(port_owner.sys, "platform", "linux")
     monkeypatch.setattr(port_owner, "_unix_pid", lambda _port: 8)
     assert port_owner.owner_pid(3000) == 8
 
@@ -106,6 +107,7 @@ def test_terminate_falls_back_to_the_taskkill_name(monkeypatch):
 
 def test_terminate_sends_sigterm_on_unix(monkeypatch):
     called = []
+    monkeypatch.setattr(port_owner.sys, "platform", "linux")
     monkeypatch.setattr(port_owner.os, "kill", lambda pid, sig: called.append((pid, sig)))
     port_owner._terminate(42)
     assert called == [(42, signal.SIGTERM)]
@@ -118,6 +120,7 @@ def test_terminate_ignores_a_process_that_is_gone(monkeypatch):
         attempts.append(pid)
         raise ProcessLookupError
 
+    monkeypatch.setattr(port_owner.sys, "platform", "linux")
     monkeypatch.setattr(port_owner.os, "kill", gone)
     port_owner._terminate(42)
     assert attempts == [42]

@@ -110,7 +110,8 @@
     "vite_failed_hint": "راجع مخرجات Vite أعلاه لمعرفة السبب.",
     "server_failed": "توقف الخادم ({reason}): في انتظار الإصلاح.",
     "port_in_use": "المنفذ {asked} مستخدم، يتم استخدام {port} بدلاً منه.",
-    "help_open": "فتح المتصفح بمجرد استجابة الخادم"
+    "help_open": "فتح المتصفح بمجرد استجابة الخادم",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "format": {
     "failed": "فشل {count} ملف",
@@ -249,7 +250,8 @@
     "broken": "تعذر تحميل {count} من ملفات المسارات: لم يبدأ الخادم.",
     "exited": "تم الإيقاف",
     "no_build": "لا يوجد بناء للإنتاج: شغّل `nexy build` ثم `nexy start`.",
-    "help_open": "فتح المتصفح بمجرد استجابة الخادم"
+    "help_open": "فتح المتصفح بمجرد استجابة الخادم",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "test": {
     "failed": "فشلت {count} عملية تشغيل للاختبارات",

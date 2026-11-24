@@ -110,7 +110,8 @@
     "vite_failed_hint": "Consultez la sortie de Vite ci-dessus pour en connaître la cause.",
     "server_failed": "Le serveur s'est arrêté ({reason}) : en attente d'une correction.",
     "port_in_use": "Le port {asked} est pris, utilisation du port {port}.",
-    "help_open": "Ouvrir le navigateur dès que le serveur répond"
+    "help_open": "Ouvrir le navigateur dès que le serveur répond",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "format": {
     "failed": "{count} fichier(s) en échec",
@@ -249,7 +250,8 @@
     "broken": "{count} fichier(s) de route n'ont pas pu être chargés : le serveur n'a pas démarré.",
     "exited": "arrêté",
     "no_build": "Aucun build de production : lancez `nexy build`, puis `nexy start`.",
-    "help_open": "Ouvrir le navigateur dès que le serveur répond"
+    "help_open": "Ouvrir le navigateur dès que le serveur répond",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "test": {
     "failed": "{count} exécution(s) de tests en échec",

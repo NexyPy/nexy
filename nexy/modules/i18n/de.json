@@ -110,7 +110,8 @@
     "vite_failed_hint": "Die Ursache steht in der Vite-Ausgabe oben.",
     "server_failed": "Der Server wurde beendet ({reason}): wartet auf eine Korrektur.",
     "port_in_use": "Port {asked} ist belegt, verwende stattdessen {port}.",
-    "help_open": "Den Browser öffnen, sobald der Server antwortet"
+    "help_open": "Den Browser öffnen, sobald der Server antwortet",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "format": {
     "failed": "{count} Datei(en) fehlgeschlagen",
@@ -249,7 +250,8 @@
     "broken": "{count} Routendatei(en) konnten nicht geladen werden: Der Server wurde nicht gestartet.",
     "exited": "beendet",
     "no_build": "Kein Produktions-Build: Führen Sie `nexy build` aus, dann `nexy start`.",
-    "help_open": "Den Browser öffnen, sobald der Server antwortet"
+    "help_open": "Den Browser öffnen, sobald der Server antwortet",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "test": {
     "failed": "{count} Testlauf/-läufe fehlgeschlagen",

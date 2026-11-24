@@ -110,7 +110,8 @@
     "vite_failed_hint": "原因は上の Vite の出力を確認してください。",
     "server_failed": "サーバーが停止しました（{reason}）：修正を待っています。",
     "port_in_use": "ポート {asked} は使用中のため、{port} を使います。",
-    "help_open": "サーバーが応答したらブラウザを開く"
+    "help_open": "サーバーが応答したらブラウザを開く",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "format": {
     "failed": "{count} 件のファイルが失敗しました",
@@ -249,7 +250,8 @@
     "broken": "{count} 個のルートファイルを読み込めませんでした。サーバーは起動していません。",
     "exited": "終了しました",
     "no_build": "本番ビルドがありません。`nexy build` を実行してから `nexy start` を実行してください。",
-    "help_open": "サーバーが応答したらブラウザを開く"
+    "help_open": "サーバーが応答したらブラウザを開く",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "test": {
     "failed": "{count} 件のテスト実行が失敗しました",

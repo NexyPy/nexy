@@ -110,7 +110,8 @@
     "vite_failed_hint": "Причину смотрите в выводе Vite выше.",
     "server_failed": "Сервер остановлен ({reason}): ожидание исправления.",
     "port_in_use": "Порт {asked} занят, используется {port}.",
-    "help_open": "Открыть браузер, когда сервер ответит"
+    "help_open": "Открыть браузер, когда сервер ответит",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "format": {
     "failed": "Файлов с ошибками: {count}",
@@ -249,7 +250,8 @@
     "broken": "Не удалось загрузить файлов маршрутов: {count}. Сервер не запущен.",
     "exited": "остановлено",
     "no_build": "Нет продакшен-сборки: выполните `nexy build`, затем `nexy start`.",
-    "help_open": "Открыть браузер, когда сервер ответит"
+    "help_open": "Открыть браузер, когда сервер ответит",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "test": {
     "failed": "Запусков тестов с ошибками: {count}",
