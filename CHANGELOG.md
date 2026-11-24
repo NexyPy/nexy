@@ -5,6 +5,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [Unreleased]
 
+## [2.11.0] - 2026-11-24
+
+### Added
+
+- **`nx routes` lists the application routes** with their HTTP methods, paths and source files,
+  sorted by path. Framework routes are skipped, and an empty project prints `No routes found.`
+  (#455, #590).
+- **The CLI reference documents `nx routes`** (#590).
+
+### Changed
+
+- **The dev startup and start shutdown helpers stay under the 20-line structure limit**, so
+  `python scripts/verify.py` no longer stops on a long function (#640).
+
+### Thanks
+
+- @WinnrDz: Add nx routes command (#590)
+
 ## [2.10.0] - 2026-11-24
 
 ### Added
