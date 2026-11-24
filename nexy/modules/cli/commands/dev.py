@@ -365,6 +365,19 @@ def dev(
         signal.signal(signal.SIGTERM, previous)
 
 
+def _prepare_endpoint(
+    config: Config, host: str | None, port: int | None
+) -> tuple[Endpoint, int, OccupiedPort]:
+    """Where dev listens, and the occupied port to free when it stops."""
+    run_host = host or config.useHost
+    asked = port or config.usePort
+    run_port, client_port = Server.resolve_ports(run_host, asked)
+    _announce_port(asked, run_port)
+    ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)
+    endpoint = Endpoint(run_host, run_port, ssl_keyfile, ssl_certfile)
+    return endpoint, client_port, OccupiedPort(asked, run_port)
+
+
 def _dev(port: int | None, host: str | None, open_browser: bool) -> None:
     pycache()
     ensure_project_packages()
@@ -375,15 +388,9 @@ def _dev(port: int | None, host: str | None, open_browser: bool) -> None:
     config = Config()
     if config.useVite:
         _require_vite_install()
-    run_host = host or config.useHost
-    asked = port or config.usePort
-    run_port, client_port = Server.resolve_ports(run_host, asked)
-    _announce_port(asked, run_port)
-    occupied = OccupiedPort(asked, run_port)
+    endpoint, client_port, occupied = _prepare_endpoint(config, host, port)
     Server.check_nexy_prod(delete=True)
 
-    ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)
-    endpoint = Endpoint(run_host, run_port, ssl_keyfile, ssl_certfile)
     started = time.perf_counter()
     session = _initialise(config, client_port, endpoint.protocol == "https")
     _serve(config, endpoint, session, started, occupied, open_browser)
