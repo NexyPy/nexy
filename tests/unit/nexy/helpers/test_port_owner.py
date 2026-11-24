@@ -15,6 +15,32 @@ def _done(stdout: str = "") -> subprocess.CompletedProcess[str]:
     return subprocess.CompletedProcess([], 0, stdout)
 
 
+def test_windows_owner_resolves_netstat_from_path(monkeypatch):
+    seen = []
+
+    def run(argv, **_kwargs):
+        seen.append(argv)
+        return _done()
+
+    monkeypatch.setattr(port_owner.shutil, "which", lambda _name: "C:/bin/netstat.exe")
+    monkeypatch.setattr(port_owner.subprocess, "run", run)
+    port_owner._windows_pid(3000)
+    assert seen == [["C:/bin/netstat.exe", "-ano", "-p", "tcp"]]
+
+
+def test_windows_owner_falls_back_to_netstat_name(monkeypatch):
+    seen = []
+
+    def run(argv, **_kwargs):
+        seen.append(argv)
+        return _done()
+
+    monkeypatch.setattr(port_owner.shutil, "which", lambda _name: None)
+    monkeypatch.setattr(port_owner.subprocess, "run", run)
+    port_owner._windows_pid(3000)
+    assert seen == [["netstat", "-ano", "-p", "tcp"]]
+
+
 def test_windows_owner_comes_from_netstat(monkeypatch):
     monkeypatch.setattr(
         port_owner.subprocess,

@@ -17,14 +17,15 @@ import sys
 
 def _windows_pid(port: int) -> int | None:
     """The PID netstat reports as listening on *port*."""
+    netstat = shutil.which("netstat") or "netstat"
     try:
         done = subprocess.run(
-            ["netstat", "-ano", "-p", "tcp"],
+            [netstat, "-ano", "-p", "tcp"],
             capture_output=True,
             text=True,
             timeout=3,
             check=False,
-        )  # nosec B603 - fixed argv, no shell
+        )  # nosec B603/B607 - resolved via shutil.which, fixed argv, no shell
     except (OSError, subprocess.SubprocessError):
         return None
     listening = re.compile(rf"\s*TCP\s+\S+:{port}\s+\S+\s+LISTENING\s+(\d+)")
