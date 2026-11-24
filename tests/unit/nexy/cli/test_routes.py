@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import patch
 
 from typer.testing import CliRunner
 
@@ -68,3 +69,15 @@ def test_routes_reports_when_no_routes_exist(nexy_project) -> None:
 
     assert result.exit_code == 0
     assert "No routes found." in result.stdout
+
+
+def test_get_routes_returns_empty_when_server_is_unavailable() -> None:
+    from nexy.modules.cli.commands.routes import _get_routes
+
+    with patch("nexy.modules.routers.app.AppServer") as app_server:
+        application = app_server.return_value
+        application.server = None
+
+        assert _get_routes() == []
+
+        application.run.assert_called_once()
