@@ -75,7 +75,6 @@ def test_start_names_no_reference_that_only_dev_serves(monkeypatch):
 
 
 def test_open_opens_the_local_address_once_the_server_answers(monkeypatch):
-    import socket
     import threading
     import webbrowser
 
@@ -98,7 +97,7 @@ def test_open_opens_the_local_address_once_the_server_answers(monkeypatch):
     monkeypatch.setattr(
         start_module.socket,
         "create_connection",
-        lambda *_a, **_k: type("C", (), {"__enter__": lambda s: s, "__exit__": lambda *a: None})(),
+        lambda *_a, **_k: type("C", (), {"__enter__": lambda s: s, "__exit__": lambda *_: None})(),
     )
     monkeypatch.setattr(webbrowser, "open", fake_open)
 
