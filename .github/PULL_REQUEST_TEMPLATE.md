@@ -12,8 +12,12 @@
 ## Summary
 
 <!--
-  The motivation: what problem does this solve, for whom? If it fixes an issue, write "Fixes #123".
+  The motivation: what problem does this solve, for whom? Link one issue on its own line below:
+  "Closes #123", "Fixes #123" or "Resolves #123". CI requires it and a bot closes the issue
+  when the pull request is merged.
 -->
+
+Closes #123
 
 ## How did you test this change?
 
@@ -24,6 +28,7 @@
 
 ## Checklist
 
+- [ ] The description has a `Closes #123`, `Fixes #123` or `Resolves #123` line
 - [ ] `python scripts/verify.py` passes (lint, format, typecheck, structure, tests)
 - [ ] Each new behaviour has a test that failed before the change
 - [ ] Each commit changes one file written by hand, with its test (a docs page also carries its
