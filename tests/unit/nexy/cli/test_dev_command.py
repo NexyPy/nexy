@@ -499,6 +499,22 @@ class TestBrowserOpener:
         opener.open_once_started(SimpleNamespace(started=True), lambda: True)
         assert opened == ["http://localhost:3000"]
 
+    def test_the_address_opens_once_a_waiting_server_listens(self, monkeypatch):
+        opened: list[str] = []
+        naps: list[float] = []
+        monkeypatch.setattr(dev_module.webbrowser, "open", lambda url: opened.append(url) or True)
+        monkeypatch.setattr(dev_module.time, "sleep", naps.append)
+        opener = dev_module._BrowserOpener("http://localhost:3000")
+        server = SimpleNamespace(started=False)
+
+        def still_running() -> bool:
+            server.started = True  # the server listens while the opener waits
+            return True
+
+        opener.open_once_started(server, still_running)
+        assert naps == [0.05]
+        assert opened == ["http://localhost:3000"]
+
     def test_without_an_address_no_watch_starts(self, monkeypatch):
         started: list[object] = []
         monkeypatch.setattr(dev_module.threading, "Thread", lambda *a, **k: started.append(k))
