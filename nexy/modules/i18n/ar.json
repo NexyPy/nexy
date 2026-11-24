@@ -111,7 +111,8 @@
     "vite_failed": "تعذّر تشغيل Vite.",
     "vite_failed_hint": "راجع مخرجات Vite أعلاه لمعرفة السبب.",
     "server_failed": "توقف الخادم ({reason}): في انتظار الإصلاح.",
-    "port_in_use": "المنفذ {asked} مستخدم، يتم استخدام {port} بدلاً منه."
+    "port_in_use": "المنفذ {asked} مستخدم، يتم استخدام {port} بدلاً منه.",
+    "help_open": "فتح المتصفح بمجرد استجابة الخادم"
   },
   "format": {
     "failed": "فشل {count} ملف",

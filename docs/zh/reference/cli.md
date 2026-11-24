@@ -24,6 +24,7 @@
 |---|---|---|
 | `dev`，`start` | `--port` | `usePort`，`3000` |
 | `dev`，`start` | `--host` | `useHost`，`0.0.0.0` |
+| `dev` | `--open`，`-o` | off - 服务器应答后在本地地址上打开浏览器 |
 | `build` | `--check` | off - 构建后运行 ruff 和 mypy |
 | `format` | `--check` | off - 报告而不是重写 |
 | `test` | `--client` | off - 还运行 vitest 而不是单独运行 pytest |

@@ -24,6 +24,7 @@ Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` cr
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
+| `dev` | `--open`, `-o` | off - ouvre le navigateur sur l'adresse locale une fois que le serveur répond |
 | `build` | `--check` | off - exécute ruff et mypy après la construction |
 | `format` | `--check` | off - rapport au lieu de réécrire |
 | `test` | `--client` | off - exécute également Vitest au lieu de pytest seul |

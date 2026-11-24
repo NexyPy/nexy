@@ -5,6 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [Unreleased]
 
+## [2.9.0] - 2026-11-24
+
+### Added
+
+- **`nx dev --open` opens the browser once the server answers** (`-o`), on the local address, and
+  only once across reloads (#457, #627).
+- **The ready block shows where the API reference answers** once the server is ready (#625).
+- **New examples and short samples**: `fbr-basics`, `with-isr`, `with-sitemap`, `with-i18n`,
+  `modular-guards`, `custom-router`, `with-postgresql`, `auth`, and `chat`, and the README lists
+  the examples and short samples (#569, #571, #576, #578, #579, #581, #583, #585, #587, #589).
+- **An island renders server HTML from the literal props its page gives it** (#596).
+
 ### Changed
 
 - **The `/connection` page of every web starter is now a Todos app at `/todos`.** Add a task, tick
@@ -13,6 +25,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
   how long the server took. Without an ORM the tasks are a list the server keeps; with one they are
   the `todos` table, which the first migration creates. A web project no longer ships the `users`
   page; an API project keeps its users.
+
+### Fixed
+
+- **Vite never warms up a declaration file in dev** (#624).
+- **A dynamic route is never reported as hidden by the API reference** (#623).
+- **Svelte strips the document of a layout whose script ends with a space** (#621).
+- **The VS Code extension reads a script or style block closed with a space or written in
+  capitals** (#616).
+- **The VS Code extension reads a Python module path without exponential backtracking** (#611).
+- **The translator keeps props as written in every translation** (#609).
+- **Skills tell a project about `.nexy` files only when it has them, and give each project only the
+  skill text of its mode** (#608, #606).
+- **Dependency version floors are raised past known CVEs, and audited** (#604); `diff` overridden to
+  8.0.3 or later past CVE-2026-24001 (#603).
+- **Vue SSG imports the server renderer from `vue`, so pnpm projects get server HTML** (#597).
+- **React, Preact and Solid islands show their defaults, not `{{ prop }}`, before hydration** (#594).
+- **The `.nexy` compiler closes the logic block only on a line of dashes** (#577).
+
+### Security
+
+- **CI and E2E jobs run with a read-only token** (#613).
+
+### Documentation
+
+- **How errors and path types differ from FastAPI under `useRouter`** (#593).
+- **Rendering docs write props as code, so translations keep the word** (#599).
 
 ## [2.8.0] - 2026-11-20
 
