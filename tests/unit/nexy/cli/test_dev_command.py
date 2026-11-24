@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import signal
+import threading
 from types import SimpleNamespace
 from typing import Any
 
@@ -107,9 +108,11 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
         def __init__(self, uvicorn_config: Any) -> None:
             self.config = uvicorn_config
             self.should_exit = False
+            self.started = False
             rec("uvicorn_new")
 
         def run(self) -> None:
+            self.started = True
             rec("uvicorn_run")
             step = state.serve_plan.pop(0) if state.serve_plan else "exit"
             if step == "restart":
@@ -437,3 +440,25 @@ def test_dev_says_where_the_api_reference_answers(world, monkeypatch):
     monkeypatch.setattr(launcher, "entry", lambda _label, value: shown.append(value))
     dev_module.dev()
     assert "http://localhost:3000/docs" in shown
+
+
+def test_open_opens_the_local_address_once_the_server_answers(world, monkeypatch):
+    opened: list[str] = []
+    done = threading.Event()
+
+    def fake_open(url: str) -> bool:
+        opened.append(url)
+        done.set()
+        return True
+
+    monkeypatch.setattr(dev_module.webbrowser, "open", fake_open)
+    dev_module.dev(open_browser=True)
+    assert done.wait(2), "the browser was never opened"
+    assert opened == ["http://localhost:3000"]
+
+
+def test_without_open_no_browser_is_opened(world, monkeypatch):
+    opened: list[str] = []
+    monkeypatch.setattr(dev_module.webbrowser, "open", lambda url: opened.append(url) or True)
+    dev_module.dev()
+    assert opened == []
