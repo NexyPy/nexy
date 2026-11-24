@@ -5,6 +5,7 @@ import sys
 import threading
 import time
 import webbrowser
+from collections.abc import Callable
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import Annotated, Any
@@ -152,6 +153,33 @@ def _import_app() -> None:
     import_from_string(_APP)
 
 
+class _BrowserOpener:
+    """`nx dev --open`: opens the local address once, when a server first answers."""
+
+    def __init__(self, url: str | None) -> None:
+        self._url = url  # None once opened
+        self._lock = threading.Lock()
+
+    def watch(self, server: Any, is_running: Callable[[], bool]) -> None:
+        """Wait for *server* to listen in the background, then open the address if still due."""
+        if self._url:
+            threading.Thread(
+                target=self.open_once_started, args=(server, is_running), daemon=True
+            ).start()
+
+    def open_once_started(self, server: Any, is_running: Callable[[], bool]) -> None:
+        """A run that ends before it listens leaves the address for the next run."""
+        while not server.started:
+            if not is_running():
+                return
+            time.sleep(0.05)
+        with self._lock:
+            url, self._url = self._url, None
+        if url:
+            # False when no browser can be found (over SSH): the address is already on screen.
+            webbrowser.open(url)
+
+
 class _Reloader:
     """Runs uvicorn and restarts it whenever the watcher asks."""
 
@@ -162,9 +190,7 @@ class _Reloader:
         self._server: Any = None
         self._changed = threading.Event()
         self._announced = False
-        # The address `--open` opens once the server first answers; None once it is opened.
-        self._open_url = open_url
-        self._open_lock = threading.Lock()
+        self._opener = _BrowserOpener(open_url)
 
     def request_restart(self) -> None:
         """A Python file changed: the watcher already named it."""
@@ -239,7 +265,7 @@ class _Reloader:
 
         from nexy.helpers.server.uvicorn_config import DEV_SERVE_LIMITS, NEXY_LOG_CONFIG
 
-        self._server = uvicorn.Server(
+        self._server = server = uvicorn.Server(
             uvicorn.Config(
                 _APP,
                 host=endpoint.host,
@@ -252,24 +278,9 @@ class _Reloader:
                 ssl_certfile=endpoint.ssl_certfile,
             )
         )
-        if self._open_url:
-            opener = threading.Thread(target=self._open_once_started, args=(self._server,))
-            opener.daemon = True
-            opener.start()
-        self._server.run()
+        self._opener.watch(server, lambda: self._server is server)
+        server.run()
         self._server = None
-
-    def _open_once_started(self, server: Any) -> None:
-        """Open the browser once *server* listens; a run that ends before leaves it for the next."""
-        while not server.started:
-            if self._server is not server:
-                return
-            time.sleep(0.05)
-        with self._open_lock:
-            url, self._open_url = self._open_url, None
-        if url:
-            # False when no browser can be found (over SSH): the address is already on screen.
-            webbrowser.open(url)
 
 
 def _watch(config: Config, reloader: _Reloader) -> Any:
