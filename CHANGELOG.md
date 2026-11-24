@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [Unreleased]
 
+## [2.11.1] - 2026-11-24
+
+### Fixed
+
+- **Stopping `nx dev` or `nx start` frees a busy port almost immediately.** Linux reads the TCP
+  table from `/proc` instead of spawning `lsof`, Windows queries `GetExtendedTcpTable` and calls
+  `TerminateProcess` instead of spawning `netstat` and `taskkill`, and Unix escalates to `SIGKILL`
+  after 100 ms when the owner ignores `SIGTERM`. The recorded PID is checked again before any
+  process is stopped (#644).
+
 ## [2.11.0] - 2026-11-24
 
 ### Added
