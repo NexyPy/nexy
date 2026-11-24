@@ -237,6 +237,14 @@
     "no_orm": "No hay ningún ORM compatible. Instale uno: sqlmodel, tortoise-orm, sqlalchemy",
     "tool_missing": "Error: {tool} no está en el PATH. Instálelo e inténtelo de nuevo."
   },
+  "routes": {
+    "title": "Rutas",
+    "methods": "Métodos",
+    "path": "Ruta",
+    "source": "Archivo de origen",
+    "unknown": "Desconocido",
+    "empty": "No se encontraron rutas."
+  },
   "server": {
     "launch_failed": "No se pudo iniciar el servidor",
     "local": "Local:",

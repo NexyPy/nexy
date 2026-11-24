@@ -237,6 +237,14 @@
     "no_orm": "لم يتم العثور على ORM مدعوم. ثبّت أحدها: sqlmodel أو tortoise-orm أو sqlalchemy",
     "tool_missing": "خطأ: لم يتم العثور على {tool} في PATH. ثبّته ثم حاول مرة أخرى."
   },
+  "routes": {
+    "title": "المسارات",
+    "methods": "الطرق",
+    "path": "المسار",
+    "source": "ملف المصدر",
+    "unknown": "غير معروف",
+    "empty": "لم يتم العثور على مسارات."
+  },
   "server": {
     "launch_failed": "تعذّر تشغيل الخادم",
     "local": "محلي:",

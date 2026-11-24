@@ -16,7 +16,20 @@ El binario es `nx` (también instalado como `nexy`). `uvx nexy new` crea un proy
 | `nx check` | `nx c` | verificación de tipo: mypy en Python, `tsc` en TypeScript |
 | `nx format` | `nx f` | formato Python (ruff), JS/TS (más bonito), archivos `.nexy` |
 | `nx test` | - | ejecutar pytest; `--client` agrega vitest |
+| `nx routes` | - | enumerar rutas de aplicaciones, métodos HTTP, rutas y archivos fuente |
 | `nx skills` | - | agregar o actualizar las habilidades, `AGENTS.md` y `CLAUDE.md` para agentes de codificación |
+
+## `nx routes`
+
+Enumera las rutas de la aplicación, sus métodos HTTP, rutas y archivos fuente en una tabla. Las rutas están ordenadas por camino. La ruta del favicon del marco está excluida.
+
+Ejecútelo dentro del entorno del proyecto:
+
+```bash
+nx routes
+```
+
+Si no se encuentran rutas de aplicación, imprime `No routes found.`.
 
 ## Banderas
 
@@ -27,7 +40,7 @@ El binario es `nx` (también instalado como `nexy`). `uvx nexy new` crea un proy
 | `dev`, `start` | `--open`, `-o` | desactivado: abra el navegador en la dirección local una vez que el servidor responda |
 | `build` | `--check` | off: ejecuta ruff y mypy después de la compilación. |
 | `format` | `--check` | apagado - informar en lugar de reescribir |
-| `test` | `--client` | off - también ejecuta vitest en lugar de pytest solo |
+| `test` | `--client` | desactivado: también ejecuta vitest en lugar de pytest solo |
 | `test` | `--no-server` | activado: omita pytest cuando solo desee pruebas de clientes |
 | `new` | `--template`, `-t` | ninguno: clonar una plantilla registrada sin indicaciones |
 | `new` | `--no-agents` | agentes en - omitir `AGENTS.md` y las habilidades del agente |

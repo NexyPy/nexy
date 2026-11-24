@@ -16,7 +16,20 @@ Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` cr
 | `nx check` | `nx c` | type-check : mypy sur Python, `tsc` sur TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (plus joli), `.nexy` fichiers |
 | `nx test` | - | exécuter pytest ; `--client` ajoute vitest |
-| `nx skills` | - | ajouter ou actualiser les compétences, `AGENTS.md` et `CLAUDE.md` pour les agents de codage |
+| `nx routes` | - | répertorier les routes d'application, les méthodes HTTP, les chemins et les fichiers sources |
+| `nx skills` | - | ajouter ou rafraîchir les compétences, `AGENTS.md` et `CLAUDE.md` pour les agents de codage |
+
+## `nx routes`
+
+Répertorie les routes de l'application, leurs méthodes HTTP, leurs chemins et leurs fichiers source dans un tableau. Les itinéraires sont triés par chemin. La route favicon du framework est exclue.
+
+Exécutez-le dans l'environnement du projet :
+
+```bash
+nx routes
+```
+
+Si aucune route d'application n'est trouvée, il imprime `No routes found.`.
 
 ## Drapeaux
 
@@ -34,7 +47,7 @@ Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` cr
 | `add` | `--ui`, `--url` | off - force un nom de registre ou une URL lorsqu'il est ambigu |
 | `add` | `--all`, `-a` | off - ajoute tous les composants du registre |
 | `add` | `--sha256` | none - résumé attendu d'un composant distant ; un décalage est interrompu |
-| `migrate` | `--init` | off - écriture de la configuration Alembic ou Aerich |
+| `migrate` | `--init` | off - écrit la configuration Alembic ou Aerich |
 | `migrate` | `--upgrade`, `-u` | off - appliquer les migrations au lieu d'en écrire une nouvelle |
 | `migrate` | `--message`, `-m` | vide - nom de la nouvelle révision |
 
@@ -60,11 +73,11 @@ L'enregistrement d'un fichier cassé n'arrête jamais le serveur. Un fichier `.p
   Fix it and save: the server keeps its last working version.
 ```
 
-Un fichier qui analyse mais échoue au chargement de l'application (une importation manquante, une erreur au niveau du module) est signalé de la même manière et `nx dev` attend votre prochaine sauvegarde ; rien n'est servi jusqu'à ce que l'application se charge à nouveau. Une sauvegarde valide lit `nexy » update <file>` pendant le rechargement du serveur. Les fichiers Markdown en dehors de `src/routes`, tels que `README.md`, ne sont pas des pages et ne déclenchent rien. `nx start` est plus strict : il se termine avec le code 1, et ne démarre rien, si un fichier de route ne peut pas se charger ou si `nx build` n'a pas encore construit le projet.
+Un fichier qui analyse mais échoue au chargement de l'application (une importation manquante, une erreur au niveau du module) est signalé de la même manière et `nx dev` attend votre prochaine sauvegarde ; rien n'est servi jusqu'à ce que l'application se charge à nouveau. Une sauvegarde valide indique `nexy » update <file>` pendant le rechargement du serveur. Les fichiers Markdown en dehors de `src/routes`, tels que `README.md`, ne sont pas des pages et ne déclenchent rien. `nx start` est plus strict : il se termine avec le code 1, et ne démarre rien, si un fichier de route ne peut pas se charger ou si `nx build` n'a pas encore construit le projet.
 
 ## Questions de `nx new`
 
-`nx new` demande, dans cet ordre : le routeur basé sur les fichiers, le type de projet (Web ou API), le routage côté client, le framework client, comment styliser l'application, l'alias d'importation, l'ORM, la base de données et l'URL de la base de données. Chaque option a une brève description et celle actuelle est mise en surbrillance. Les questions qui ne s'appliquent pas sont ignorées (un projet API n'a ni cadre ni style ; en choisissant **Aucune base de données** car l'ORM ignore la base de données et l'URL). Déplacez-vous avec les touches fléchées (ou `j`/`k`, ou un chiffre), confirmez avec `enter`, revenez à la question précédente avec `←` ou `esc`, quittez avec `ctrl+c`.
+`nx new` demande, dans cet ordre : le routeur basé sur les fichiers, le type de projet (web ou API), le routage côté client, le framework client, comment styliser l'application, l'alias d'importation, l'ORM, la base de données et l'URL de la base de données. Chaque option a une brève description et celle actuelle est mise en surbrillance. Les questions qui ne s'appliquent pas sont ignorées (un projet API n'a ni cadre ni style ; en choisissant **Aucune base de données** car l'ORM ignore la base de données et l'URL). Déplacez-vous avec les touches fléchées (ou `j`/`k`, ou un chiffre), confirmez avec `enter`, revenez à la question précédente avec `←` ou `esc`, quittez avec `ctrl+c`.
 
 | Question | Choix |
 |---|---|

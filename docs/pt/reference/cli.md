@@ -16,7 +16,20 @@ O binário é `nx` (também instalado como `nexy`). `uvx nexy new` cria um proje
 | `nx check` | `nx c` | verificação de tipo: mypy em Python, `tsc` em TypeScript |
 | `nx format` | `nx f` | formato Python (ruff), JS/TS (mais bonito), `.nexy` arquivos |
 | `nx test` | - | execute pytest; `--client` adiciona vitest |
-| `nx skills` | - | adicione ou atualize as habilidades, `AGENTS.md` e `CLAUDE.md` para agentes de codificação |
+| `nx routes` | - | listar rotas de aplicativos, métodos HTTP, caminhos e arquivos de origem |
+| `nx skills` | - | adicione ou atualize as habilidades `AGENTS.md` e `CLAUDE.md` para agentes de codificação |
+
+## `nx routes`
+
+Lista as rotas da aplicação, seus métodos HTTP, caminhos e arquivos de origem em uma tabela. As rotas são classificadas por caminho. A rota favicon da estrutura está excluída.
+
+Execute-o dentro do ambiente do projeto:
+
+```bash
+nx routes
+```
+
+Se nenhuma rota de aplicação for encontrada, ele imprime `No routes found.`.
 
 ## Bandeiras
 
@@ -40,7 +53,7 @@ O binário é `nx` (também instalado como `nexy`). `uvx nexy new` cria um proje
 
 ## Saída
 
-Etapas longas (instalação de pacotes, compilação, empacotamento) mostram um botão giratório com o tempo decorrido e a última linha que o comando imprimiu, depois deixa uma linha para trás, como uv faz: `Synced .venv with uv in 1.4s`. Um grupo de etapas (as instalações de `nx new`) também mostra uma barra de progresso e o número de etapas concluídas, `2/5`. Uma etapa com falha é uma linha `error:` com sua causa, `cause: exit 1 after 2.1s`, seguida pelas últimas linhas da saída do comando em vez de ocultá-la. Algo para olhar diz `warning: ...` e o que fazer a seguir `hint: ...`. Os logs de desenvolvimento são lidos `GET » /about 200 in 12ms` para solicitações e `vite » ...` para Vite.
+Etapas longas (instalação de pacotes, compilação, empacotamento) mostram um botão giratório com o tempo decorrido e a última linha que o comando imprimiu, depois deixa uma linha para trás, como uv faz: `Synced .venv with uv in 1.4s`. Um grupo de etapas (as instalações de `nx new`) também mostra uma barra de progresso e o número de etapas concluídas, `2/5`. Uma etapa com falha é uma linha `error:` com sua causa, `cause: exit 1 after 2.1s`, seguida pelas últimas linhas da saída do comando em vez de ocultá-la. Algo para observar diz `warning: ...` e o que fazer a seguir `hint: ...`. Os logs de desenvolvimento são lidos `GET » /about 200 in 12ms` para solicitações e `vite » ...` para Vite.
 
 ## Erros durante a execução de `nx dev`
 
@@ -75,7 +88,7 @@ Um arquivo que analisa, mas falha quando o aplicativo é carregado (uma importa�
 
 O driver de banco de dados para o ORM escolhido é instalado com ele (`psycopg`, `pymysql`, `asyncpg` ou `aiomysql`), e a URL é gravada em `.env`.
 
-Antes de instalar pacotes, `nx new` verifica a conexão. Sem ele, ele ignora as instalações e solicita que você execute `uv sync` e a instalação do seu gerenciador de pacotes mais tarde. Com um, ele imprime a latência e velocidade de download, e avisa quando a conexão está lenta (acima de 400 ms, ou abaixo de 100 KB/s). Cada linha de instalação nomeia a ferramenta e a pasta que ela preenche, por exemplo `pnpm install node_modules` ou `uv sync .venv`.
+Antes de instalar os pacotes, `nx new` verifica a conexão. Sem ele, ele ignora as instalações e solicita que você execute `uv sync` e a instalação do seu gerenciador de pacotes mais tarde. Com um, ele imprime a latência e velocidade de download, e avisa quando a conexão está lenta (acima de 400 ms, ou abaixo de 100 KB/s). Cada linha de instalação nomeia a ferramenta e a pasta que ela preenche, por exemplo `pnpm install node_modules` ou `uv sync .venv`.
 
 ## O que `dev`, `build` e `start` criam
 
