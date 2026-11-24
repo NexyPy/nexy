@@ -384,12 +384,15 @@ npm run test
 - [ ] Documentation updated (if public API change)
 - [ ] Conventional commit messages
 - [ ] One module/feature per PR
+- [ ] The description links one issue with `Closes #123`, `Fixes #123` or `Resolves #123`
 
 ### Review
 
 1. At least one maintainer review required
 2. Address feedback with additional commits (no force-push during review)
 3. Maintainers squash-merge approved PRs
+4. The `Issue link` check fails until the description names an issue; a bot closes that issue when
+   the pull request is merged
 
 ## Triage
 
