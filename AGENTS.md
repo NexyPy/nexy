@@ -26,7 +26,7 @@ What a developer sees:
   commits, PRs, issues or replies: no em/en dash, arrow, ellipsis character, curly quotes, bullet,
   middle dot, check mark, warning sign, box drawing or invisible space. A menu separator (mobile
   menu included) is a CSS border or gap. List and exceptions: `skills/nexy-principles/SKILL.md`.
-- **All code in English**: No French comments or variables.
+- **All text in English**: code, tests, commits, pull requests, issues, comments and replies. No French comments or variables.
 
 ## Philosophy (KISS, TDD, SOLID)
 
