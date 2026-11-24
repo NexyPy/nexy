@@ -57,8 +57,8 @@ def _start_shows(monkeypatch, use_docs: bool | str) -> list[str]:
     monkeypatch.setattr(start_module, "_refuse_unbuilt_project", lambda: None)
     monkeypatch.setattr(start_module, "_route_failures", list)
     monkeypatch.setattr(start_module, "_endpoint", lambda *_: Endpoint("127.0.0.1", 8000))
-    monkeypatch.setattr(start_module, "_serve", lambda _endpoint: None)
-    config = SimpleNamespace(useDocs=use_docs, useDocsUrl="/docs")
+    monkeypatch.setattr(start_module, "_serve", lambda *_args, **_kwargs: None)
+    config = SimpleNamespace(useDocs=use_docs, useDocsUrl="/docs", usePort=8000)
     monkeypatch.setattr(start_module, "Config", lambda: config)
     monkeypatch.setattr(launcher, "banner", lambda *_: None)
     monkeypatch.setattr(launcher, "entry", lambda _label, value: shown.append(value))
@@ -72,3 +72,108 @@ def test_start_says_where_the_api_reference_answers(monkeypatch):
 
 def test_start_names_no_reference_that_only_dev_serves(monkeypatch):
     assert "http://localhost:8000/docs" not in _start_shows(monkeypatch, "dev")
+
+
+def test_open_opens_the_local_address_once_the_server_answers(monkeypatch):
+    import threading
+    import webbrowser
+
+    from nexy.helpers.server.listening import Endpoint
+
+    opened: list[str] = []
+    done = threading.Event()
+
+    def fake_open(url: str) -> bool:
+        opened.append(url)
+        done.set()
+        return True
+
+    for step in ("pycache", "ensure_project_packages", "abort_on_invalid_config"):
+        monkeypatch.setattr(start_module, step, lambda: None)
+    monkeypatch.setattr(start_module, "has_build", lambda: True)
+    monkeypatch.setattr(start_module, "_route_failures", list)
+    monkeypatch.setattr(start_module, "_endpoint", lambda *_: Endpoint("127.0.0.1", 8000))
+    monkeypatch.setattr(start_module.Server, "uvicorn", lambda **_: True)
+    monkeypatch.setattr(
+        start_module.socket,
+        "create_connection",
+        lambda *_a, **_k: type("C", (), {"__enter__": lambda s: s, "__exit__": lambda *_: None})(),
+    )
+    monkeypatch.setattr(webbrowser, "open", fake_open)
+
+    start_module.start(open_browser=True)
+
+    assert done.wait(2), "the browser was never opened"
+    assert opened == ["http://localhost:8000"]
+
+
+def test_without_open_no_browser_is_opened(monkeypatch):
+    import webbrowser
+
+    from nexy.helpers.server.listening import Endpoint
+
+    opened: list[str] = []
+    for step in ("pycache", "ensure_project_packages", "abort_on_invalid_config"):
+        monkeypatch.setattr(start_module, step, lambda: None)
+    monkeypatch.setattr(start_module, "has_build", lambda: True)
+    monkeypatch.setattr(start_module, "_route_failures", list)
+    monkeypatch.setattr(start_module, "_endpoint", lambda *_: Endpoint("127.0.0.1", 8000))
+    monkeypatch.setattr(start_module.Server, "uvicorn", lambda **_: True)
+    monkeypatch.setattr(webbrowser, "open", lambda url: opened.append(url) or True)
+
+    start_module.start()
+
+    assert opened == []
+
+
+class _FreedPort:
+    asked = 3000
+
+    def free(self):
+        return 4242
+
+
+class _KeptPort:
+    asked = 3000
+
+    def free(self):
+        return None
+
+
+def test_start_reports_the_port_it_freed_on_stop(monkeypatch, capsys):
+    from nexy.helpers.server.listening import Endpoint
+
+    monkeypatch.setattr(start_module.Server, "check_nexy_prod", lambda **_kwargs: None)
+    monkeypatch.setattr(start_module.Server, "uvicorn", lambda **_kwargs: None)
+    start_module._serve(Endpoint("127.0.0.1", 8000), _FreedPort())
+    assert "Freed port 3000: stopped process 4242." in capsys.readouterr().out
+
+
+def test_start_says_nothing_when_no_port_was_freed(monkeypatch, capsys):
+    from nexy.helpers.server.listening import Endpoint
+
+    monkeypatch.setattr(start_module.Server, "check_nexy_prod", lambda **_kwargs: None)
+    monkeypatch.setattr(start_module.Server, "uvicorn", lambda **_kwargs: None)
+    start_module._serve(Endpoint("127.0.0.1", 8000), _KeptPort())
+    assert "Freed port" not in capsys.readouterr().out
+
+
+def test_open_retries_while_the_port_refuses(monkeypatch):
+    from nexy.helpers.server.listening import Endpoint
+
+    attempts = []
+
+    def refuse_once(*_args, **_kwargs):
+        attempts.append(1)
+        if len(attempts) == 1:
+            raise OSError("not listening yet")
+        return type("C", (), {"__enter__": lambda self: self, "__exit__": lambda *_: None})()
+
+    monkeypatch.setattr(start_module.socket, "create_connection", refuse_once)
+    monkeypatch.setattr(start_module.time, "sleep", lambda *_: None)
+    monkeypatch.setattr(start_module.webbrowser, "open", lambda _url: True)
+
+    endpoint = Endpoint("127.0.0.1", 8000)
+    start_module._open_once_listening(endpoint, endpoint.url("localhost"))
+
+    assert len(attempts) == 2

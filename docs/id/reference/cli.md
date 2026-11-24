@@ -37,10 +37,11 @@ Jika tidak ada rute aplikasi yang ditemukan, ia akan mencetak `No routes found.`
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
+| `dev`, `start` | `--open`, `-o` | mati - buka browser di alamat lokal setelah server menjawab |
 | `build` | `--check` | off - menjalankan ruff dan mypy setelah build |
 | `format` | `--check` | mati - laporkan alih-alih menulis ulang |
 | `test` | `--client` | off - jalankan juga vitest alih-alih pytest saja |
-| `test` | `--no-server` | aktif - lewati pytest bila Anda hanya ingin pengujian klien |
+| `test` | `--no-server` | aktif - lewati pytest bila Anda hanya menginginkan pengujian klien |
 | `new` | `--template`, `-t` | tidak ada - mengkloning templat terdaftar tanpa diminta |
 | `new` | `--no-agents` | agen aktif - lewati `AGENTS.md` dan keterampilan agen |
 | `add` | `--ui`, `--url` | off - memaksakan nama registri atau URL jika tidak jelas |
@@ -91,7 +92,7 @@ Sebelum menginstal paket, `nx new` memeriksa koneksi. Tanpa satu pun, ia akan me
 
 ## Apa yang `dev`, `build` dan `start` ciptakan
 
-Sebelum dijalankan, ketiga perintah tersebut membuat `__init__.py` kosong di `src/` dan di setiap folder di bawahnya yang menyimpan file `.py` atau `.nexy`, sehingga rute seperti `src/routes/users.py` mengimpor dengan cara yang sama ke semuanya. File yang ada tidak pernah disentuh, dan `nx dev` melakukan hal yang sama lagi saat Anda menambahkan folder. Python bytecode masuk ke `__nexy__/__pycache__`, jadi tidak ada folder `__pycache__` yang muncul di sebelah sumber Anda.
+Sebelum dijalankan, ketiga perintah tersebut membuat `__init__.py` kosong di `src/` dan di setiap folder di bawahnya yang menyimpan file `.py` atau `.nexy`, sehingga rute seperti `src/routes/users.py` mengimpor dengan cara yang sama ke semuanya. File yang sudah ada tidak pernah disentuh, dan `nx dev` melakukan hal yang sama lagi saat Anda menambahkan folder. Python bytecode masuk ke `__nexy__/__pycache__`, jadi tidak ada folder `__pycache__` yang muncul di sebelah sumber Anda.
 
 ## Bahasa
 
@@ -101,14 +102,14 @@ Baris perintah berbicara bahasa Inggris, Cina, Hindi, Spanyol, Portugis, Prancis
 2. variabel lokal shell Anda (`LC_ALL`, `LC_MESSAGES`, `LANG`, lalu `LANGUAGE`);
 3. bahasa sistem operasi Anda.
 
-Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimiliki bahasa tersebut. Hanya apa yang `nx` cetak yang diterjemahkan: kesalahan kompiler, penelusuran balik, dan keluaran alat yang dijalankannya tetap sebagaimana adanya. Terjemahannya belum ditinjau oleh penutur asli: koreksi dipersilahkan sebagai permintaan tarik ke `nexy/modules/i18n/<language>.json`.
+Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimiliki bahasa tersebut. Hanya apa yang `nx` cetak yang diterjemahkan: kesalahan kompiler, penelusuran balik, dan keluaran alat yang dijalankannya tetap sebagaimana adanya. Terjemahannya belum ditinjau oleh penutur asli: koreksi dipersilahkan sebagai permintaan penarikan ke `nexy/modules/i18n/<language>.json`.
 
 ## Membangun perilaku
 
 `nx build` mengkompilasi rute, lalu menggabungkan klien ketika `useVite` aktif.
 
 > [!NOTE]
-> tidak ada bendera `--static` . Hosting statis adalah pilihan penerapan, bukan mode build - lihat [Penerapan](../deployment/README.md).
+> tidak ada bendera `--static`. Hosting statis adalah pilihan penerapan, bukan mode build - lihat [Penerapan](../deployment/README.md).
 
 ## Mengerjakan Nexy itu sendiri
 

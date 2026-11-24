@@ -63,7 +63,6 @@
       "test": "टेस्ट चलाएँ (--server / --client)",
       "skills": "कोडिंग एजेंटों के लिए स्किल और AGENTS.md जोड़ें",
       "info": "Print environment and project versions in one block"
-    
     },
     "commands_header": "उपलब्ध कमांड:",
     "help": "Nexy CLI",
@@ -110,7 +109,9 @@
     "vite_failed": "Vite शुरू नहीं हो सका।",
     "vite_failed_hint": "कारण जानने के लिए ऊपर Vite का आउटपुट देखें।",
     "server_failed": "सर्वर रुक गया ({reason}): सुधार की प्रतीक्षा है।",
-    "port_in_use": "पोर्ट {asked} उपयोग में है, इसके बजाय {port} का उपयोग हो रहा है।"
+    "port_in_use": "पोर्ट {asked} उपयोग में है, इसके बजाय {port} का उपयोग हो रहा है।",
+    "help_open": "सर्वर के जवाब देते ही ब्राउज़र खोलें",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "format": {
     "failed": "{count} फ़ाइलें विफल रहीं",
@@ -123,7 +124,7 @@
     "nexy": "{count} .nexy फ़ाइलें फ़ॉर्मैट हो रही हैं",
     "nexy_done": "{count} .nexy फ़ाइलें फ़ॉर्मैट हो गईं"
   },
-    "info": {
+  "info": {
     "label": {
       "frameworks": "Frameworks",
       "nexy": "Nexy",
@@ -136,7 +137,6 @@
     "not_found": "not found",
     "router_file_based": "file-based"
   },
-
   "init": {
     "alias_invalid": "@, ~, # या $ का उपयोग करें, उसके बाद वैकल्पिक अक्षर (जैसे ~ या @app)।",
     "already": "प्रोजेक्ट यहाँ पहले से शुरू किया जा चुका है",
@@ -257,7 +257,9 @@
   "start": {
     "broken": "{count} रूट फ़ाइल लोड नहीं हो सकीं: सर्वर शुरू नहीं किया गया।",
     "exited": "बंद हो गया",
-    "no_build": "कोई प्रोडक्शन बिल्ड नहीं है: पहले `nexy build` चलाएँ, फिर `nexy start`।"
+    "no_build": "कोई प्रोडक्शन बिल्ड नहीं है: पहले `nexy build` चलाएँ, फिर `nexy start`।",
+    "help_open": "सर्वर के जवाब देते ही ब्राउज़र खोलें",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "test": {
     "failed": "{count} टेस्ट रन विफल रहे",

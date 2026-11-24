@@ -4,10 +4,13 @@ import subprocess  # nosec B404
 import sys
 import threading
 import time
+import webbrowser
+from collections.abc import Callable
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
-from typing import Any
+from typing import Annotated, Any
 
+import typer
 from rich.markup import escape
 
 from nexy.__version__ import __version__
@@ -23,6 +26,7 @@ from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.fs.vfs import VFS
 from nexy.helpers.server.dev_mode import DEV_ENV_VAR
 from nexy.helpers.server.listening import Endpoint, print_listening, served_docs_path
+from nexy.helpers.server.port_owner import OccupiedPort
 from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder, BuildResult
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
@@ -150,16 +154,44 @@ def _import_app() -> None:
     import_from_string(_APP)
 
 
+class _BrowserOpener:
+    """`nx dev --open`: opens the local address once, when a server first answers."""
+
+    def __init__(self, url: str | None) -> None:
+        self._url = url  # None once opened
+        self._lock = threading.Lock()
+
+    def watch(self, server: Any, is_running: Callable[[], bool]) -> None:
+        """Wait for *server* to listen in the background, then open the address if still due."""
+        if self._url:
+            threading.Thread(
+                target=self.open_once_started, args=(server, is_running), daemon=True
+            ).start()
+
+    def open_once_started(self, server: Any, is_running: Callable[[], bool]) -> None:
+        """A run that ends before it listens leaves the address for the next run."""
+        while not server.started:
+            if not is_running():
+                return
+            time.sleep(0.05)
+        with self._lock:
+            url, self._url = self._url, None
+        if url:
+            # False when no browser can be found (over SSH): the address is already on screen.
+            webbrowser.open(url)
+
+
 class _Reloader:
     """Runs uvicorn and restarts it whenever the watcher asks."""
 
-    def __init__(self) -> None:
+    def __init__(self, open_url: str | None = None) -> None:
         self.restart_requested = False
         self.regenerate_requested = False
         self._started = False
         self._server: Any = None
         self._changed = threading.Event()
         self._announced = False
+        self._opener = _BrowserOpener(open_url)
 
     def request_restart(self) -> None:
         """A Python file changed: the watcher already named it."""
@@ -234,7 +266,7 @@ class _Reloader:
 
         from nexy.helpers.server.uvicorn_config import DEV_SERVE_LIMITS, NEXY_LOG_CONFIG
 
-        self._server = uvicorn.Server(
+        self._server = server = uvicorn.Server(
             uvicorn.Config(
                 _APP,
                 host=endpoint.host,
@@ -247,7 +279,8 @@ class _Reloader:
                 ssl_certfile=endpoint.ssl_certfile,
             )
         )
-        self._server.run()
+        self._opener.watch(server, lambda: self._server is server)
+        server.run()
         self._server = None
 
 
@@ -261,17 +294,28 @@ def _watch(config: Config, reloader: _Reloader) -> Any:
     )
 
 
-def _release(observer: Any, session: _Session) -> None:
-    """Stop what `nx dev` started: the watcher and Vite."""
+def _release(observer: Any, session: _Session, occupied: OccupiedPort) -> None:
+    """Stop what `nx dev` started: the watcher, Vite and the port another process held."""
     console.print(f"  [dim]{t('dev.cleaning', 'Cleaning up...')}[/dim]")
     stop_observer(observer)
     Server.stop_process(session.vite)
+    freed = occupied.free()
+    if freed is not None:
+        message = t("dev.port_freed", "Freed port {port}: stopped process {pid}.")
+        console.print(tagged("nexy", message.format(port=occupied.asked, pid=freed), "yellow"))
     console.print(tagged("nexy", t("dev.exited", "exited"), "red"))
 
 
-def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float) -> None:
+def _serve(
+    config: Config,
+    endpoint: Endpoint,
+    session: _Session,
+    started: float,
+    occupied: OccupiedPort,
+    open_browser: bool = False,
+) -> None:
     """Watch the project and serve it until Ctrl+C; always release what was started."""
-    reloader = _Reloader()
+    reloader = _Reloader(endpoint.url("localhost") if open_browser else None)
     observer = None
     try:
         observer = _watch(config, reloader)
@@ -286,7 +330,7 @@ def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float
     except Exception as problem:
         error(escape(str(problem) or type(problem).__name__))
     finally:
-        _release(observer, session)
+        _release(observer, session, occupied)
 
 
 def _interrupt(_signum: int, _frame: Any) -> None:
@@ -300,17 +344,28 @@ def _announce_port(asked: int, used: int) -> None:
         warning(message.format(asked=asked, port=used))
 
 
-def dev(port: int | None = None, host: str | None = None) -> None:
+def dev(
+    port: int | None = None,
+    host: str | None = None,
+    open_browser: Annotated[
+        bool,
+        typer.Option(
+            "--open",
+            "-o",
+            help=t("dev.help_open", "Open the browser once the server answers"),
+        ),
+    ] = False,
+) -> None:
     # uvicorn raises a SIGTERM again once it has stopped: without this, the process would end
     # there, before the clean-up that stops Vite.
     previous = signal.signal(signal.SIGTERM, _interrupt)
     try:
-        _dev(port, host)
+        _dev(port, host, open_browser)
     finally:
         signal.signal(signal.SIGTERM, previous)
 
 
-def _dev(port: int | None, host: str | None) -> None:
+def _dev(port: int | None, host: str | None, open_browser: bool) -> None:
     pycache()
     ensure_project_packages()
     abort_on_invalid_config()
@@ -324,10 +379,11 @@ def _dev(port: int | None, host: str | None) -> None:
     asked = port or config.usePort
     run_port, client_port = Server.resolve_ports(run_host, asked)
     _announce_port(asked, run_port)
+    occupied = OccupiedPort(asked, run_port)
     Server.check_nexy_prod(delete=True)
 
     ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)
     endpoint = Endpoint(run_host, run_port, ssl_keyfile, ssl_certfile)
     started = time.perf_counter()
     session = _initialise(config, client_port, endpoint.protocol == "https")
-    _serve(config, endpoint, session, started)
+    _serve(config, endpoint, session, started, occupied, open_browser)

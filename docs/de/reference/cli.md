@@ -37,6 +37,7 @@ Wenn keine Anwendungsrouten gefunden werden, wird `No routes found.` gedruckt.
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
+| `dev`, `start` | `--open`, `-o` | aus – Öffnen Sie den Browser auf der lokalen Adresse, sobald der Server antwortet |
 | `build` | `--check` | off – führt ruff und mypy nach dem Build aus |
 | `format` | `--check` | aus – melden statt umschreiben |
 | `test` | `--client` | off - Führen Sie auch vitest anstelle von pytest allein aus |
@@ -52,11 +53,11 @@ Wenn keine Anwendungsrouten gefunden werden, wird `No routes found.` gedruckt.
 
 ## Ausgabe
 
-Bei langen Schritten (Pakete installieren, kompilieren, bündeln) wird ein Kreisel mit der verstrichenen Zeit und der letzten Zeile angezeigt, die der Befehl ausgegeben hat. Lassen Sie dann eine Zeile stehen, wie es uv tut: `Synced .venv with uv in 1.4s`. Eine Gruppe von Schritten (die Installationen von `nx new`) zeigt auch einen Fortschrittsbalken und die Anzahl der abgeschlossenen Schritte an, `2/5`. Ein fehlgeschlagener Schritt ist eine `error:`-Zeile mit ihrer Ursache, `cause: exit 1 after 2.1s`, gefolgt von den letzten Zeilen der Befehlsausgabe, anstatt sie auszublenden. Etwas, das Sie sich ansehen sollten, lautet `warning: ...` und was als nächstes zu tun ist `hint: ...`. Entwicklungsprotokolle lauten `GET » /about 200 in 12ms` für Anfragen und `vite » ...` für Vite.
+Bei langen Schritten (Pakete installieren, kompilieren, bündeln) wird ein Spinner mit der verstrichenen Zeit und der letzten Zeile angezeigt, die der Befehl ausgegeben hat. Lassen Sie dann eine Zeile stehen, wie es uv tut: `Synced .venv with uv in 1.4s`. Eine Gruppe von Schritten (die Installationen von `nx new`) zeigt auch einen Fortschrittsbalken und die Anzahl der abgeschlossenen Schritte an, `2/5`. Ein fehlgeschlagener Schritt ist eine `error:`-Zeile mit ihrer Ursache, `cause: exit 1 after 2.1s`, gefolgt von den letzten Zeilen der Befehlsausgabe, anstatt sie auszublenden. Etwas, das Sie sich ansehen sollten, lautet `warning: ...` und was als nächstes zu tun ist `hint: ...`. Die Entwicklungsprotokolle lauten `GET » /about 200 in 12ms` für Anfragen und `vite » ...` für Vite.
 
 ## Fehler beim Ausführen von `nx dev`
 
-Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Datei mit einem Syntaxfehler wird mit ihrer Datei und Zeile gemeldet und der Server stellt weiterhin die letzte funktionierende Version bereit, bis Sie den Fehler beheben:
+Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Datei mit einem Syntaxfehler wird mit ihrer Datei und Zeile gemeldet, und der Server stellt weiterhin die letzte funktionierende Version bereit, bis Sie den Fehler beheben:
 
 ```text
   nexy » error  src/routes/users.py:3
@@ -72,7 +73,7 @@ Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Da
   Fix it and save: the server keeps its last working version.
 ```
 
-Eine Datei, die analysiert wird, aber beim Laden der Anwendung fehlschlägt (ein fehlender Import, ein Fehler auf Modulebene), wird auf die gleiche Weise gemeldet und `nx dev` wartet auf Ihre nächste Speicherung; Es wird nichts bereitgestellt, bis die Anwendung erneut geladen wird. Ein gültiger Speicher lautet `nexy » update <file>`, während der Server neu lädt. Markdown-Dateien außerhalb von `src/routes`, wie etwa `README.md`, sind keine Seiten und lösen nichts aus. `nx start` ist strenger: Es wird mit Code 1 beendet und startet nichts, wenn eine Routendatei nicht geladen werden kann oder wenn `nx build` das Projekt noch nicht erstellt hat.
+Eine Datei, die analysiert wird, aber beim Laden der Anwendung fehlschlägt (ein fehlender Import, ein Fehler auf Modulebene), wird auf die gleiche Weise gemeldet und `nx dev` wartet auf Ihre nächste Speicherung; Es wird nichts bereitgestellt, bis die Anwendung erneut geladen wird. Eine gültige Speicherung lautet `nexy » update <file>`, während der Server neu lädt. Markdown-Dateien außerhalb von `src/routes`, wie etwa `README.md`, sind keine Seiten und lösen nichts aus. `nx start` ist strenger: Es wird mit Code 1 beendet und startet nichts, wenn eine Routendatei nicht geladen werden kann oder wenn `nx build` das Projekt noch nicht erstellt hat.
 
 ## Fragen von `nx new`
 

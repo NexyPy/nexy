@@ -109,7 +109,9 @@
     "vite_failed": "Vite failed to start.",
     "vite_failed_hint": "Read the Vite output above for the cause.",
     "server_failed": "The server stopped ({reason}): waiting for a fix.",
-    "port_in_use": "Port {asked} is in use, using {port} instead."
+    "port_in_use": "Port {asked} is in use, using {port} instead.",
+    "port_freed": "Freed port {port}: stopped process {pid}.",
+    "help_open": "Open the browser once the server answers"
   },
   "format": {
     "failed": "{count} file(s) failed",
@@ -255,7 +257,9 @@
   "start": {
     "broken": "{count} route file(s) failed to load: the server was not started.",
     "exited": "exited",
-    "no_build": "No production build: run `nexy build`, then `nexy start`."
+    "no_build": "No production build: run `nexy build`, then `nexy start`.",
+    "port_freed": "Freed port {port}: stopped process {pid}.",
+    "help_open": "Open the browser once the server answers"
   },
   "test": {
     "failed": "{count} test run(s) failed",

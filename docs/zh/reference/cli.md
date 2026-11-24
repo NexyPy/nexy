@@ -37,6 +37,7 @@ nx routes
 |---|---|---|
 | `dev`，`start` | `--port` | `usePort`，`3000` |
 | `dev`，`start` | `--host` | `useHost`，`0.0.0.0` |
+| `dev`，`start` | `--open`，`-o` | off - 服务器应答后在本地地址上打开浏览器 |
 | `build` | `--check` | off - 构建后运行 ruff 和 mypy |
 | `format` | `--check` | off - 报告而不是重写 |
 | `test` | `--client` | off - 还运行 vitest 而不是单独运行 pytest |
@@ -52,7 +53,7 @@ nx routes
 
 ## 输出
 
-长步骤（安装包、编译、捆绑）会显示一个旋转器，其中包含经过的时间和命令打印的最后一行，然后留下一行，如 uv 所做的那样：`Synced .venv with uv in 1.4s`。一组步骤（`nx new` 的安装）还显示进度条和已完成步骤的数量 `2/5`。失败的步骤是 `error:` 行及其原因 `cause: exit 1 after 2.1s`，后跟命令输出的最后几行，而不是隐藏它。需要注意的内容是 `warning: ...`，以及接下来要做什么 `hint: ...`。开发日志对于请求读取 `GET » /about 200 in 12ms`，对于 Vite 读取 `vite » ...`。
+长步骤（安装包、编译、捆绑）会显示一个旋转器，其中包含经过的时间和命令打印的最后一行，然后留下一行，如 uv 所做的那样：`Synced .venv with uv in 1.4s`。一组步骤（`nx new` 的安装）还显示进度条和已完成的步骤数 `2/5`。失败的步骤是 `error:` 行及其原因 `cause: exit 1 after 2.1s`，后跟命令输出的最后几行，而不是隐藏它。需要注意的内容是 `warning: ...`，以及接下来要做什么 `hint: ...`。开发日志对于请求读取 `GET » /about 200 in 12ms`，对于 Vite 读取 `vite » ...`。
 
 ## `nx dev` 运行时出错
 
@@ -89,7 +90,7 @@ nx routes
 
 在安装软件包之前，`nx new` 检查连接。如果没有，它会跳过安装并告诉您稍后运行 `uv sync` 和包管理器的安装。使用其中之一时，它会打印延迟和下载速度，并在连接速度较慢（超过 400 毫秒或低于 100 KB/s）时发出警告。每个安装行都会命名该工具及其填充的文件夹，例如 `pnpm install node_modules` 或 `uv sync .venv`。
 
-## `dev`、`build` 和 `start` 创建了什么
+## `dev`、`build` 和 `start` 创建什么
 
 在运行之前，这三个命令会在 `src/` 及其下的每个包含 `.py` 或 `.nexy` 文件的文件夹中创建一个空的 `__init__.py`，因此诸如 `src/routes/users.py` 之类的路由在所有这些路径中都会以相同的方式导入。现有文件永远不会被触及，并且当您添加文件夹时 `nx dev` 会再次执行相同的操作。 Python 字节码转到 `__nexy__/__pycache__`，因此源旁边不会出现 `__pycache__` 文件夹。
 
@@ -101,7 +102,7 @@ nx routes
 2. shell 的语言环境变量（`LC_ALL`、`LC_MESSAGES`、`LANG`，然后是 `LANGUAGE`）；
 3. 您的操作系统的语言。
 
-其他任何东西都是英语，任何一种语言还没有的信息也是英语。仅翻译 `nx` 打印的内容：编译器错误、回溯及其运行的工具的输出保持原样。这些翻译尚未经过母语人士的审核：欢迎更正，作为 `nexy/modules/i18n/<language>.json` 的拉取请求。
+其他任何东西都是英语，任何一种语言还没有的信息也是英语。仅翻译 `nx` 打印的内容：编译器错误、回溯及其运行的工具的输出保持原样。这些翻译尚未经过母语人士的审核：欢迎更正，作为对 `nexy/modules/i18n/<language>.json` 的拉取请求。
 
 ## 建立行为
 

@@ -37,6 +37,7 @@ Si aucune route d'application n'est trouvée, il imprime `No routes found.`.
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
+| `dev`, `start` | `--open`, `-o` | off - ouvre le navigateur sur l'adresse locale une fois que le serveur répond |
 | `build` | `--check` | off - exécute ruff et mypy après la construction |
 | `format` | `--check` | off - rapport au lieu de réécrire |
 | `test` | `--client` | off - exécute également Vitest au lieu de pytest seul |
@@ -46,7 +47,7 @@ Si aucune route d'application n'est trouvée, il imprime `No routes found.`.
 | `add` | `--ui`, `--url` | off - force un nom de registre ou une URL lorsqu'il est ambigu |
 | `add` | `--all`, `-a` | off - ajoute tous les composants du registre |
 | `add` | `--sha256` | none - résumé attendu d'un composant distant ; un décalage est interrompu |
-| `migrate` | `--init` | off - écriture de la configuration Alembic ou Aerich |
+| `migrate` | `--init` | off - écrit la configuration Alembic ou Aerich |
 | `migrate` | `--upgrade`, `-u` | off - appliquer les migrations au lieu d'en écrire une nouvelle |
 | `migrate` | `--message`, `-m` | vide - nom de la nouvelle révision |
 
@@ -76,7 +77,7 @@ Un fichier qui analyse mais échoue au chargement de l'application (une importat
 
 ## Questions de `nx new`
 
-`nx new` demande, dans cet ordre : le routeur basé sur les fichiers, le type de projet (Web ou API), le routage côté client, le framework client, comment styliser l'application, l'alias d'importation, l'ORM, la base de données et l'URL de la base de données. Chaque option a une brève description et celle actuelle est mise en surbrillance. Les questions qui ne s'appliquent pas sont ignorées (un projet API n'a ni cadre ni style ; en choisissant **Aucune base de données** car l'ORM ignore la base de données et l'URL). Déplacez-vous avec les touches fléchées (ou `j`/`k`, ou un chiffre), confirmez avec `enter`, revenez à la question précédente avec `←` ou `esc`, quittez avec `ctrl+c`.
+`nx new` demande, dans cet ordre : le routeur basé sur les fichiers, le type de projet (web ou API), le routage côté client, le framework client, comment styliser l'application, l'alias d'importation, l'ORM, la base de données et l'URL de la base de données. Chaque option a une brève description et celle actuelle est mise en surbrillance. Les questions qui ne s'appliquent pas sont ignorées (un projet API n'a ni cadre ni style ; en choisissant **Aucune base de données** car l'ORM ignore la base de données et l'URL). Déplacez-vous avec les touches fléchées (ou `j`/`k`, ou un chiffre), confirmez avec `enter`, revenez à la question précédente avec `←` ou `esc`, quittez avec `ctrl+c`.
 
 | Question | Choix |
 |---|---|
@@ -91,7 +92,7 @@ Avant d'installer les packages, `nx new` vérifie la connexion. Sans cela, il ig
 
 ## Ce que `dev`, `build` et `start` créent
 
-Avant de s'exécuter, les trois commandes créent un `__init__.py` vide dans `src/` et dans chaque dossier en dessous contenant un fichier `.py` ou `.nexy`, donc une route telle que `src/routes/users.py` est importée de la même manière dans chacun d'eux. Les fichiers existants ne sont jamais modifiés et `nx dev` fait de même lorsque vous ajoutez un dossier. Le bytecode Python va à `__nexy__/__pycache__`, donc aucun dossier `__pycache__` n'apparaît à côté de vos sources.
+Avant de s'exécuter, les trois commandes créent un `__init__.py` vide dans `src/` et dans chaque dossier situé en dessous contenant un fichier `.py` ou `.nexy`, donc une route telle que `src/routes/users.py` est importée de la même manière dans chacun d'eux. Les fichiers existants ne sont jamais modifiés et `nx dev` fait de même lorsque vous ajoutez un dossier. Le bytecode Python va à `__nexy__/__pycache__`, donc aucun dossier `__pycache__` n'apparaît à côté de vos sources.
 
 ## Langue
 

@@ -37,6 +37,7 @@ Se nenhuma rota de aplicação for encontrada, ele imprime `No routes found.`.
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
+| `dev`, `start` | `--open`, `-o` | off - abra o navegador no endereço local assim que o servidor responder |
 | `build` | `--check` | off - executa ruff e mypy após a compilação |
 | `format` | `--check` | off - relatar em vez de reescrever |
 | `test` | `--client` | off - execute também o vitest em vez de pytest sozinho |
@@ -52,7 +53,7 @@ Se nenhuma rota de aplicação for encontrada, ele imprime `No routes found.`.
 
 ## Saída
 
-Etapas longas (instalação de pacotes, compilação, empacotamento) mostram um botão giratório com o tempo decorrido e a última linha que o comando imprimiu, depois deixa uma linha para trás, como uv faz: `Synced .venv with uv in 1.4s`. Um grupo de etapas (as instalações de `nx new`) também mostra uma barra de progresso e o número de etapas concluídas, `2/5`. Uma etapa com falha é uma linha `error:` com sua causa, `cause: exit 1 after 2.1s`, seguida pelas últimas linhas da saída do comando em vez de ocultá-la. Algo para olhar diz `warning: ...` e o que fazer a seguir `hint: ...`. Os logs de desenvolvimento são lidos `GET » /about 200 in 12ms` para solicitações e `vite » ...` para Vite.
+Etapas longas (instalação de pacotes, compilação, empacotamento) mostram um botão giratório com o tempo decorrido e a última linha que o comando imprimiu, depois deixa uma linha para trás, como uv faz: `Synced .venv with uv in 1.4s`. Um grupo de etapas (as instalações de `nx new`) também mostra uma barra de progresso e o número de etapas concluídas, `2/5`. Uma etapa com falha é uma linha `error:` com sua causa, `cause: exit 1 after 2.1s`, seguida pelas últimas linhas da saída do comando em vez de ocultá-la. Algo para observar diz `warning: ...` e o que fazer a seguir `hint: ...`. Os logs de desenvolvimento são lidos `GET » /about 200 in 12ms` para solicitações e `vite » ...` para Vite.
 
 ## Erros durante a execução de `nx dev`
 
@@ -72,11 +73,11 @@ Salvar um arquivo quebrado nunca para o servidor. Um arquivo `.py` com erro de s
   Fix it and save: the server keeps its last working version.
 ```
 
-Um arquivo que analisa, mas falha quando o aplicativo é carregado (uma importação ausente, um erro no nível do módulo) é relatado da mesma maneira e `nx dev` aguarda seu próximo salvamento; nada é servido até que o aplicativo seja carregado novamente. Um salvamento válido lê `nexy » update <file>` enquanto o servidor recarrega. Markdown arquivos fora de `src/routes`, como `README.md`, não são páginas e não acionam nada. `nx start` é mais rigoroso: sai com o código 1 e não inicia nada, se um arquivo de rota não puder ser carregado ou se `nx build` ainda não tiver compilado o projeto.
+Um arquivo que analisa, mas falha quando o aplicativo é carregado (uma importação ausente, um erro no nível do módulo) é relatado da mesma maneira e `nx dev` aguarda seu próximo salvamento; nada é servido até que o aplicativo seja carregado novamente. Um salvamento válido lê `nexy » update <file>` enquanto o servidor é recarregado. Markdown arquivos fora de `src/routes`, como `README.md`, não são páginas e não acionam nada. `nx start` é mais rigoroso: sai com o código 1 e não inicia nada, se um arquivo de rota não puder ser carregado ou se `nx build` ainda não tiver compilado o projeto.
 
 ## Perguntas de `nx new`
 
-`nx new` pergunta, nesta ordem: roteador baseado em arquivo, tipo de projeto (web ou API), roteamento do lado do cliente, estrutura do cliente, como estilizar o aplicativo, alias de importação, ORM, banco de dados e URL do banco de dados. Cada opção possui uma breve descrição e a atual é destacada. As perguntas que não se aplicam são ignoradas (um projeto de API não tem estrutura ou estilo; escolha **Sem banco de dados** pois o ORM ignora o banco de dados e a URL). Mova-se com as setas (ou `j`/`k`, ou um número), confirme com `enter`, volte à pergunta anterior com `←` ou `esc`, saia com `ctrl+c`.
+`nx new` pergunta, nesta ordem: roteador baseado em arquivo, tipo de projeto (web ou API), roteamento do lado do cliente, estrutura do cliente, como estilizar o aplicativo, alias de importação, ORM, banco de dados e URL do banco de dados. Cada opção possui uma breve descrição e a atual é destacada. As perguntas que não se aplicam são ignoradas (um projeto de API não tem estrutura ou estilo; escolha **Sem banco de dados** pois o ORM ignora o banco de dados e a URL). Mova-se com as setas (ou `j`/`k`, ou um número), confirme com `enter`, volte para a pergunta anterior com `←` ou `esc`, saia com `ctrl+c`.
 
 | Pergunta | Escolhas |
 |---|---|
@@ -87,11 +88,11 @@ Um arquivo que analisa, mas falha quando o aplicativo é carregado (uma importa�
 
 O driver de banco de dados para o ORM escolhido é instalado com ele (`psycopg`, `pymysql`, `asyncpg` ou `aiomysql`), e a URL é gravada em `.env`.
 
-Antes de instalar pacotes, `nx new` verifica a conexão. Sem ele, ele ignora as instalações e solicita que você execute `uv sync` e a instalação do seu gerenciador de pacotes mais tarde. Com um, ele imprime a latência e velocidade de download, e avisa quando a conexão está lenta (acima de 400 ms, ou abaixo de 100 KB/s). Cada linha de instalação nomeia a ferramenta e a pasta que ela preenche, por exemplo `pnpm install node_modules` ou `uv sync .venv`.
+Antes de instalar os pacotes, `nx new` verifica a conexão. Sem ele, ele ignora as instalações e solicita que você execute `uv sync` e a instalação do seu gerenciador de pacotes mais tarde. Com um, ele imprime a latência e velocidade de download, e avisa quando a conexão está lenta (acima de 400 ms, ou abaixo de 100 KB/s). Cada linha de instalação nomeia a ferramenta e a pasta que ela preenche, por exemplo `pnpm install node_modules` ou `uv sync .venv`.
 
 ## O que `dev`, `build` e `start` criam
 
-Antes de serem executados, os três comandos criam um `__init__.py` vazio em `src/` e em cada pasta abaixo dele que contém um arquivo `.py` ou `.nexy`, então uma rota como `src/routes/users.py` importa da mesma maneira em todos eles. Os arquivos existentes nunca são alterados e `nx dev` faz o mesmo novamente quando você adiciona uma pasta. O bytecode Python vai para `__nexy__/__pycache__`, então nenhuma pasta `__pycache__` aparece ao lado de suas fontes.
+Antes de serem executados, os três comandos criam um `__init__.py` vazio em `src/` e em cada pasta abaixo dele que contém um arquivo `.py` ou `.nexy`, então uma rota como `src/routes/users.py` importa da mesma maneira em todos eles. Os arquivos existentes nunca são tocados e `nx dev` faz o mesmo novamente quando você adiciona uma pasta. O bytecode Python vai para `__nexy__/__pycache__`, então nenhuma pasta `__pycache__` aparece ao lado de suas fontes.
 
 ## Idioma
 

@@ -1,5 +1,11 @@
+import socket
 import sys
+import threading
 import time
+import webbrowser
+from typing import Annotated
+
+import typer
 
 from nexy.__version__ import __version__
 from nexy.core.config import Config
@@ -9,6 +15,7 @@ from nexy.helpers.common.messages import error
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.listening import Endpoint, print_listening, served_docs_path
 from nexy.helpers.server.markers import has_build
+from nexy.helpers.server.port_owner import OccupiedPort
 from nexy.helpers.server.server import Server
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
 from nexy.modules.cli.devtools.pycache import pycache
@@ -50,10 +57,28 @@ def _endpoint(port: int | None, host: str | None) -> Endpoint:
     return Endpoint(run_host, run_port, keyfile, certfile)
 
 
-def _serve(endpoint: Endpoint) -> None:
+def _open_once_listening(endpoint: Endpoint, url: str) -> None:
+    """Open the browser once the server accepts connections."""
+    while True:
+        try:
+            with socket.create_connection((endpoint.host, endpoint.port), timeout=0.2):
+                break
+        except OSError:
+            time.sleep(0.05)
+    # False when no browser can be found: the address is already on screen.
+    webbrowser.open(url)
+
+
+def _serve(endpoint: Endpoint, occupied: OccupiedPort, open_browser: bool = False) -> None:
     """Serve until Ctrl+C; the production marker exists only while the server runs."""
     try:
         Server.check_nexy_prod(delete=False)
+        if open_browser:
+            threading.Thread(
+                target=_open_once_listening,
+                args=(endpoint, endpoint.url("localhost")),
+                daemon=True,
+            ).start()
         Server.uvicorn(
             host=endpoint.host,
             port=endpoint.port,
@@ -64,10 +89,25 @@ def _serve(endpoint: Endpoint) -> None:
         pass
     finally:
         Server.check_nexy_prod(delete=True)
+        freed = occupied.free()
+        if freed is not None:
+            message = t("start.port_freed", "Freed port {port}: stopped process {pid}.")
+            console.print(tagged("nexy", message.format(port=occupied.asked, pid=freed), "yellow"))
         console.print(tagged("nexy", t("start.exited", "exited"), "red"))
 
 
-def start(port: int | None = None, host: str | None = None) -> None:
+def start(
+    port: int | None = None,
+    host: str | None = None,
+    open_browser: Annotated[
+        bool,
+        typer.Option(
+            "--open",
+            "-o",
+            help=t("start.help_open", "Open the browser once the server answers"),
+        ),
+    ] = False,
+) -> None:
     pycache()
     ensure_project_packages()
     abort_on_invalid_config()
@@ -77,6 +117,8 @@ def start(port: int | None = None, host: str | None = None) -> None:
     endpoint = _endpoint(port, host)
     elapsed = time.perf_counter() - started
     config = Config()
+    asked = port or config.usePort
+    occupied = OccupiedPort(asked, endpoint.port)
     docs = served_docs_path(config.useDocs, config.useDocsUrl, dev=False)
     print_listening("start", __version__, endpoint, elapsed, Server.get_network_ip, docs)
-    _serve(endpoint)
+    _serve(endpoint, occupied, open_browser)

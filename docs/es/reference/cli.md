@@ -37,6 +37,7 @@ Si no se encuentran rutas de aplicación, imprime `No routes found.`.
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
+| `dev`, `start` | `--open`, `-o` | desactivado: abra el navegador en la dirección local una vez que el servidor responda |
 | `build` | `--check` | off: ejecuta ruff y mypy después de la compilación. |
 | `format` | `--check` | apagado - informar en lugar de reescribir |
 | `test` | `--client` | desactivado: también ejecuta vitest en lugar de pytest solo |
@@ -46,7 +47,7 @@ Si no se encuentran rutas de aplicación, imprime `No routes found.`.
 | `add` | `--ui`, `--url` | off: fuerza un nombre de registro o una URL cuando es ambiguo |
 | `add` | `--all`, `-a` | desactivado: agrega todos los componentes del registro |
 | `add` | `--sha256` | ninguno: resumen esperado de un componente remoto; un desajuste aborta |
-| `migrate` | `--init` | desactivado: escriba la configuración Alembic o Aerich |
+| `migrate` | `--init` | desactivado: escribe la configuración Alembic o Aerich |
 | `migrate` | `--upgrade`, `-u` | desactivado: aplica las migraciones en lugar de escribir una nueva |
 | `migrate` | `--message`, `-m` | vacío: nombre de la nueva revisión |
 
@@ -72,7 +73,7 @@ Guardar un archivo roto nunca detiene el servidor. Se informa un archivo `.py` c
   Fix it and save: the server keeps its last working version.
 ```
 
-Un archivo que se analiza pero falla cuando se carga la aplicación (una importación faltante, un error a nivel de módulo) se informa de la misma manera y `nx dev` espera su siguiente guardado; no se sirve nada hasta que la aplicación se carga nuevamente. Un guardado válido dice `nexy » update <file>` mientras el servidor se recarga. Los archivos Markdown fuera de `src/routes`, como `README.md`, no son páginas y no activan nada. `nx start` es más estricto: sale con el código 1 y no comienza nada si no se puede cargar un archivo de ruta o si `nx build` aún no ha creado el proyecto.
+Un archivo que se analiza pero falla cuando se carga la aplicación (una importación faltante, un error a nivel de módulo) se informa de la misma manera y `nx dev` espera su siguiente guardado; no se sirve nada hasta que la aplicación se carga nuevamente. Un guardado válido dice `nexy » update <file>` mientras el servidor se recarga. Los archivos Markdown fuera de `src/routes`, como `README.md`, no son páginas y no activan nada. `nx start` es más estricto: sale con el código 1 y no inicia nada si no se puede cargar un archivo de ruta o si `nx build` aún no ha creado el proyecto.
 
 ## Preguntas de `nx new`
 
@@ -91,7 +92,7 @@ Antes de instalar paquetes, `nx new` verifica la conexión. Sin uno, omite las i
 
 ## Qué crean `dev`, `build` y `start`
 
-Antes de ejecutarse, los tres comandos crean un `__init__.py` vacío en `src/` y en cada carpeta debajo que contenga un archivo `.py` o `.nexy`, por lo que una ruta como `src/routes/users.py` se importa de la misma manera en todos ellos. Los archivos existentes nunca se modifican y `nx dev` vuelve a hacer lo mismo cuando agrega una carpeta. El código de bytes Python va a `__nexy__/__pycache__`, por lo que no aparece ninguna carpeta `__pycache__` junto a sus fuentes.
+Antes de ejecutarse, los tres comandos crean un `__init__.py` vacío en `src/` y en cada carpeta debajo que contenga un archivo `.py` o `.nexy`, por lo que una ruta como `src/routes/users.py` se importa de la misma manera en todos ellos. Los archivos existentes nunca se modifican y `nx dev` vuelve a hacer lo mismo cuando agrega una carpeta. El código de bytes Python va a `__nexy__/__pycache__`, por lo que no aparece ninguna carpeta `__pycache__` junto a tus fuentes.
 
 ## Idioma
 

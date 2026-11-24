@@ -63,7 +63,6 @@
       "test": "Запустить тесты (--server / --client)",
       "skills": "Добавить навыки и AGENTS.md для кодирующих агентов",
       "info": "Print environment and project versions in one block"
-
     },
     "commands_header": "Доступные команды:",
     "help": "CLI Nexy",
@@ -110,7 +109,9 @@
     "vite_failed": "Не удалось запустить Vite.",
     "vite_failed_hint": "Причину смотрите в выводе Vite выше.",
     "server_failed": "Сервер остановлен ({reason}): ожидание исправления.",
-    "port_in_use": "Порт {asked} занят, используется {port}."
+    "port_in_use": "Порт {asked} занят, используется {port}.",
+    "help_open": "Открыть браузер, когда сервер ответит",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "format": {
     "failed": "Файлов с ошибками: {count}",
@@ -123,7 +124,7 @@
     "nexy": "Форматирование файлов .nexy: {count}",
     "nexy_done": "Отформатировано файлов .nexy: {count}"
   },
-    "info": {
+  "info": {
     "label": {
       "frameworks": "Frameworks",
       "nexy": "Nexy",
@@ -136,7 +137,6 @@
     "not_found": "not found",
     "router_file_based": "file-based"
   },
-
   "init": {
     "alias_invalid": "Используйте @, ~, # или $, при желании с буквами (например, ~ или @app).",
     "already": "Проект здесь уже инициализирован",
@@ -257,7 +257,9 @@
   "start": {
     "broken": "Не удалось загрузить файлов маршрутов: {count}. Сервер не запущен.",
     "exited": "остановлено",
-    "no_build": "Нет продакшен-сборки: выполните `nexy build`, затем `nexy start`."
+    "no_build": "Нет продакшен-сборки: выполните `nexy build`, затем `nexy start`.",
+    "help_open": "Открыть браузер, когда сервер ответит",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "test": {
     "failed": "Запусков тестов с ошибками: {count}",

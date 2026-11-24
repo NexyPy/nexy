@@ -63,7 +63,6 @@
       "test": "テストを実行する（--server / --client）",
       "skills": "コーディングエージェント用のスキルと AGENTS.md を追加します",
       "info": "Print environment and project versions in one block"
-     
     },
     "commands_header": "利用可能なコマンド:",
     "help": "Nexy CLI",
@@ -110,7 +109,9 @@
     "vite_failed": "Vite を起動できませんでした。",
     "vite_failed_hint": "原因は上の Vite の出力を確認してください。",
     "server_failed": "サーバーが停止しました（{reason}）：修正を待っています。",
-    "port_in_use": "ポート {asked} は使用中のため、{port} を使います。"
+    "port_in_use": "ポート {asked} は使用中のため、{port} を使います。",
+    "help_open": "サーバーが応答したらブラウザを開く",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "format": {
     "failed": "{count} 件のファイルが失敗しました",
@@ -123,7 +124,7 @@
     "nexy": "{count} 個の .nexy ファイルを整形中",
     "nexy_done": "{count} 個の .nexy ファイルを整形しました"
   },
-    "info": {
+  "info": {
     "label": {
       "frameworks": "Frameworks",
       "nexy": "Nexy",
@@ -136,7 +137,6 @@
     "not_found": "not found",
     "router_file_based": "file-based"
   },
-
   "init": {
     "alias_invalid": "@、~、# または $ に続けて任意の文字を使います(例: ~ や @app)。",
     "already": "このディレクトリは既に初期化されています",
@@ -257,7 +257,9 @@
   "start": {
     "broken": "{count} 個のルートファイルを読み込めませんでした。サーバーは起動していません。",
     "exited": "終了しました",
-    "no_build": "本番ビルドがありません。`nexy build` を実行してから `nexy start` を実行してください。"
+    "no_build": "本番ビルドがありません。`nexy build` を実行してから `nexy start` を実行してください。",
+    "help_open": "サーバーが応答したらブラウザを開く",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "test": {
     "failed": "{count} 件のテスト実行が失敗しました",
