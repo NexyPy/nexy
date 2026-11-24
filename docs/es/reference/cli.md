@@ -24,7 +24,7 @@ El binario es `nx` (también instalado como `nexy`). `uvx nexy new` crea un proy
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
-| `dev` | `--open`, `-o` | desactivado: abra el navegador en la dirección local una vez que el servidor responda |
+| `dev`, `start` | `--open`, `-o` | desactivado: abra el navegador en la dirección local una vez que el servidor responda |
 | `build` | `--check` | off: ejecuta ruff y mypy después de la compilación. |
 | `format` | `--check` | apagado - informar en lugar de reescribir |
 | `test` | `--client` | off - también ejecuta vitest en lugar de pytest solo |
@@ -34,7 +34,7 @@ El binario es `nx` (también instalado como `nexy`). `uvx nexy new` crea un proy
 | `add` | `--ui`, `--url` | off: fuerza un nombre de registro o una URL cuando es ambiguo |
 | `add` | `--all`, `-a` | desactivado: agrega todos los componentes del registro |
 | `add` | `--sha256` | ninguno: resumen esperado de un componente remoto; un desajuste aborta |
-| `migrate` | `--init` | desactivado: escriba la configuración Alembic o Aerich |
+| `migrate` | `--init` | desactivado: escribe la configuración Alembic o Aerich |
 | `migrate` | `--upgrade`, `-u` | desactivado: aplica las migraciones en lugar de escribir una nueva |
 | `migrate` | `--message`, `-m` | vacío: nombre de la nueva revisión |
 

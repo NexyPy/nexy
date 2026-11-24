@@ -345,15 +345,35 @@ function nexyPlugin(): Plugin {
   }
 }
 
+// Vite sends one comma-separated message for a batch of files. Keep the leading slash of every
+// path and put each file on its own line so the tag is readable again.
+const formatInfo = (msg: string): string => {
+  const parts = msg.split(/,\s*/).map(part => part.trim()).filter(Boolean)
+  if (parts.length === 1) return msg
+  const actionEnd = parts[0].indexOf(' /')
+  if (actionEnd === -1) return msg
+  const action = parts[0].slice(0, actionEnd)
+  return parts
+    .map((part, index) => `${action} ${index === 0 ? part.slice(actionEnd + 1) : part}`)
+    .join('\n')
+}
+
 const nexyLogger = (): Logger => {
   const logger = createLogger()
   const prefix = `${c.reset}${c.dim}vite »${c.reset}`
+  let lastInfo = ''
   return {
     ...logger,
     info: (msg) => {
       const silentMessages = ['Local', 'Network', 'ready in', 'press', 'watching']
       if (silentMessages.some(m => msg.includes(m))) return
-      console.info(`${prefix} ${msg.replace("/", "")}`)
+      const text = formatInfo(msg)
+        .split('\n')
+        .map(line => `${prefix} ${line}`)
+        .join('\n')
+      if (text === lastInfo) return
+      lastInfo = text
+      console.info(text)
     },
     warn: (msg) => console.warn(`${prefix} ${c.yellow}${msg}${c.reset}`),
     error: (msg) => console.error(`${prefix} ${c.red}${msg}${c.reset}`),

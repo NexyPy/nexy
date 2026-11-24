@@ -63,8 +63,6 @@
       "test": "تشغيل الاختبارات (--server / --client)",
       "skills": "إضافة المهارات وAGENTS.md لوكلاء البرمجة",
       "info": "Print environment and project versions in one block"
-
-      
     },
     "commands_header": "الأوامر المتاحة:",
     "help": "أداة سطر أوامر Nexy",
@@ -112,7 +110,8 @@
     "vite_failed_hint": "راجع مخرجات Vite أعلاه لمعرفة السبب.",
     "server_failed": "توقف الخادم ({reason}): في انتظار الإصلاح.",
     "port_in_use": "المنفذ {asked} مستخدم، يتم استخدام {port} بدلاً منه.",
-    "help_open": "فتح المتصفح بمجرد استجابة الخادم"
+    "help_open": "فتح المتصفح بمجرد استجابة الخادم",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "format": {
     "failed": "فشل {count} ملف",
@@ -125,7 +124,7 @@
     "nexy": "جارٍ تنسيق {count} من ملفات .nexy",
     "nexy_done": "تم تنسيق {count} من ملفات .nexy"
   },
-    "info": {
+  "info": {
     "label": {
       "frameworks": "Frameworks",
       "nexy": "Nexy",
@@ -138,7 +137,6 @@
     "not_found": "not found",
     "router_file_based": "file-based"
   },
-
   "init": {
     "alias_invalid": "استخدم @ أو ~ أو # أو $ ويمكن أن تتبعها أحرف (مثل ~ أو @app).",
     "already": "المشروع مهيّأ هنا مسبقًا",
@@ -251,7 +249,9 @@
   "start": {
     "broken": "تعذر تحميل {count} من ملفات المسارات: لم يبدأ الخادم.",
     "exited": "تم الإيقاف",
-    "no_build": "لا يوجد بناء للإنتاج: شغّل `nexy build` ثم `nexy start`."
+    "no_build": "لا يوجد بناء للإنتاج: شغّل `nexy build` ثم `nexy start`.",
+    "help_open": "فتح المتصفح بمجرد استجابة الخادم",
+    "port_freed": "Freed port {port}: stopped process {pid}."
   },
   "test": {
     "failed": "فشلت {count} عملية تشغيل للاختبارات",
