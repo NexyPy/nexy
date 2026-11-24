@@ -69,6 +69,15 @@ def _open_once_listening(endpoint: Endpoint, url: str) -> None:
     webbrowser.open(url)
 
 
+def _report_freed(occupied: OccupiedPort) -> None:
+    """Say which process was stopped to free the port Nexy originally asked for."""
+    freed = occupied.free()
+    if freed is None:
+        return
+    message = t("start.port_freed", "Freed port {port}: stopped process {pid}.")
+    console.print(tagged("nexy", message.format(port=occupied.asked, pid=freed), "yellow"))
+
+
 def _serve(endpoint: Endpoint, occupied: OccupiedPort, open_browser: bool = False) -> None:
     """Serve until Ctrl+C; the production marker exists only while the server runs."""
     try:
@@ -89,10 +98,7 @@ def _serve(endpoint: Endpoint, occupied: OccupiedPort, open_browser: bool = Fals
         pass
     finally:
         Server.check_nexy_prod(delete=True)
-        freed = occupied.free()
-        if freed is not None:
-            message = t("start.port_freed", "Freed port {port}: stopped process {pid}.")
-            console.print(tagged("nexy", message.format(port=occupied.asked, pid=freed), "yellow"))
+        _report_freed(occupied)
         console.print(tagged("nexy", t("start.exited", "exited"), "red"))
 
 
