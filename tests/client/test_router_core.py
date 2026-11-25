@@ -168,6 +168,20 @@ class TestBlocker:
         assert seen["guard"]["freed"] is False
 
 
+class TestBasePath:
+    def test_the_first_page_is_matched_without_the_prefix(self, seen):
+        assert seen["basePath"]["initial"] == "/about"
+
+    def test_a_navigation_writes_the_prefixed_url(self, seen):
+        assert seen["basePath"]["path"] == "/app/"
+
+    def test_the_route_stays_prefix_free_internally(self, seen):
+        assert seen["basePath"]["local"] == "/"
+
+    def test_the_prefixed_page_is_rendered_by_its_route(self, seen):
+        assert seen["basePath"]["rendered"] == ["/src/routes/index.tsx"]
+
+
 class TestHold:
     def test_false_holds_nothing(self, seen):
         assert seen["hold"]["freeOk"] is True
