@@ -1,51 +1,26 @@
 name: Assign
 
-# Nothing sits unowned. Every issue and every pull request gets the maintainer
-# as soon as it exists, so the list answers "who is on this?" without asking.
+# Issues and pull requests stay unassigned. An assignee reads as taken, so a
+# contributor must be able to see what is free. The `/take` command still gives
+# a good first issue to whoever asks for it.
 #
-# pull_request_target, not pull_request: a pull request from a fork gets a
-# read-only token there, and assigning needs write. No code from the pull
-# request is checked out or run, so the target context is safe here.
+# The job name stays `Give it an owner` because branch protection requires the
+# check. pull_request_target, not pull_request: a pull request from a fork gets a
+# read-only token there, and the check needs no write.
 on:
   issues:
     types: [opened, reopened]
   pull_request_target:
     types: [opened, reopened]
 
-permissions:
-  issues: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   assign:
     name: Give it an owner
-    # A good first issue stays unassigned: an assignee reads as "taken" to a newcomer.
-    if: ${{ !contains(github.event.issue.labels.*.name, 'good first issue') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
-      # Speak as the Nexy bot (a GitHub App) once the maintainer has set it up: see
-      # .github/bot/README.md. Until then the workflow token answers, as github-actions.
-      - name: Act as the Nexy bot
-        id: bot
-        if: ${{ vars.NEXY_BOT_CLIENT_ID != '' }}
-        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
-        with:
-          client-id: ${{ vars.NEXY_BOT_CLIENT_ID }}
-          private-key: ${{ secrets.NEXY_BOT_PRIVATE_KEY }}
-          permission-issues: write
-          permission-pull-requests: write
-      - name: Assign the maintainer
-        env:
-          GH_TOKEN: ${{ steps.bot.outputs.token || github.token }}
-          GH_REPO: ${{ github.repository }}
-          OWNER: Espoir-Loem
-          NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
-          IS_PULL_REQUEST: ${{ github.event_name == 'pull_request_target' }}
-        run: |
-          if [ "$IS_PULL_REQUEST" = "true" ]; then
-            gh pr edit "$NUMBER" --add-assignee "$OWNER"
-          else
-            gh issue edit "$NUMBER" --add-assignee "$OWNER"
-          fi
+      - name: Leave the issue or pull request unassigned
+        run: echo "No automatic assignment."
