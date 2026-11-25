@@ -105,7 +105,7 @@ export default function Breadcrumb() {
 
 ## Attrapez une page qui échoue avec `ErrorBoundary`
 
-`ErrorBoundary` affiche une solution de repli à la place de ses enfants lorsque l'un d'eux lance un lancer pendant le rendu dans le navigateur. La solution de secours reçoit l'erreur et `reset`, ce qui restitue à nouveau les enfants.
+`ErrorBoundary` affiche une solution de secours à la place de ses enfants lorsque l'un d'entre eux lance pendant son rendu dans le navigateur. La solution de secours reçoit l'erreur et `reset`, ce qui restitue à nouveau les enfants.
 
 | Cadre | Importer | Repli |
 |---|---|---|
@@ -137,7 +137,7 @@ Il n'attrape pas :
 
 ## Demander avant de quitter une page avec des modifications non enregistrées
 
-`useBlocker(dirty, message?)` demande au visiteur avant son départ alors que `dirty` est vrai : un lien, un `router.push`, les boutons Précédent et Suivant, un rechargement et un onglet fermé. Une navigation client affiche `message` dans `confirm()` : oui continue, non reste sur la page. Un rechargement ou un onglet fermé affiche la propre question du navigateur, qu'aucune page ne peut formuler. Sans message, la question est « Vous avez des modifications non enregistrées. Quitter cette page ? ».
+`useBlocker(dirty, message?)` demande au visiteur avant son départ alors que `dirty` est vrai : un lien, un `router.push`, les boutons Précédent et Suivant, un rechargement et un onglet fermé. Une navigation client affiche `message` dans `confirm()` : oui continue, non reste sur la page. Un rechargement ou un onglet fermé affiche la propre question du navigateur, qu'aucune page ne peut formuler. Sans message, la question est « Vous avez des modifications non enregistrées. Quitter cette page ? ».
 
 ```tsx
 import { useState } from "react";
@@ -161,7 +161,7 @@ Le drapeau se lit là où il change, dans le langage de chaque framework :
 | Cadre | Suivez le drapeau |
 |---|---|
 | React, Preact | `useBlocker(dirty)` sur chaque rendu |
-| Vue | `useBlocker(dirty)` avec `dirty` une référence ou un calcul |
+| Vue | `useBlocker(dirty)` avec `dirty` une référence ou un calculé |
 | Solid | `createEffect(() => useBlocker(dirty()))` |
 | Svelte | `$effect(() => useBlocker(dirty))` |
 
@@ -211,6 +211,8 @@ Sur une navigation, le routeur :
 2. importe et restitue la page et ses [mises en page](../layouts/README.md) **d'abord**, puis déplace ensuite l'URL avec `history.pushState`, de sorte que la barre d'adresse n'affiche jamais une page qui a échoué ;
 3. distribue un événement `nexy:navigated` sur `document` ;
 4. fait défiler vers le haut ou vers la cible `#fragment`.
+
+L'échange de page s'exécute dans une transition d'affichage du navigateur lorsqu'elle est disponible : voir [Comment fonctionnent les transitions de page](page-transitions.md).
 
 Une navigation plus récente annule une navigation plus ancienne qui est toujours en cours de rendu. Si une page ne peut pas s'afficher, le navigateur la demande au serveur à la place. Les boutons Précédent et Suivant affichent la page de cette entrée et restaurent sa position de défilement.
 

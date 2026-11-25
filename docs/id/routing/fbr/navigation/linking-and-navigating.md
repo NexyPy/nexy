@@ -64,7 +64,7 @@ Lokasi tersedia di setiap framework, dalam idiom framework tersebut. Selama taha
 | Cocokkan jalan | `useMatch(path?)` | `useMatch(path?)` pengakses | `useMatch(path?)` rujukan | `useMatch(path?)` toko |
 | Tanyakan sebelum pergi | `useBlocker(dirty)` | `useBlocker(dirty())` di `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` di `$effect` |
 
-Kuerinya adalah `URLSearchParams`. `useRouter()` dan `router` menghasilkan `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` dan `prefetch(href)`; `push` dan `replace` menerima `{ scroll: false }`.
+Kuerinya adalah `URLSearchParams`. `useRouter()` dan `router` memberikan `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` dan `prefetch(href)`; `push` dan `replace` menerima `{ scroll: false }`.
 
 ```tsx
 import { useParams, useRouter, useSearchParams } from "@nexy/client";
@@ -211,6 +211,8 @@ Pada navigasi, router:
 2. mengimpor dan merender halaman dan [tata letak](../layouts/README.md) **pertama**, dan baru kemudian memindahkan URL dengan `history.pushState`, sehingga bilah alamat tidak pernah menampilkan halaman yang gagal;
 3. mengirimkan acara `nexy:navigated` pada `document`;
 4. bergulir ke atas, atau ke target `#fragment`.
+
+Pertukaran halaman berjalan di dalam transisi tampilan browser jika tersedia: lihat [Cara kerja transisi halaman](page-transitions.md).
 
 Navigasi yang lebih baru membatalkan navigasi lama yang masih dirender. Jika halaman tidak dapat dirender, browser akan meminta halaman tersebut ke server. Tombol mundur dan maju merender halaman entri tersebut dan memulihkan posisi gulirnya.
 

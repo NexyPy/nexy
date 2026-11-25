@@ -1,6 +1,6 @@
 # Verlinken und navigieren
 
-Beim Client-Routing (`useCSR = True`) tauscht ein Link zwischen zwei Seiten die Seite im Browser aus, anstatt das Dokument neu zu laden. Die Layouts behalten ihren Zustand.
+Beim Client-Routing (`useCSR = True`) tauscht ein Link zwischen zwei Seiten die Seite im Browser aus, anstatt das Dokument neu zu laden. The layouts keep their state.
 
 ## Einfache Links funktionieren bereits
 
@@ -12,7 +12,7 @@ Jeder `<a href>` zu einer Seite Ihres Projekts navigiert auf dem Client, ohne Ko
 
 Es wird ein Link zum Browser hinterlassen und die Seite wird normal geladen, wenn:
 
-- eine Zusatztaste gedrückt wird oder die Taste nicht die Haupttaste ist;
+- eine Sondertaste gedrückt wird oder die Taste nicht die Haupttaste ist;
 - es hat `target` (außer `_self`), `download`, `rel="external"` oder `data-nexy-reload`;
 - das `href` ist ein anderer Ursprung, ein `mailto:`- oder `tel:`-Link oder nur ein `#fragment`;
 - Da der Pfad mit keiner Client-Route übereinstimmt, antwortet der Server darauf.
@@ -41,11 +41,11 @@ export default function Nav() {
 | Prop | Bedeutung |
 |---|---|
 | `href` | Eine Route des Projekts (ein Tippfehler ist ein Tippfehler), optional mit `?query` oder `#fragment`, oder eine externe URL. |
-| `replace` | Ersetzen Sie den Verlaufseintrag, anstatt einen hinzuzufügen. |
+| `replace` | Replace the history entry instead of adding one. |
 | `scroll` | `false` behält die Scroll-Position nach dem Navigieren bei. Standard: `true`. |
-| `prefetch` | `'intent'` (Standard) lädt die Seite beim Schweben, Fokussieren oder Berühren; `'viewport'` wenn der Link angezeigt wird; `false` niemals. |
+| `prefetch` | `'intent'` (Standard) lädt die Seite beim Schweben, Fokussieren oder Berühren; `'viewport'` when the link scrolls into view; `false` niemals. |
 | `activeClassName` | Der Klasse hinzugefügt, während der Link auf die aktuelle Seite oder eine Seite darunter verweist (`activeClass` in Vue und Svelte). |
-| `exact` | Nur auf der genauen Seite aktiv. |
+| `exact` | Active only on the exact page. |
 
 Der Link, der auf die aktuelle Seite verweist, erhält ebenfalls `aria-current="page"`.
 
@@ -55,7 +55,7 @@ Der Speicherort ist in jedem Framework in der Sprache dieses Frameworks verfügb
 
 | | React, Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
-| Pfad | `usePathname()` | `usePathname()` gibt einen Accessor zurück | `usePathname()` gibt eine Referenz zurück | `$pathname` speichern |
+| Pfad | `usePathname()` | `usePathname()` returns an accessor | `usePathname()` gibt eine Referenz zurück | `$pathname` speichern |
 | Routenparameter | `useParams()` | `useParams()`-Accessor | `useParams()` Ref | `$params` speichern |
 | Abfrage | `useSearchParams()` | `useSearchParams()`-Accessor | `useSearchParams()` Ref | `$searchParams` speichern |
 | Alles | `useLocation()` | `useLocation()`-Accessor | `useLocation()` Ref | `$location` speichern |
@@ -64,7 +64,7 @@ Der Speicherort ist in jedem Framework in der Sprache dieses Frameworks verfügb
 | Passen Sie einen Pfad an | `useMatch(path?)` | `useMatch(path?)`-Accessor | `useMatch(path?)` Ref | `useMatch(path?)` speichern |
 | Fragen Sie vor der Abreise | `useBlocker(dirty)` | `useBlocker(dirty())` in `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` in `$effect` |
 
-Die Abfrage ist ein `URLSearchParams`. `useRouter()` und `router` ergeben `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` und `prefetch(href)`; `push` und `replace` akzeptieren `{ scroll: false }`.
+Die Abfrage ist ein `URLSearchParams`. `useRouter()` und `router` ergeben `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` und `prefetch(href)`; `push` and `replace` accept `{ scroll: false }`.
 
 ```tsx
 import { useParams, useRouter, useSearchParams } from "@nexy/client";
@@ -77,7 +77,7 @@ export default function User() {
 }
 ```
 
-## Ladezustand anzeigen mit `useTransition`
+## Show a loading state with `useTransition`
 
 `useTransition()` gibt an, ob sich eine Client-Navigation im Flug befindet. `pending` ist `true` vom Klick bis zur Anzeige der nächsten Seite und `next` ist der Ort, an den es geht. Es kehrt zu `{ pending: false, next: null }` zurück, sobald die Seite angezeigt wird, wenn die Navigation stoppt oder wenn eine neuere Seite sie ersetzt.
 
@@ -103,14 +103,14 @@ export default function Breadcrumb() {
 }
 ```
 
-## Fangen Sie eine Seite ab, die mit `ErrorBoundary` fehlschlägt
+## Catch a page that fails with `ErrorBoundary`
 
 `ErrorBoundary` zeigt einen Fallback anstelle seiner untergeordneten Elemente an, wenn eines von ihnen beim Rendern im Browser auslöst. Der Fallback erhält den Fehler und `reset`, wodurch die untergeordneten Elemente erneut gerendert werden.
 
 | Rahmen | Importieren | Rückfall |
 |---|---|---|
 | React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
-| Vue | `import { ErrorBoundary } from "@nexy/client"` | eine `fallback`-Funktion prop; Die Kinder kommen in den Standard-Slot |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | eine `fallback`-Funktion prop; the children go in the default slot |
 | Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | ein `fallback`-Ausschnitt |
 
 ```tsx
@@ -137,7 +137,7 @@ Es fängt nicht:
 
 ## Fragen Sie nach, bevor Sie eine Seite mit nicht gespeicherten Änderungen verlassen
 
-`useBlocker(dirty, message?)` fragt den Besucher, bevor er geht, während `dirty` wahr ist: ein Link, ein `router.push`, die Zurück- und Vorwärts-Buttons, ein Neuladen und ein geschlossener Tab. Eine Client-Navigation zeigt `message` in `confirm()`: „Ja“ geht weiter, „Nein“ bleibt auf der Seite. Ein erneutes Laden oder ein geschlossener Tab zeigt die eigene Frage des Browsers an, die keine Seite formulieren kann. Ohne Meldung lautet die Frage: „Sie haben nicht gespeicherte Änderungen. Diese Seite verlassen?“.
+`useBlocker(dirty, message?)` fragt den Besucher, bevor er geht, während `dirty` wahr ist: ein Link, ein `router.push`, die Zurück- und Vorwärts-Buttons, ein Neuladen und ein geschlossener Tab. Eine Client-Navigation zeigt `message` in `confirm()`: „Ja“ geht weiter, „Nein“ bleibt auf der Seite. Ein Neuladen oder ein geschlossener Tab zeigt die eigene Frage des Browsers an, die keine Seite formulieren kann. Ohne Meldung lautet die Frage: „Sie haben nicht gespeicherte Änderungen. Diese Seite verlassen?“.
 
 ```tsx
 import { useState } from "react";
@@ -189,7 +189,7 @@ Eine Funktion fragt nicht selbst nach und hält kein Neuladen bereit; Rufen Sie 
 - `alt` ist erforderlich; Verwenden Sie `alt=""` für ein dekoratives Bild. Nexy warnt einmal, wenn es fehlt.
 - Sowohl bei `width` als auch bei `height` geben die Attribute dem Browser das Seitenverhältnis vor und das Bild bleibt flüssig (`height: auto; max-width: 100%`).
 - `priority` lädt das Bild jetzt mit hoher Priorität für das Bild, das bei der Ankunft sichtbar ist.
-- `fill` sorgt dafür, dass das Bild sein positioniertes übergeordnetes Bild verdeckt und ignoriert dabei `width` und `height`.
+- `fill` sorgt dafür, dass das Bild sein positioniertes übergeordnetes Element verdeckt und ignoriert dabei `width` und `height`.
 - `sizes` und `srcSet` gehen durch. Nexy ändert die Größe von Bildern nicht und konvertiert sie nicht.
 
 ## Link von einer `.nexy`-Seite
@@ -207,10 +207,12 @@ from nexy import Link
 
 Bei einer Navigation: Der Router:
 
-1. Gleicht den Pfad mit den Client-Routen ab (`.tsx`, `.jsx`, `.vue`, `.svelte`);
+1. gleicht den Pfad mit den Client-Routen ab (`.tsx`, `.jsx`, `.vue`, `.svelte`);
 2. importiert und rendert die Seite und ihre [Layouts](../layouts/README.md) **zuerst** und verschiebt erst dann die URL mit `history.pushState`, sodass in der Adressleiste nie eine Seite angezeigt wird, die fehlgeschlagen ist;
 3. löst ein `nexy:navigated`-Ereignis am `document` aus;
 4. scrollt nach oben oder zum Ziel `#fragment`.
+
+Der Seitenwechsel wird innerhalb eines Browseransichtsübergangs ausgeführt, sofern einer verfügbar ist: siehe [Funktionsweise von Seitenübergängen](page-transitions.md).
 
 Eine neuere Navigation bricht eine ältere ab, die noch gerendert wird. Wenn eine Seite nicht gerendert werden kann, fragt der Browser stattdessen den Server danach. Die Schaltflächen „Zurück“ und „Vorwärts“ rendern die Seite dieses Eintrags und stellen die Scrollposition wieder her.
 
