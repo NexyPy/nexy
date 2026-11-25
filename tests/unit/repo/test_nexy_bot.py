@@ -13,7 +13,6 @@ ACTION = "actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc455
 WORKFLOWS = {
     "take": {"permission-issues": "write"},
     "welcome": {"permission-issues": "write"},
-    "assign": {"permission-issues": "write", "permission-pull-requests": "write"},
     "release-stale": {"permission-issues": "write"},
 }
 
