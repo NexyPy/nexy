@@ -39,6 +39,22 @@ VITE_SUBPROTOCOLS = (HMR_SUBPROTOCOL, PING_SUBPROTOCOL)
 SAFE_METHODS = frozenset({"GET", "HEAD"})
 
 
+def _public_path(scope: Scope, base: str) -> str:
+    """The path Vite expects: the ASGI path is already prefix-free for the app."""
+    path: str = scope["path"]
+    return base + path if base else path
+
+
+def _upstream_url(scope: Scope, host: str, port: int, base: str) -> str:
+    query = scope.get("query_string", b"").decode("latin-1")
+    url = f"http://{host}:{port}{_public_path(scope, base)}"
+    return f"{url}?{query}" if query else url
+
+
+def _upstream_websocket_url(scope: Scope, host: str, port: int, base: str) -> str:
+    return f"ws://{host}:{port}{_public_path(scope, base)}"
+
+
 class ViteProxyMiddleware:
     """Forward Vite dev-server traffic that arrives on the Nexy origin."""
 
@@ -116,25 +132,13 @@ class ViteProxyMiddleware:
             else:
                 await self.app(scope, receive, send)
 
-    def _public_path(self, scope: Scope) -> str:
-        """The path Vite expects: the ASGI path is already prefix-free for the app."""
-        path: str = scope["path"]
-        return self.base + path if self.base else path
-
-    def _upstream_url(self, scope: Scope) -> str:
-        query = scope.get("query_string", b"").decode("latin-1")
-        url = f"http://{self.host}:{self.port}{self._public_path(scope)}"
-        return f"{url}?{query}" if query else url
-
-    def _upstream_websocket_url(self, scope: Scope) -> str:
-        return f"ws://{self.host}:{self.port}{self._public_path(scope)}"
-
     async def _forward_http(
         self, scope: Scope, receive: Receive, send: Send, *, fallthrough: bool
     ) -> None:
         """Relay one HTTP response, or hand an unknown path to the application."""
         client = self._upstream_client()
-        request = client.build_request(scope["method"], self._upstream_url(scope))
+        url = _upstream_url(scope, self.host, self.port, self.base)
+        request = client.build_request(scope["method"], url)
         response = await client.send(request, stream=True)
         try:
             if fallthrough and response.status_code == httpx.codes.NOT_FOUND:
@@ -148,7 +152,7 @@ class ViteProxyMiddleware:
         self, scope: Scope, receive: Receive, send: Send, protocol: Subprotocol
     ) -> None:
         """Relay a WebSocket connection to Vite's HMR endpoint."""
-        uri = self._upstream_websocket_url(scope)
+        uri = _upstream_websocket_url(scope, self.host, self.port, self.base)
         async with connect(uri, subprotocols=[protocol], open_timeout=10) as upstream:
             await send({"type": "websocket.accept", "subprotocol": upstream.subprotocol})
             await asyncio.gather(
