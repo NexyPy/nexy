@@ -20,7 +20,7 @@ import pytest
 from PIL import Image as PillowImage
 
 from nexy.modules.images.generator import prepare_images, write_image_files
-from nexy.modules.images.manifest import write_image_typescript
+from nexy.modules.images.manifest import write_image_typescript, write_manifest
 
 FIXTURE_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "client_router"
 
@@ -174,6 +174,7 @@ def _add_responsive_image(project: Path) -> None:
     )
     route.write_text(source, encoding="utf-8")
     build = prepare_images(project, widths=[320, 640])
+    write_manifest(build.manifest, project)
     write_image_files(build, project)
     write_image_typescript(build.manifest, project)
 
