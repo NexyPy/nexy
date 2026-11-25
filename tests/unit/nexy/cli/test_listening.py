@@ -76,3 +76,10 @@ class TestServedDocsPath:
     )
     def test_the_reference_follows_use_docs_and_the_command(self, use_docs, dev, path):
         assert served_docs_path(use_docs, "/docs", dev=dev) == path
+
+    def test_the_reference_shows_the_public_prefix(self, monkeypatch):
+        from nexy.core.config import Config
+
+        monkeypatch.setattr(Config, "useBasePath", "/app")
+
+        assert served_docs_path(True, "/docs", dev=False) == "/app/docs"
