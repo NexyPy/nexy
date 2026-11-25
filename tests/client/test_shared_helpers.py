@@ -95,3 +95,41 @@ class TestBasePath:
 
 def test_style_objects_become_css_text(seen):
     assert seen["css"] == {"camel": "max-width:100%;object-fit:cover", "empty": ""}
+
+
+@pytest.fixture(scope="module")
+def responsive() -> dict:
+    done = subprocess.run(
+        [NODE, str(HERE / "responsive_image_scenarios.mjs")],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=60,
+        check=False,
+        cwd=HERE,
+    )
+    assert "@@" in done.stdout, (done.stdout + done.stderr)[-1500:]
+    return json.loads(done.stdout.split("@@")[1])
+
+
+class TestGeneratedImage:
+    def test_a_built_image_uses_its_generated_src(self, responsive):
+        assert responsive["generated"]["src"] == "/app/images/logo-abc-640.webp"
+
+    def test_the_base_path_prefixes_every_generated_candidate(self, responsive):
+        assert responsive["generated"]["srcset"].startswith("/app/images/logo-abc-320.webp 320w")
+
+    def test_the_manifest_supplies_sizes_and_dimensions(self, responsive):
+        generated = responsive["generated"]
+        assert (generated["sizes"], generated["width"], generated["height"]) == (
+            "(max-width: 640px) 100vw, 640px",
+            1200,
+            600,
+        )
+
+    def test_explicit_responsive_props_win(self, responsive):
+        explicit = responsive["explicit"]
+        assert (explicit["srcset"], explicit["sizes"]) == ("/app/a.png 1x", "50vw")
+
+    def test_an_image_outside_the_manifest_keeps_its_plain_url(self, responsive):
+        assert responsive["fallback"]["src"] == "/app/plain.png"

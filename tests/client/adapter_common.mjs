@@ -17,7 +17,17 @@ export function stage(framework, adapter, extras = [], base = '') {
   copy("router.ts", "router.ts");
   copy("shared.ts", "shared.ts");
   copy("base-path.auto.ts", "base-path.auto.ts");
+  copy("image-manifest.auto.ts", "image-manifest.auto.ts");
   if (base) fs.writeFileSync(new URL("base-path.auto.ts", dir), `export const BASE_PATH = '${base}'\n`);
+  fs.writeFileSync(new URL("image-manifest.auto.ts", dir), `export const IMAGE_VARIANTS = {
+  'a.png': {
+    src: '/images/a-640.webp',
+    srcset: '/images/a-320.webp 320w, /images/a-640.webp 640w',
+    sizes: '(max-width: 640px) 100vw, 640px',
+    width: 1200,
+    height: 600,
+  },
+}\n`);
   copy("actions.ts", "action-runtime.ts");
   copy("fetch.ts", "fetch-runtime.ts");
   copy(adapter, `client${path.extname(adapter)}`);
@@ -103,6 +113,8 @@ export function observe(doc) {
       loading: img.getAttribute("loading"),
       decoding: img.getAttribute("decoding"),
       fetchpriority: img.getAttribute("fetchpriority"),
+      srcset: img.getAttribute("srcset"),
+      sizes: img.getAttribute("sizes"),
       style: (img.getAttribute("style") ?? "").replace(/\s+/g, ""),
     },
   };
