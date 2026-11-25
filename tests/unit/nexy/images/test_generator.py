@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -13,12 +14,20 @@ from nexy.modules.images.generator import (
     DEFAULT_WIDTHS,
     ImageBuild,
     ImageBuildError,
+    _add_references,
+    _display,
+    _keys,
+    _pillow,
+    _resolve_reference,
+    _vite_aliases,
+    find_sources,
     prepare_images,
     write_image_files,
 )
 from nexy.modules.images.manifest import (
     IMAGE_MANIFEST,
     IMAGE_TYPESCRIPT,
+    normalize_source,
     write_image_typescript,
     write_manifest,
 )
@@ -149,3 +158,87 @@ def test_the_typescript_module_publishes_the_same_manifest(project: Path) -> Non
 
 def test_the_default_widths_are_a_small_set() -> None:
     assert DEFAULT_WIDTHS == (320, 640, 960, 1280)
+
+
+def test_a_remote_reference_is_not_a_local_image(project: Path) -> None:
+    file = project / "src/routes/index.nexy"
+
+    assert _resolve_reference(project, file, "https://example.com/a.png") is None
+
+
+def test_a_bare_relative_reference_points_at_the_source_file(project: Path) -> None:
+    file = project / "src/routes/index.nexy"
+
+    assert _resolve_reference(project, file, "a.png") == file.parent / "a.png"
+
+
+def test_an_unreadable_source_file_is_skipped(project: Path, monkeypatch) -> None:
+    file = project / "src/routes/index.nexy"
+
+    def unreadable(*_args: object, **_kwargs: object) -> str:
+        raise OSError("blocked")
+
+    monkeypatch.setattr(Path, "read_text", unreadable)
+
+    assert _add_references(project, file, set()) is None
+
+
+def test_a_remote_reference_is_skipped_by_the_scanner(tmp_path: Path) -> None:
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "index.tsx").write_text('"https://example.com/a.png"', encoding="utf-8")
+
+    assert find_sources(tmp_path) == []
+
+
+def test_a_file_outside_the_project_keeps_its_absolute_name(tmp_path: Path) -> None:
+    assert _display(tmp_path, Path("/outside/logo.png")) == "/outside/logo.png"
+
+
+def test_a_file_outside_the_project_still_has_manifest_keys(tmp_path: Path) -> None:
+    assert _keys(tmp_path, Path("/outside/logo.png")) == {
+        "outside/logo.png",
+        "/outside/logo.png",
+    }
+
+
+def test_an_invalid_vite_manifest_gives_no_aliases(project: Path) -> None:
+    vite = project / "__nexy__/client/.vite"
+    vite.mkdir(parents=True)
+    (vite / "manifest.json").write_text("not json", encoding="utf-8")
+
+    assert _vite_aliases(project, {"logo.png"}) == set()
+
+
+def test_a_vite_manifest_without_an_object_entry_gives_no_aliases(project: Path) -> None:
+    vite = project / "__nexy__/client/.vite"
+    vite.mkdir(parents=True)
+    (vite / "manifest.json").write_text(json.dumps({"logo.png": "logo.png"}), encoding="utf-8")
+
+    assert _vite_aliases(project, {"logo.png"}) == set()
+
+
+def test_a_vite_entry_without_a_file_gives_no_aliases(project: Path) -> None:
+    vite = project / "__nexy__/client/.vite"
+    vite.mkdir(parents=True)
+    (vite / "manifest.json").write_text(json.dumps({"logo.png": {}}), encoding="utf-8")
+
+    assert _vite_aliases(project, {"logo.png"}) == set()
+
+
+def test_a_non_dict_vite_manifest_gives_no_aliases(project: Path) -> None:
+    vite = project / "__nexy__/client/.vite"
+    vite.mkdir(parents=True)
+    (vite / "manifest.json").write_text(json.dumps(["logo.png"]), encoding="utf-8")
+
+    assert _vite_aliases(project, {"logo.png"}) == set()
+
+
+def test_a_project_without_pillow_skips_the_import(monkeypatch) -> None:
+    monkeypatch.setitem(sys.modules, "PIL", None)
+
+    assert _pillow() is None
+
+
+def test_repeated_dot_prefixes_are_stripped() -> None:
+    assert normalize_source("././logo.png") == "logo.png"
