@@ -67,6 +67,7 @@ label: prop[str]
 
 ## Next steps
 
+- [How page transitions work](page-transitions.md): what happens when the client router swaps a page
 - [Pages](../pages/README.md): dynamic segments and layouts
 - [Recipes](../../../guides/recipes.md): a tested sign-in flow built on `useSession()`
 - [Config](../../../reference/config.md): enable sessions and locales

@@ -5,23 +5,23 @@
 > [!NOTE]
 > ہکس صرف اس وقت کام کرتے ہیں جب درخواست کو سنبھالا جا رہا ہو۔ کسی کو کہیں اور پکارنے سے `RuntimeError` اضافہ ہوتا ہے۔
 
-## کانٹے
+## ہکس
 
 | ہک | واپسی |
 |---|---|
 | `usePathname()` | درخواست کا راستہ، جیسے `"/blog/post-1"` |
-| `useSearchParams()` | استفسار سٹرنگ بطور `dict[str, str]`، پہلی قدر فی کلید |
-| `useParams()` | متحرک راستے کے پیرامیٹرز، جیسے `{"slug": "post-1"}` |
-| `useQuery()` | `useParams()` کا اصل نام، موجودہ صفحات کے لیے رکھا گیا ہے |
-| `useRequest()` | Starlette درخواست، جس کے لیے دوسرے کانٹے نہیں چھپاتے |
+| `useSearchParams()` | استفسار کی تار بطور `dict[str, str]`، پہلی قدر فی کلید |
+| `useParams()` | ڈائنامک پاتھ پیرامیٹرز، جیسے `{"slug": "post-1"}` |
+| `useQuery()` | `useParams()` کا اصل نام، موجودہ صفحات کے لیے رکھا گیا ہے۔ |
+| `useRequest()` | Starlette درخواست، جس کے لیے دوسرے ہکس کا احاطہ نہیں کرتے |
 | `useHeaders()` | درخواست کے ہیڈر بطور `dict[str, str]`، چھوٹے کیس میں نام |
 | `useUrl()` | مکمل URL: `.scheme`، `.hostname`، `.port`، `.path`، `.query` |
-| `useIsActive(href, exact=False)` | چاہے `href` موجودہ صفحہ ہو یا اس کے والدین میں سے ایک |
+| `useIsActive(href, exact=False)` | چاہے `href` موجودہ صفحہ ہے یا اس کے والدین میں سے ایک ہے۔ |
 | `useRouter()` | `{"path", "base_url", "url_for"}` |
 | `useCookies()` | تمام کوکیز بطور `dict[str, str]` |
-| `useSession()` | سیشن کا حکم، `{}` جب سیشنز فعال نہ ہوں |
-| `useToc(depth_range="2-6")` | مواد کا جدول موجودہ صفحہ کے لیے HTML، `""` جب کوئی بھی نہیں |
-| `useViews(path, context=None)` | ایک اور نظریہ پیش کرتا ہے اور واپس کرتا ہے `HTMLResponse` |
+| `useSession()` | سیشن ڈکٹ، `{}` جب سیشنز فعال نہ ہوں۔ |
+| `useToc(depth_range="2-6")` | مندرجات کا جدول موجودہ صفحہ کے لیے HTML، `""` جب کوئی نہیں۔ |
+| `useViews(path, context=None)` | ایک اور نقطہ نظر پیش کرتا ہے اور ایک `HTMLResponse` واپس کرتا ہے |
 
 ## درخواست پڑھیں
 
@@ -52,14 +52,15 @@ label: prop[str]
 
 ## نوٹس
 
-- `useQuery()` **path** پیرامیٹرز واپس کرتا ہے، استفسار کی تار نہیں، یہی وجہ ہے کہ `useParams()` موجود ہے۔ استفسار کی تار `useSearchParams()` ہے۔
+- `useQuery()` **path** پیرامیٹرز لوٹاتا ہے، استفسار کی تار نہیں، یہی وجہ ہے کہ `useParams()` موجود ہے۔ استفسار کی تار `useSearchParams()` ہے۔
 - `useRouter()` یہاں درخواست ہک ہے۔ یہ `useRouter` کنفگ فیلڈ نہیں ہے جو ایک `APIRouter` کو ماؤنٹ کرتا ہے۔
 - `useSession()` ضروریات `useSession = {...}` `nexyconfig.py` میں؛ اس کے بغیر ڈکٹ خالی ہے۔
 - `useViews("about.tsx", {"title": "About"})` HTML واپس کرتا ہے: ایک `.nexy` منظر اس کے مرتب کردہ ماڈیول کے ذریعہ پیش کیا جاتا ہے، ایک `.tsx`/`.jsx`/`.vue`/`.svelte`/`.mdx` منظر کلائنٹ ماؤنٹ کنٹینر بن جاتا ہے۔
 
 ## اگلے اقدامات
 
+- [صفحہ کی منتقلی کیسے کام کرتی ہے](page-transitions.md): جب کلائنٹ راؤٹر کسی صفحے کو تبدیل کرتا ہے تو کیا ہوتا ہے
 - [صفحات](../pages/README.md): متحرک طبقات اور ترتیب
-- [ترکیبیں](../../../guides/recipes.md): ایک آزمائشی سائن ان فلو `useSession()` پر بنایا گیا
-- [کنفیگ](../../../reference/config.md): سیشنز اور لوکیلز کو فعال کریں۔
+- [ترکیبیں](../../../guides/recipes.md): آزمائشی سائن ان فلو `useSession()` پر بنایا گیا
+- [کنفیگ ](../../../reference/config.md): سیشنز اور لوکیلز کو فعال کریں۔
 - [.nexy فائلیں](../../../views/nexy/README.md): جہاں ہکس کو عام طور پر کہا جاتا ہے۔

@@ -7,20 +7,20 @@ Hooks 从 `.nexy` 页面、API 处理程序或模块化控制器内部读取当�
 
 ## 钩子
 
-| 钩子 | 返回 |
+| 钩子 | 退货 |
 |---|---|
 | `usePathname()` | 请求路径，例如 `"/blog/post-1"` |
 | `useSearchParams()` | 查询字符串为 `dict[str, str]`，每个键的第一个值 |
 | `useParams()` | 动态路径参数，例如 `{"slug": "post-1"}` |
 | `useQuery()` | `useParams()` 的原始名称，为现有页面保留 |
-| `useRequest()` | Starlette 请求，其他钩子没有覆盖 |
+| `useRequest()` | Starlette 请求，用于其他钩子未涵盖的内容 |
 | `useHeaders()` | 请求标头为 `dict[str, str]`，名称小写 |
-| `useUrl()` | 完整 URL：`.scheme`、`.hostname`、`.port`、`.path`、`.query` |
+| `useUrl()` | 完整网址：`.scheme`、`.hostname`、`.port`、`.path`、`.query` |
 | `useIsActive(href, exact=False)` | `href` 是否是当前页面或其父页面之一 |
 | `useRouter()` | `{"path", "base_url", "url_for"}` |
-| `useCookies()` | 所有 cookie 为 `dict[str, str]` |
-| `useSession()` | 会话字典，`{}` 未启用会话时 |
-| `useToc(depth_range="2-6")` | 当前页面的 HTML 目录，`""` 没有时 |
+| `useCookies()` | 所有 cookie 均为 `dict[str, str]` |
+| `useSession()` | 未启用会话时的会话字典，`{}` |
+| `useToc(depth_range="2-6")` | 当前页面的 HTML 目录，如果没有，则为 `""` |
 | `useViews(path, context=None)` | 渲染另一个视图并返回 `HTMLResponse` |
 
 ## 阅读请求
@@ -59,7 +59,8 @@ label: prop[str]
 
 ## 后续步骤
 
+- [页面转换如何工作](page-transitions.md)：当客户端路由器交换页面时会发生什么
 - [页面](../pages/README.md)：动态段和布局
-- [食谱](../../../guides/recipes.md)：基于 `useSession()` 构建的经过测试的登录流程
+- [Recipes](../../../guides/recipes.md)：基于 `useSession()` 构建的经过测试的登录流程
 - [配置](../../../reference/config.md)：启用会话和区域设置
 - [.nexy 文件](../../../views/nexy/README.md)：通常调用钩子的地方
