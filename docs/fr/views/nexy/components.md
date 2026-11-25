@@ -62,7 +62,7 @@ from nexy import Image
 <Image src="/logo.png" alt="Logo" width=128 height=32 />
 ```
 
-`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` restitue un `<img>` avec un chargement paresseux par défaut.
+`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` restitue un `<img>` avec un chargement paresseux par défaut. Pour une image locale dans `src/` ou `public/`, `nx build` écrit des variantes WebP hachées et `Image` ajoute `srcset` et `sizes` à partir du manifeste généré. Les dimensions et attributs explicites gagnent. Voir [Image](../../routing/fbr/navigation/linking-and-navigating.md#image).
 
 ## Lien
 
@@ -134,7 +134,7 @@ from "@/components/Card.nexy" import Card
 
 ## Importer un composant client
 
-A partir d'un fichier `.nexy`, importez un composant du framework par chemin ; le compilateur le monte sur le client et transmet les attributs comme props :
+A partir d'un fichier `.nexy`, importez un composant du framework par chemin ; le compilateur le monte sur le client et transmet les attributs comme props :
 
 ```nexy
 ---

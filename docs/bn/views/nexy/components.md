@@ -45,7 +45,7 @@ from nexy import Audio
 | অন্য কোন `value` | `"value"`, একটি স্ট্রিং |
 
 - ট্যাগটি একটি বড় হাতের অক্ষর দিয়ে শুরু হতে হবে এবং ফ্রন্ট ম্যাটারে আমদানি করতে হবে; অন্যথায় কম্পাইলার উত্থাপন করে `Missing Import: <Name> used but not declared.`
-- ট্যাগ ফর্ম হল **সেলফ-ক্লোজিং**। `<Audio src="/a.mp3" />` এবং `{{ Audio("/a.mp3") }}` সমতুল্য; সাহায্যকারী ট্যাগের ভিতরে শিশুদের লেখা সমর্থিত নয়।
+- ট্যাগ ফর্ম হল **সেলফ-ক্লোজিং**। `<Audio src="/a.mp3" />` এবং `{{ Audio("/a.mp3") }}` সমতুল্য; একটি হেল্পার ট্যাগের ভিতরে শিশুদের লেখা সমর্থিত নয়।
 - একটি বেয়ার HTML অ্যাট্রিবিউট এখানে বুলিয়ান নয়: `controls` হয়ে যায় `controls=""`, যা মিথ্যা। লেখ `controls=True`।
 
 > [!NOTE]
@@ -62,7 +62,7 @@ from nexy import Image
 <Image src="/logo.png" alt="Logo" width=128 height=32 />
 ```
 
-`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` ডিফল্টরূপে অলস লোডিং সহ একটি `<img>` রেন্ডার করে।
+`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` ডিফল্টরূপে অলস লোডিং সহ একটি `<img>` রেন্ডার করে। একটি স্থানীয় ছবির জন্য `src/` বা `public/`, `nx build` হ্যাশ করা WebP ভেরিয়েন্ট লেখে এবং `Image` জেনারেট করা ম্যানিফেস্ট থেকে `srcset` এবং `sizes` যোগ করে। সুস্পষ্ট মাত্রা এবং গুণাবলী জয়. দেখুন [চিত্র](../../routing/fbr/navigation/linking-and-navigating.md#image)।
 
 ## লিঙ্ক
 
@@ -73,7 +73,7 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` ক্লায়েন্ট রাউটার দ্বারা পরিচালিত একটি `<a data-nexy-link>` রেন্ডার করে। `prefetch=True` এর সাথে, লিঙ্কটিকে ঘোরা বা স্পর্শ করা `window.__nexy_prefetch` এর মাধ্যমে লক্ষ্যকে উষ্ণ করে।
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` ক্লায়েন্ট রাউটার দ্বারা পরিচালিত একটি `<a data-nexy-link>` রেন্ডার করে। `prefetch=True` এর সাথে, লিঙ্কটিকে ঘোরানো বা স্পর্শ করা `window.__nexy_prefetch` এর মাধ্যমে লক্ষ্যকে উষ্ণ করে।
 
 > [!NOTE]
 > ট্যাগ ফর্মটি লেবেলটিকে `children` হিসাবে নেয়, উপাদান সামগ্রী হিসাবে নয়: `<Link href="/about" children="About" />`। একটি লিঙ্কের ভিতরে মার্কআপ রাখতে, `children=` অথবা একটি `.nexy` উপাদান যা একটি `<Slot />` রেন্ডার করে তার সাথে কল ফর্মটি ব্যবহার করুন।
@@ -130,7 +130,7 @@ from "@/components/Card.nexy" import Card
 ```
 <!-- /router -->
 
-`title` কোন ডিফল্ট নেই, তাই পৃষ্ঠাটি অবশ্যই এটি পাস করতে হবে; `tone` `"neutral"`-এ ফিরে আসে। ট্যাগগুলির মধ্যে মার্কআপটি `<Slot />` (ক্যাপিটাল এস) এর ভিতরে আসে। props, স্লট এবং ট্যাগ ফর্মের নিয়মগুলির জন্য [.nexy ফাইল](README.md#components) দেখুন।
+`title` কোন ডিফল্ট নেই, তাই পৃষ্ঠাটি অবশ্যই এটি পাস করতে হবে; `tone` `"neutral"`-এ ফিরে আসে। ট্যাগগুলির মধ্যে মার্কআপ `<Slot />` (ক্যাপিটাল এস) এর ভিতরে আসে। props, স্লট এবং ট্যাগ ফর্মের নিয়মগুলির জন্য [.nexy ফাইল](README.md#components) দেখুন।
 
 ## একটি ক্লায়েন্ট উপাদান আমদানি করা হচ্ছে
 
@@ -156,9 +156,9 @@ html = counter(start=0)
 
 ## টেমপ্লেট এবং Vite
 
-`Template().render(path, context)` একটি টেমপ্লেট ফাইল (Jinja2, অথবা Markdown `.md` রুটের জন্য HTML-এ রেন্ডার করা হয়। `Template().invalidate(path)` ক্যাশে থেকে এটি ড্রপ করে।
+`Template().render(path, context)` একটি টেমপ্লেট ফাইল (Jinja2, অথবা Markdown `.md` রুটের জন্য HTML-এ রেন্ডার করা হয়। `Template().invalidate(path)` এটি ক্যাশে থেকে ফেলে দেয়।
 
-`Vite()` বর্তমান মোডের জন্য ক্লায়েন্ট ট্যাগ প্রদান করে: বিকাশে এইচএমআর স্ক্রিপ্ট, উৎপাদনে নির্মিত ক্লায়েন্ট বান্ডেল। Nexy প্রতিটি পৃষ্ঠার জন্য এটি কল; আপনার খুব কমই সরাসরি এটি প্রয়োজন।
+`Vite()` বর্তমান মোডের জন্য ক্লায়েন্ট ট্যাগ ফেরত দেয়: বিকাশে এইচএমআর স্ক্রিপ্ট, উৎপাদনে নির্মিত ক্লায়েন্ট বান্ডিল। Nexy প্রতিটি পৃষ্ঠার জন্য এটি কল; আপনার খুব কমই সরাসরি এটি প্রয়োজন।
 
 ## এখনো বাস্তবায়ন হয়নি
 
@@ -168,4 +168,4 @@ html = counter(start=0)
 
 - [.nexy ফাইল](README.md): যেখানে এই সাহায্যকারী ব্যবহার করা হয়
 - [React](../react/differences.md): `.tsx` উপাদান আমদানি করা
-- [ফ্রন্টএন্ড](../../guides/frontend.md): কিভাবে ক্লায়েন্ট উপাদানগুলি একত্রিত করা হয়
+- [ফ্রন্টএন্ড](../../guides/frontend.md): কিভাবে ক্লায়েন্ট উপাদান একত্রিত করা হয়

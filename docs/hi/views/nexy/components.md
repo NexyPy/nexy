@@ -46,7 +46,7 @@ from nexy import Audio
 
 - टैग को बड़े अक्षर से शुरू होना चाहिए और फ्रंटमैटर में आयात किया जाना चाहिए; अन्यथा संकलक उठाता है `Missing Import: <Name> used but not declared.`
 - टैग फॉर्म **स्वयं-समापन** है। `<Audio src="/a.mp3" />` और `{{ Audio("/a.mp3") }}` समतुल्य हैं; हेल्पर टैग के अंदर बच्चों को लिखना समर्थित नहीं है।
-- एक खाली HTML विशेषता यहां बूलियन नहीं है: `controls` `controls=""` बन जाता है, जो कि गलत है। `controls=True` लिखें।
+- एक खाली HTML विशेषता यहां बूलियन नहीं है: `controls` `controls=""` बन जाता है, जो कि गलत है। `controls=True` लिखें.
 
 > [!NOTE]
 > `class_name` सीएसएस कक्षाओं के लिए प्रलेखित कीवर्ड है। अतिरिक्त कीवर्ड तर्क HTML विशेषताएँ बन जाते हैं, इसलिए `class="nav"` भी आउटपुट तक पहुँचता है।
@@ -62,7 +62,7 @@ from nexy import Image
 <Image src="/logo.png" alt="Logo" width=128 height=32 />
 ```
 
-`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` डिफ़ॉल्ट रूप से आलसी लोडिंग के साथ एक `<img>` प्रस्तुत करता है।
+`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` डिफ़ॉल्ट रूप से आलसी लोडिंग के साथ एक `<img>` प्रस्तुत करता है। `src/` या `public/` में एक स्थानीय छवि के लिए, `nx build` हैशेड वेबपी वेरिएंट लिखता है और `Image` जेनरेट किए गए मेनिफेस्ट से `srcset` और `sizes` जोड़ता है। स्पष्ट आयाम और विशेषताएँ जीतती हैं। [छवि](../../routing/fbr/navigation/linking-and-navigating.md#image) देखें।
 
 ## लिंक
 
@@ -73,7 +73,7 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` क्लाइंट राउटर द्वारा संचालित `<a data-nexy-link>` को प्रस्तुत करता है। `prefetch=True` के साथ, लिंक को घुमाने या छूने से लक्ष्य `window.__nexy_prefetch` के माध्यम से गर्म हो जाता है।
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` क्लाइंट राउटर द्वारा प्रबंधित एक `<a data-nexy-link>` प्रस्तुत करता है। `prefetch=True` के साथ, लिंक को घुमाने या छूने से लक्ष्य `window.__nexy_prefetch` तक गर्म हो जाता है।
 
 > [!NOTE]
 > टैग प्रपत्र लेबल को `children` के रूप में लेता है, तत्व सामग्री के रूप में नहीं: `<Link href="/about" children="About" />`। किसी लिंक के अंदर मार्कअप डालने के लिए, `children=` या `.nexy` घटक के साथ कॉल फॉर्म का उपयोग करें जो `<Slot />` प्रस्तुत करता है।
@@ -162,7 +162,7 @@ html = counter(start=0)
 
 ## अभी तक लागू नहीं हुआ
 
-`Form` और `Script` बिना किसी व्यवहार के निर्यात किए गए प्लेसहोल्डर हैं। उन पर भरोसा मत करो.
+`Form` और `Script` बिना किसी व्यवहार के निर्यातित प्लेसहोल्डर हैं। उन पर भरोसा मत करो.
 
 ## अगले चरण
 
