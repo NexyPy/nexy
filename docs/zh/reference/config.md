@@ -28,6 +28,7 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | 进程 `nx start` 运行； `0` 是 Linux 和 macOS 上每个 CPU 一个，Windows 上一个 |
 | `useCSR` | `False` | 客户端路由模式； `.nexy` 路线已禁用 |
 | `useBasePath` | `None` | 整个应用程序的公共前缀，例如 `"/app"`；外部的请求回答 404，生成的链接、客户端路由、操作调用和资产都带有前缀。请参阅[部署](../deployment/README.md#serve-under-a-sub-path) |
+| `useImageWidths` | `[320, 640, 960, 1280]` | 像素宽度 `nx build` 为局部图像生成；转换需要 `Pillow`，如果没有它，图像将保留其原始 URL。请参阅[图片](../routing/fbr/navigation/linking-and-navigating.md#image) |
 
 ## 数据库
 
@@ -97,7 +98,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useMiddlewares` | `[]` | ASGI中间件类 |
 | `useCORS` | `None` | 夸格斯 `CORSMiddleware` |
-| `useGZip` | `None` | 夸格斯 `GZipMiddleware` |
+| `useGZip` | `None` | kwargs 为 `GZipMiddleware` |
 | `useTrustedHost` | `None` | 夸格斯 `TrustedHostMiddleware` |
 | `useSession` | `None` | 夸格斯 `SessionMiddleware` |
 | `useAuth` | `None` | 身份验证中间件配置 |

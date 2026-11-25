@@ -28,6 +28,7 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | Prozesse `nx start` läuft; `0` ist einer pro CPU unter Linux und macOS, einer unter Windows |
 | `useCSR` | `False` | Client-seitiger Routing-Modus; `.nexy` Routen sind deaktiviert |
 | `useBasePath` | `None` | öffentliches Präfix für die gesamte Anwendung, z. B. `"/app"`; Anfragen außerhalb antworten mit 404 und generierte Links, Client-Routen, Aktionsaufrufe und Assets tragen das Präfix. Siehe [Bereitstellen](../deployment/README.md#serve-under-a-sub-path) |
+| `useImageWidths` | `[320, 640, 960, 1280]` | Pixelbreiten `nx build` werden für lokale Bilder generiert; Die Konvertierung erfordert `Pillow`, und ohne sie behalten Bilder ihre ursprüngliche URL. Siehe [Bild](../routing/fbr/navigation/linking-and-navigating.md#image) |
 
 ## Datenbank
 
@@ -39,7 +40,7 @@ class NexyConfig(NexyConfigModel):
 
 | Feld | Standard | Bedeutung |
 |---|---|---|
-| `useRouter` | `None` | eine `APIRouter`-Instanz oder -Klasse, die neben den dateibasierten Routen bereitgestellt wird; `None` bedeutet nur dateibasiert |
+| `useRouter` | `None` | eine `APIRouter`-Instanz oder -Klasse, die neben den dateibasierten Routen gemountet ist; `None` bedeutet nur dateibasiert |
 | `excludeDirs` | `["templates", "extension", "docs"]` | Beim Scannen von Routen werden Verzeichnisse übersprungen |
 | `useAliases` | `None` | Aliase importieren, z.B. `{"@": "src"}` (`@/components/Counter.tsx` bedeutet `src/components/Counter.tsx`); `nx new` schreibt die von Ihnen gewählte, und Vite und `tsconfig.json` folgen ihr |
 

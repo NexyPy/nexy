@@ -28,18 +28,19 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | تشغيل العمليات `nx start`؛ `0` هو واحد لكل وحدة معالجة مركزية على Linux وmacOS، وواحد على Windows |
 | `useCSR` | `False` | وضع التوجيه من جانب العميل؛ `.nexy` الطرق معطلة |
 | `useBasePath` | `None` | البادئة العامة للتطبيق بأكمله، مثل `"/app"`؛ الطلبات خارجها تجيب على 404، والروابط التي تم إنشاؤها ومسارات العميل ونداءات الإجراء والأصول تحمل البادئة. راجع [نشر](../deployment/README.md#serve-under-a-sub-path) |
+| `useImageWidths` | `[320, 640, 960, 1280]` | عروض البكسل `nx build` تولد للصور المحلية؛ يحتاج التحويل إلى `Pillow`، وبدونه تحتفظ الصور بعنوان URL الأصلي الخاص بها. انظر [الصورة](../routing/fbr/navigation/linking-and-navigating.md#image) |
 
 ## قاعدة البيانات
 
 | الميدان | الافتراضي | معنى |
 |---|---|---|
-| `useORM` | `None` | ORM للمشروع: `"SQLModel"`، `"SQLAlchemy"` أو `"Tortoise-ORM"`. `nx new` يكتبه، و `nx migrate` ينتقي منه Alembic أو Aerich منه؛ بدونه، `nx migrate` يأخذ أول ORM مثبتًا. انظر [قواعد البيانات](../guides/databases.md#migrations) |
+| `useORM` | `None` | ORM للمشروع: `"SQLModel"`، `"SQLAlchemy"` أو `"Tortoise-ORM"`. `nx new` يكتبه، ويلتقط `nx migrate` منه Alembic أو Aerich منه؛ بدونه، `nx migrate` يأخذ أول ORM مثبتًا. انظر [قواعد البيانات](../guides/databases.md#migrations) |
 
 ## الطرق
 
 | الميدان | الافتراضي | معنى |
 |---|---|---|
-| `useRouter` | `None` | مثيل أو فئة `APIRouter` مثبتة بجوار المسارات المستندة إلى الملف؛ `None` يعني المستند إلى الملف فقط |
+| `useRouter` | `None` | `APIRouter` مثيل أو فئة مثبتة بجوار المسارات المستندة إلى الملف؛ `None` يعني المستند إلى الملف فقط |
 | `excludeDirs` | `["templates", "extension", "docs"]` | تم تخطي الدلائل عند مسح المسارات |
 | `useAliases` | `None` | استيراد الأسماء المستعارة، على سبيل المثال `{"@": "src"}` (`@/components/Counter.tsx` يعني `src/components/Counter.tsx`)؛ `nx new` يكتب الذي اخترته، ويتبعه Vite و `tsconfig.json` |
 
@@ -53,11 +54,11 @@ class NexyConfig(NexyConfigModel):
 | `useWatchExtensions` | `None` | ملحقات إضافية يشاهدها خادم التطوير |
 | `useWatchExcludePatterns` | `None` | أنماط الكرة الأرضية التي يتجاهلها خادم التطوير |
 
-> **من المفيد معرفة**: `NexyConfigModel` يعلن `useVite = False`؛ وقت التشغيل `Config` الافتراضي هو `True`.
+> **من المفيد أن نعرف**: `NexyConfigModel` يعلن `useVite = False`؛ وقت التشغيل `Config` الافتراضي هو `True`.
 
 ## أسماء الملفات المحجوزة
 
-يضيف كل حقل ملحقات إلى دور محجوز. `useLayoutExtensions = ["md"]` يجعل `layout.md` محجوزاً، مثل `layout.nexy` تماماً.
+يضيف كل حقل ملحقات إلى دور محجوز. `useLayoutExtensions = ["md"]` يجعل `layout.md` محجوزاً، تماماً مثل `layout.nexy`.
 
 | الميدان | يضيف ملحقات إلى |
 |---|---|
@@ -89,7 +90,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-أو أطفئه بـ `useDocs = False`، والذي يتوقف أيضًا عن الخدمة `/openapi.json`. أثناء تشغيل المرجع، احتفظ بمسارات المشروع بعيدًا عن هذا المسار.
+أو قم بإيقاف تشغيله باستخدام `useDocs = False`، والذي يتوقف أيضًا عن الخدمة `/openapi.json`. أثناء تشغيل المرجع، احتفظ بمسارات المشروع بعيدًا عن هذا المسار.
 
 ## الوسيطة
 
@@ -143,4 +144,4 @@ class NexyConfig(NexyConfigModel):
 
 - [i18n](../guides/i18n.md): التدويل
 - [الواجهة الأمامية](../guides/frontend.md): `useFF` وبناء العميل
-- [نشر](../deployment/README.md): خيارات الإنتاج
+- [النشر](../deployment/README.md): خيارات الإنتاج
