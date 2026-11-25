@@ -1,4 +1,4 @@
-"""The Assign workflow gives everything an owner, except a good first issue (#301)."""
+"""The Assign workflow leaves every issue and pull request unassigned."""
 
 from __future__ import annotations
 
@@ -14,5 +14,10 @@ def _job() -> dict:
     return workflow["jobs"]["assign"]
 
 
-def test_assign_workflow_leaves_a_good_first_issue_unassigned():
-    assert "!contains(github.event.issue.labels.*.name, 'good first issue')" in _job()["if"]
+def test_assign_workflow_keeps_the_required_check_name():
+    assert _job()["name"] == "Give it an owner"
+
+
+def test_assign_workflow_never_runs_an_assignment_command():
+    script = " ".join(step.get("run", "") for step in _job()["steps"])
+    assert "--add-assignee" not in script
