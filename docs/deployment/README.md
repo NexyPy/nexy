@@ -58,6 +58,30 @@ nx start --host 127.0.0.1 --port 8000
 Make sure the proxy forwards WebSocket upgrades if you use `SOCKET` handlers, and that it forwards
 the original host - FastAPI builds absolute URLs from it.
 
+### Serve under a sub-path
+
+Set `useBasePath` when the application is published under a prefix instead of the domain root:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useBasePath = "/app"
+```
+
+Every public answer then lives under `/app`: pages, client navigation, assets, server actions, API
+documentation, sitemap and health probes. A request for `/` answers 404. Nexy accepts `app/`,
+`/app/` and `/app` as the same setting and normalizes it to `/app`.
+
+Route files keep root-relative paths. A page served at `/app/about` is still `src/routes/about.tsx`
+or `about.nexy`, and internal paths stay `/about`. Nexy adds the prefix only to URLs written to the
+browser.
+
+Configure the proxy to forward the prefix unchanged, for example `/app/...` to
+`http://127.0.0.1:8000/app/...`. WebSocket upgrades need the same prefix. Nexy strips it after the
+request arrives, so no rewrite rule is needed.
+
 ## Health check
 
 <!-- router:fbr,custom -->
