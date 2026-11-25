@@ -64,7 +64,7 @@ Lokasi tersedia di setiap framework, dalam idiom framework tersebut. Selama taha
 | Cocokkan jalan | `useMatch(path?)` | `useMatch(path?)` pengakses | `useMatch(path?)` rujukan | `useMatch(path?)` toko |
 | Tanyakan sebelum pergi | `useBlocker(dirty)` | `useBlocker(dirty())` di `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` di `$effect` |
 
-Kuerinya adalah `URLSearchParams`. `useRouter()` dan `router` memberikan `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` dan `prefetch(href)`; `push` dan `replace` menerima `{ scroll: false }`.
+Kuerinya adalah `URLSearchParams`. `useRouter()` dan `router` menghasilkan `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` dan `prefetch(href)`; `push` dan `replace` menerima `{ scroll: false }`.
 
 ```tsx
 import { useParams, useRouter, useSearchParams } from "@nexy/client";
@@ -186,11 +186,13 @@ Suatu fungsi tidak bertanya dengan sendirinya dan tidak memuat ulang; panggil `c
 <Image src="/photo.jpg" alt="A mountain" width={800} height={600} />
 ```
 
+`nx build` menemukan gambar lokal di `src/` dan `public/`, lalu menulis varian WebP pada 320, 640, 960, dan 1280 piksel di bawah `__nexy__/client/images/`. Nama yang di-hash membuat setiap varian dapat disimpan dalam cache: mengubah gambar akan mengubah URL-nya. `Image` membaca manifes yang dihasilkan dan menetapkan `src`, `srcset` dan `sizes` untuk gambar lokal yang Anda beri nama. `width`, `height`, `srcSet` dan `sizes` props yang eksplisit menang atas URL yang dihasilkan, dan setiap URL yang dihasilkan membawa `useBasePath`. Atur `useImageWidths` di `nexyconfig.py` untuk memilih lebar lainnya. Kebutuhan konversi `Pillow` dipasang di proyek; tanpanya, `Image` menyajikan URL asli tanpa perubahan.
+
 - `alt` diperlukan; gunakan `alt=""` untuk gambar dekoratif. Nexy memperingatkan sekali jika hilang.
 - Dengan `width` dan `height`, atribut memberikan rasio aspek pada browser dan gambar tetap lancar (`height: auto; max-width: 100%`).
-- `priority` sekarang memuat gambar dengan prioritas tinggi, untuk gambar yang terlihat saat tiba.
-- `fill` membuat gambar menutupi posisi induknya, mengabaikan `width` dan `height`.
-- `sizes` dan `srcSet` melewatinya. Nexy tidak mengubah ukuran atau mengonversi gambar.
+- `priority` sekarang memuat gambar dengan prioritas tinggi, untuk gambar yang terlihat pada saat kedatangan.
+- `fill` membuat gambar menutupi induk posisinya, mengabaikan `width` dan `height`.
+- `sizes` dan `srcSet` melewatinya. Pada gambar lokal, nilai yang dihasilkan digunakan saat Anda menghilangkannya.
 
 ## Tautan dari halaman `.nexy`.
 
@@ -201,7 +203,7 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` menerjemahkan `<a href="/about" data-nexy-link="true">`. Setiap atribut dan `href` di-escape dengan HTML.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` merender `<a href="/about" data-nexy-link="true">`. Setiap atribut dan `href` di-escape dalam HTML.
 
 ## Apa yang dilakukan router
 
