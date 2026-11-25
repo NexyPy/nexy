@@ -43,6 +43,14 @@ def test_the_dev_server_never_warms_up_a_declaration_file():
     assert "!src/**/*.d.ts" in _run("warmup")["warmup"]
 
 
+def test_the_dev_base_follows_the_setting():
+    assert _run("base") == {"base": "/app/", "error": None}
+
+
+def test_the_build_base_follows_the_setting():
+    assert _run("base-prod") == {"base": "/app/__nexy__/client/", "error": None}
+
+
 def test_the_dev_server_still_warms_up_the_typescript_modules():
     assert any(pattern.endswith(",ts,js}") for pattern in _run("warmup")["warmup"])
 

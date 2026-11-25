@@ -157,9 +157,11 @@ function nexyPlugin(): Plugin {
     // Injects Nexy settings directly into Vite
     config({ mode }) {
       isProduction = mode === 'production'
+      const basePath = readMode().basePath ?? ''
+      const root = basePath ? basePath + '/' : '/'
       return {
         logLevel: 'info',
-        base: mode === 'production' ? '/__nexy__/client/' : '/',
+        base: mode === 'production' ? root + '__nexy__/client/' : root,
 
         resolve: {
           alias: [
