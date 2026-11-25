@@ -1,0 +1,85 @@
+name: Issue link
+
+# Every pull request names the issue it resolves on its own line, with a closing keyword. The
+# first job is the required check; the second closes those issues when the pull request is merged.
+#
+# pull_request_target, not pull_request, for the closing job: closing needs write. The description
+# is read through the API and no code from the pull request is checked out or run.
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+    branches: [main, develop]
+  pull_request_target:
+    types: [closed]
+    branches: [main, develop]
+
+permissions: {}
+
+jobs:
+  require:
+    name: Require a linked issue
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Check the description
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          body=$(gh pr view "$PR_NUMBER" --repo "$GH_REPO" --json body --jq .body)
+          if printf '%s\n' "$body" | grep -Eiq \
+            '^[[:space:]]*(close[sd]?|fix(e[sd])?|resolve[sd]?)[[:space:]]+#[0-9]+'; then
+            exit 0
+          fi
+          echo "Add a line like 'Closes #123' to the pull request description."
+          exit 1
+
+  close:
+    name: Close linked issues
+    if: >-
+      ${{ github.event_name == 'pull_request_target'
+          && github.event.pull_request.merged == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+      pull-requests: read
+    steps:
+      # Speak as the Nexy bot (a GitHub App) once the maintainer has set it up: see
+      # .github/bot/README.md. Until then the workflow token answers, as github-actions.
+      - name: Act as the Nexy bot
+        id: bot
+        if: ${{ vars.NEXY_BOT_CLIENT_ID != '' }}
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.NEXY_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.NEXY_BOT_PRIVATE_KEY }}
+          permission-issues: write
+          permission-pull-requests: read
+
+      - name: Close the issues the pull request resolves
+        env:
+          GH_TOKEN: ${{ steps.bot.outputs.token || github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          body=$(gh pr view "$PR_NUMBER" --repo "$GH_REPO" --json body --jq .body)
+          numbers=$(printf '%s\n' "$body" \
+            | grep -Eio '^[[:space:]]*(close[sd]?|fix(e[sd])?|resolve[sd]?)[[:space:]]+#[0-9]+' \
+            | grep -Eo '#[0-9]+' | tr -d '#' | sort -u || true)
+          for number in $numbers; do
+            open=$(gh api "repos/$GH_REPO/issues/$number" \
+              --jq 'select(.state == "open" and .pull_request == null) | .number')
+            if [ -n "$open" ]; then
+              gh issue close "$number" --repo "$GH_REPO" \
+                --comment "Implemented by #$PR_NUMBER and merged as $MERGE_SHA. Closing automatically."
+            fi
+          done
