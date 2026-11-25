@@ -60,7 +60,7 @@ A localização está disponível em todas as estruturas, no idioma dessa estrut
 | Consulta | `useSearchParams()` | `useSearchParams()` acessador | `useSearchParams()` referência | `$searchParams` loja |
 | Tudo | `useLocation()` | `useLocation()` acessador | `useLocation()` referência | `$location` loja |
 | Navegar | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
-| Navegação em voo | `useTransition()` | `useTransition()` acessador | `useTransition()` referência | `useTransition()` loja |
+| Navegação em vôo | `useTransition()` | `useTransition()` acessador | `useTransition()` referência | `useTransition()` loja |
 | Combine um caminho | `useMatch(path?)` | `useMatch(path?)` acessador | `useMatch(path?)` referência | `useMatch(path?)` loja |
 | Pergunte antes de sair | `useBlocker(dirty)` | `useBlocker(dirty())` em `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` em `$effect` |
 
@@ -186,11 +186,13 @@ Uma função não solicita por si só e não recarrega; ligue para `confirm()` p
 <Image src="/photo.jpg" alt="A mountain" width={800} height={600} />
 ```
 
+`nx build` encontra imagens locais em `src/` e `public/` e, em seguida, grava variantes WebP em 320, 640, 960 e 1280 pixels em `__nexy__/client/images/`. Os nomes com hash mantêm cada variante armazenável em cache: alterar a imagem altera seu URL. `Image` lê o manifesto gerado e define `src`, `srcset` e `sizes` para a imagem local que você nomeia. `width`, `height`, `srcSet` e `sizes` props explícitos vencem os gerados, e cada URL gerado carrega `useBasePath`. Defina `useImageWidths` em `nexyconfig.py` para escolher outras larguras. Necessidades de conversão `Pillow` instaladas no projeto; sem ele, `Image` exibe a URL original inalterada.
+
 - `alt` é obrigatório; use `alt=""` para uma imagem decorativa. Nexy avisa uma vez quando está faltando.
-- Com `width` e `height`, os atributos fornecem ao navegador a proporção e a imagem permanece fluida (`height: auto; max-width: 100%`).
+- Com `width` e `height`, os atributos fornecem ao navegador a proporção de aspecto e a imagem permanece fluida (`height: auto; max-width: 100%`).
 - `priority` carrega a imagem agora em alta prioridade, para aquela que está visível na chegada.
 - `fill` faz a imagem cobrir seu pai posicionado, ignorando `width` e `height`.
-- `sizes` e `srcSet` passam. Nexy não redimensiona nem converte imagens.
+- `sizes` e `srcSet` passam. Em uma imagem local, os valores gerados são usados ​​quando você os omite.
 
 ## Link de uma página `.nexy`
 
@@ -212,7 +214,7 @@ Numa navegação, o roteador:
 3. despacha um evento `nexy:navigated` em `document`;
 4. rola para o topo ou para o alvo `#fragment`.
 
-A troca de página é executada dentro de uma transição de visualização do navegador quando há uma disponível: consulte [Como funcionam as transições de página](page-transitions.md).
+A troca de página é executada dentro de uma transição de visualização do navegador quando uma está disponível: consulte [Como funcionam as transições de página](page-transitions.md).
 
 Uma navegação mais recente cancela uma navegação mais antiga que ainda está sendo renderizada. Se uma página não puder ser renderizada, o navegador a solicitará ao servidor. Os botões voltar e avançar renderizam a página dessa entrada e restauram sua posição de rolagem.
 

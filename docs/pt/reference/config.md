@@ -28,6 +28,7 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | processa `nx start` execuções; `0` é um por CPU no Linux e macOS, um no Windows |
 | `useCSR` | `False` | modo de roteamento do lado do cliente; `.nexy` rotas estão desativadas |
 | `useBasePath` | `None` | prefixo público para todo o aplicativo, como `"/app"`; solicitações fora dele respondem 404, e links gerados, rotas de clientes, chamadas de ação e ativos carregam o prefixo. Consulte [Implantar](../deployment/README.md#serve-under-a-sub-path) |
+| `useImageWidths` | `[320, 640, 960, 1280]` | larguras de pixels `nx build` geradas para imagens locais; a conversão precisa de `Pillow`, e sem ela as imagens mantêm sua URL original. Veja [Imagem](../routing/fbr/navigation/linking-and-navigating.md#image) |
 
 ## Banco de dados
 
@@ -72,7 +73,7 @@ Cada campo adiciona extensões a uma função reservada. `useLayoutExtensions = 
 
 | Campo | Padrão | Significado |
 |---|---|---|
-| `useDocs` | `"dev"` | onde a página de referência escalar e `/openapi.json` são veiculadas: `"dev"` somente em `nx dev`, `True` em produção também (o esquema lista todas as rotas e ações do servidor), `False` em nenhum lugar |
+| `useDocs` | `"dev"` | onde a página de referência escalar e `/openapi.json` são veiculadas: `"dev"` apenas em `nx dev`, `True` em produção também (o esquema lista todas as rotas e ações do servidor), `False` em nenhum lugar |
 | `useDocsUrl` | `"/docs"` | caminho da página de referência da API |
 | `useRedocsUrl` | `"/redocs"` | declarada mas nenhuma rota está montada |
 | `useTitle` | `"Nexy App"` | OpenAPI título e título da página (`"Nexy"` em `NexyConfigModel`) |

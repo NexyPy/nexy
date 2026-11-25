@@ -113,6 +113,7 @@ class Config(NexyConfigModel):
     useRewrites: list[dict[str, Any]] | None = None
     useHeaders: list[dict[str, Any]] | None = None
     useBasePath: str | None = None
+    useImageWidths: list[int] = [320, 640, 960, 1280]
 
     def __new__(cls) -> "Config":
         if cls._instance is None:

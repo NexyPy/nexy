@@ -1,6 +1,6 @@
 # Verlinken und navigieren
 
-Beim Client-Routing (`useCSR = True`) tauscht ein Link zwischen zwei Seiten die Seite im Browser aus, anstatt das Dokument neu zu laden. The layouts keep their state.
+Beim Client-Routing (`useCSR = True`) tauscht ein Link zwischen zwei Seiten die Seite im Browser aus, anstatt das Dokument neu zu laden. Die Layouts behalten ihren Zustand.
 
 ## Einfache Links funktionieren bereits
 
@@ -12,7 +12,7 @@ Jeder `<a href>` zu einer Seite Ihres Projekts navigiert auf dem Client, ohne Ko
 
 Es wird ein Link zum Browser hinterlassen und die Seite wird normal geladen, wenn:
 
-- eine Sondertaste gedrückt wird oder die Taste nicht die Haupttaste ist;
+- eine Zusatztaste gedrückt wird oder die Taste nicht die Haupttaste ist;
 - es hat `target` (außer `_self`), `download`, `rel="external"` oder `data-nexy-reload`;
 - das `href` ist ein anderer Ursprung, ein `mailto:`- oder `tel:`-Link oder nur ein `#fragment`;
 - Da der Pfad mit keiner Client-Route übereinstimmt, antwortet der Server darauf.
@@ -41,11 +41,11 @@ export default function Nav() {
 | Prop | Bedeutung |
 |---|---|
 | `href` | Eine Route des Projekts (ein Tippfehler ist ein Tippfehler), optional mit `?query` oder `#fragment`, oder eine externe URL. |
-| `replace` | Replace the history entry instead of adding one. |
+| `replace` | Ersetzen Sie den Verlaufseintrag, anstatt einen hinzuzufügen. |
 | `scroll` | `false` behält die Scroll-Position nach dem Navigieren bei. Standard: `true`. |
-| `prefetch` | `'intent'` (Standard) lädt die Seite beim Schweben, Fokussieren oder Berühren; `'viewport'` when the link scrolls into view; `false` niemals. |
+| `prefetch` | `'intent'` (Standard) lädt die Seite beim Schweben, Fokussieren oder Berühren; `'viewport'` wenn der Link angezeigt wird; `false` niemals. |
 | `activeClassName` | Der Klasse hinzugefügt, während der Link auf die aktuelle Seite oder eine Seite darunter verweist (`activeClass` in Vue und Svelte). |
-| `exact` | Active only on the exact page. |
+| `exact` | Nur auf der genauen Seite aktiv. |
 
 Der Link, der auf die aktuelle Seite verweist, erhält ebenfalls `aria-current="page"`.
 
@@ -55,7 +55,7 @@ Der Speicherort ist in jedem Framework in der Sprache dieses Frameworks verfügb
 
 | | React, Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
-| Pfad | `usePathname()` | `usePathname()` returns an accessor | `usePathname()` gibt eine Referenz zurück | `$pathname` speichern |
+| Pfad | `usePathname()` | `usePathname()` gibt einen Accessor zurück | `usePathname()` gibt eine Referenz zurück | `$pathname` speichern |
 | Routenparameter | `useParams()` | `useParams()`-Accessor | `useParams()` Ref | `$params` speichern |
 | Abfrage | `useSearchParams()` | `useSearchParams()`-Accessor | `useSearchParams()` Ref | `$searchParams` speichern |
 | Alles | `useLocation()` | `useLocation()`-Accessor | `useLocation()` Ref | `$location` speichern |
@@ -64,7 +64,7 @@ Der Speicherort ist in jedem Framework in der Sprache dieses Frameworks verfügb
 | Passen Sie einen Pfad an | `useMatch(path?)` | `useMatch(path?)`-Accessor | `useMatch(path?)` Ref | `useMatch(path?)` speichern |
 | Fragen Sie vor der Abreise | `useBlocker(dirty)` | `useBlocker(dirty())` in `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` in `$effect` |
 
-Die Abfrage ist ein `URLSearchParams`. `useRouter()` und `router` ergeben `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` und `prefetch(href)`; `push` and `replace` accept `{ scroll: false }`.
+Die Abfrage ist ein `URLSearchParams`. `useRouter()` und `router` ergeben `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` und `prefetch(href)`; `push` und `replace` akzeptieren `{ scroll: false }`.
 
 ```tsx
 import { useParams, useRouter, useSearchParams } from "@nexy/client";
@@ -77,7 +77,7 @@ export default function User() {
 }
 ```
 
-## Show a loading state with `useTransition`
+## Ladezustand anzeigen mit `useTransition`
 
 `useTransition()` gibt an, ob sich eine Client-Navigation im Flug befindet. `pending` ist `true` vom Klick bis zur Anzeige der nächsten Seite und `next` ist der Ort, an den es geht. Es kehrt zu `{ pending: false, next: null }` zurück, sobald die Seite angezeigt wird, wenn die Navigation stoppt oder wenn eine neuere Seite sie ersetzt.
 
@@ -103,14 +103,14 @@ export default function Breadcrumb() {
 }
 ```
 
-## Catch a page that fails with `ErrorBoundary`
+## Fangen Sie eine Seite ab, die mit `ErrorBoundary` fehlschlägt
 
 `ErrorBoundary` zeigt einen Fallback anstelle seiner untergeordneten Elemente an, wenn eines von ihnen beim Rendern im Browser auslöst. Der Fallback erhält den Fehler und `reset`, wodurch die untergeordneten Elemente erneut gerendert werden.
 
 | Rahmen | Importieren | Rückfall |
 |---|---|---|
 | React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
-| Vue | `import { ErrorBoundary } from "@nexy/client"` | eine `fallback`-Funktion prop; the children go in the default slot |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | eine `fallback`-Funktion prop; Die Kinder kommen in den Standard-Slot |
 | Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | ein `fallback`-Ausschnitt |
 
 ```tsx
@@ -186,11 +186,13 @@ Eine Funktion fragt nicht selbst nach und hält kein Neuladen bereit; Rufen Sie 
 <Image src="/photo.jpg" alt="A mountain" width={800} height={600} />
 ```
 
+`nx build` findet lokale Bilder in `src/` und `public/` und schreibt dann WebP-Varianten mit 320, 640, 960 und 1280 Pixeln unter `__nexy__/client/images/`. Durch gehashte Namen bleibt jede Variante zwischenspeicherbar: Durch Ändern des Bildes wird dessen URL geändert. `Image` liest das generierte Manifest und legt `src`, `srcset` und `sizes` für das von Ihnen benannte lokale Image fest. Explizite `width`, `height`, `srcSet` und `sizes` props gewinnen über die generierten, und jede generierte URL trägt `useBasePath`. Stellen Sie `useImageWidths` in `nexyconfig.py` ein, um andere Breiten auszuwählen. Konvertierungsbedarf `Pillow` im Projekt installiert; Ohne sie stellt `Image` die ursprüngliche URL unverändert bereit.
+
 - `alt` ist erforderlich; Verwenden Sie `alt=""` für ein dekoratives Bild. Nexy warnt einmal, wenn es fehlt.
 - Sowohl bei `width` als auch bei `height` geben die Attribute dem Browser das Seitenverhältnis vor und das Bild bleibt flüssig (`height: auto; max-width: 100%`).
 - `priority` lädt das Bild jetzt mit hoher Priorität für das Bild, das bei der Ankunft sichtbar ist.
-- `fill` sorgt dafür, dass das Bild sein positioniertes übergeordnetes Element verdeckt und ignoriert dabei `width` und `height`.
-- `sizes` und `srcSet` gehen durch. Nexy ändert die Größe von Bildern nicht und konvertiert sie nicht.
+- `fill` bewirkt, dass das Bild sein positioniertes übergeordnetes Element verdeckt, wobei `width` und `height` ignoriert werden.
+- `sizes` und `srcSet` gehen durch. Auf einem lokalen Bild werden die generierten Werte verwendet, wenn Sie sie weglassen.
 
 ## Link von einer `.nexy`-Seite
 
@@ -207,7 +209,7 @@ from nexy import Link
 
 Bei einer Navigation: Der Router:
 
-1. gleicht den Pfad mit den Client-Routen ab (`.tsx`, `.jsx`, `.vue`, `.svelte`);
+1. Gleicht den Pfad mit den Client-Routen ab (`.tsx`, `.jsx`, `.vue`, `.svelte`);
 2. importiert und rendert die Seite und ihre [Layouts](../layouts/README.md) **zuerst** und verschiebt erst dann die URL mit `history.pushState`, sodass in der Adressleiste nie eine Seite angezeigt wird, die fehlgeschlagen ist;
 3. löst ein `nexy:navigated`-Ereignis am `document` aus;
 4. scrollt nach oben oder zum Ziel `#fragment`.

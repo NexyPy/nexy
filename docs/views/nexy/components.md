@@ -69,7 +69,10 @@ from nexy import Image
 ```
 
 `Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` renders an
-`<img>` with lazy loading by default.
+`<img>` with lazy loading by default. For a local image in `src/` or `public/`, `nx build` writes
+hashed WebP variants and `Image` adds `srcset` and `sizes` from the generated manifest. Explicit
+dimensions and attributes win. See
+[Image](../../routing/fbr/navigation/linking-and-navigating.md#image).
 
 ## Link
 

@@ -105,7 +105,7 @@ export default function Breadcrumb() {
 
 ## Attrapez une page qui échoue avec `ErrorBoundary`
 
-`ErrorBoundary` affiche une solution de secours à la place de ses enfants lorsque l'un d'entre eux lance pendant son rendu dans le navigateur. La solution de secours reçoit l'erreur et `reset`, ce qui restitue à nouveau les enfants.
+`ErrorBoundary` affiche une solution de repli à la place de ses enfants lorsque l'un d'eux lance un lancer pendant le rendu dans le navigateur. La solution de secours reçoit l'erreur et `reset`, ce qui restitue à nouveau les enfants.
 
 | Cadre | Importer | Repli |
 |---|---|---|
@@ -161,7 +161,7 @@ Le drapeau se lit là où il change, dans le langage de chaque framework :
 | Cadre | Suivez le drapeau |
 |---|---|
 | React, Preact | `useBlocker(dirty)` sur chaque rendu |
-| Vue | `useBlocker(dirty)` avec `dirty` une référence ou un calculé |
+| Vue | `useBlocker(dirty)` avec `dirty` une référence ou un calcul |
 | Solid | `createEffect(() => useBlocker(dirty()))` |
 | Svelte | `$effect(() => useBlocker(dirty))` |
 
@@ -186,11 +186,13 @@ Une fonction ne demande pas toute seule et ne tient pas de rechargement ; appele
 <Image src="/photo.jpg" alt="A mountain" width={800} height={600} />
 ```
 
+`nx build` trouve les images locales dans `src/` et `public/`, puis écrit les variantes WebP à 320, 640, 960 et 1 280 pixels sous `__nexy__/client/images/`. Les noms hachés permettent de conserver chaque variante en cache : la modification de l'image modifie son URL. `Image` lit le manifeste généré et définit `src`, `srcset` et `sizes` pour l'image locale que vous nommez. Les `width`, `height`, `srcSet` et `sizes` props explicites l'emportent sur ceux générés, et chaque URL générée contient `useBasePath`. Définissez `useImageWidths` dans `nexyconfig.py` pour choisir d'autres largeurs. Besoins de conversion `Pillow` installés dans le projet ; sans cela, `Image` diffuse l'URL d'origine sans modification.
+
 - `alt` est requis ; utilisez `alt=""` pour une image décorative. Nexy prévient une fois lorsqu'il manque.
 - Avec `width` et `height`, les attributs donnent au navigateur le rapport hauteur/largeur et l'image reste fluide (`height: auto; max-width: 100%`).
 - `priority` charge désormais l'image en haute priorité, pour celle qui est visible à l'arrivée.
 - `fill` fait que l'image recouvre son parent positionné, en ignorant `width` et `height`.
-- `sizes` et `srcSet` passent. Nexy ne redimensionne ni ne convertit les images.
+- `sizes` et `srcSet` passent. Sur une image locale, les valeurs générées sont utilisées lorsque vous les omettez.
 
 ## Lien depuis une page `.nexy`
 

@@ -194,6 +194,8 @@ class NexyConfigModel:
     useRewrites: list[dict[str, Any]] | None = None
     useHeaders: list[dict[str, Any]] | None = None
     useBasePath: str | None = None
+    # Widths, in pixels, of the responsive variants `nx build` writes for local images.
+    useImageWidths: list[int] | None = None
     # The public origin of the site, such as "https://example.com": the sitemap writes its URLs
     # with it, and /sitemap.xml and /robots.txt are served only once it is set.
     useSiteUrl: str | None = None
