@@ -3,10 +3,24 @@
 from pathlib import Path
 
 from nexy.core.config import Config
+from nexy.helpers.fs.path import PathUtil
 from nexy.modules.frontend.assets import copy_ssg_scripts, copy_vite_config, write_aliases
 from nexy.modules.frontend.frameworks import preact, react, solid, svelte, vue
 from nexy.modules.frontend.manifest import RouteManifestBuilder
 from nexy.modules.frontend.vite_entry import generate_vite_entry
+
+_NOCHECK = "// @ts-nocheck\n"
+
+
+def _exempt_generated_typescript() -> None:
+    """Generated files are not user source, so the project's strict tsc skips them."""
+    for path in Path("__nexy__").rglob("*"):
+        if not path.is_file() or path.suffix not in {".ts", ".tsx"}:
+            continue
+        content = path.read_text(encoding="utf-8")
+        if content.startswith(_NOCHECK):
+            continue
+        PathUtil.write_if_changed(path, _NOCHECK + content)
 
 
 class FrontendGenerator:
@@ -23,6 +37,7 @@ class FrontendGenerator:
         write_aliases()
         if ssg:
             copy_ssg_scripts(list(self.config.excludeDirs or []))
+        _exempt_generated_typescript()
 
     def generate_route_manifest(self) -> str | None:
         """Build the shared route tree (routes.auto.ts contract) from src/routes.
