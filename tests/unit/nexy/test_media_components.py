@@ -1,7 +1,30 @@
+import json
+from pathlib import Path
+
+import pytest
+
 from nexy.audio import audio
+from nexy.core.config import Config
 from nexy.image import image
 from nexy.link import link
 from nexy.video import video
+
+
+@pytest.fixture
+def responsive_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    (tmp_path / "__nexy__").mkdir()
+    manifest = {
+        "logo.png": {
+            "src": "/images/logo-abc-640.webp",
+            "srcset": "/images/logo-abc-320.webp 320w, /images/logo-abc-640.webp 640w",
+            "sizes": "(max-width: 640px) 100vw, 640px",
+            "width": 1200,
+            "height": 600,
+        }
+    }
+    (tmp_path / "__nexy__/image-manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    monkeypatch.setattr(Config, "PROJECT_ROOT", tmp_path)
+    return tmp_path
 
 
 class TestAudio:
@@ -85,6 +108,46 @@ class TestImage:
 
         assert 'class="thumb"' in html
         assert 'data-id="7"' in html
+
+    @pytest.mark.usefixtures("responsive_project")
+    def test_a_built_image_uses_its_generated_srcset(self) -> None:
+        html = image("/logo.png", alt="Logo")
+
+        assert 'srcset="/images/logo-abc-320.webp 320w, /images/logo-abc-640.webp 640w"' in html
+
+    @pytest.mark.usefixtures("responsive_project")
+    def test_a_built_image_uses_its_generated_sizes(self) -> None:
+        html = image("/logo.png", alt="Logo")
+
+        assert 'sizes="(max-width: 640px) 100vw, 640px"' in html
+
+    @pytest.mark.usefixtures("responsive_project")
+    def test_a_built_image_gets_the_natural_dimensions(self) -> None:
+        html = image("/logo.png", alt="Logo")
+
+        assert 'width="1200"' in html and 'height="600"' in html
+
+    @pytest.mark.usefixtures("responsive_project")
+    def test_explicit_dimensions_win_over_the_manifest(self) -> None:
+        html = image("/logo.png", width=200, height=100)
+
+        assert 'width="200"' in html and 'height="100"' in html
+
+    @pytest.mark.usefixtures("responsive_project")
+    def test_explicit_srcset_wins_over_the_manifest(self) -> None:
+        html = image("/logo.png", srcSet="a.webp 1x")
+
+        assert 'srcset="a.webp 1x"' in html
+
+    @pytest.mark.usefixtures("responsive_project")
+    def test_the_base_path_prefixes_every_generated_url(self, monkeypatch) -> None:
+        monkeypatch.setattr(Config, "useBasePath", "/app")
+
+        html = image("/logo.png", alt="Logo")
+
+        expected = "/app/images/logo-abc-320.webp 320w, /app/images/logo-abc-640.webp 640w"
+        assert 'src="/app/images/logo-abc-640.webp"' in html
+        assert f'srcset="{expected}"' in html
 
 
 class TestLink:
