@@ -225,7 +225,8 @@ class AppServer:
         # Imported here: httpx and websockets cost a production worker 70 ms and 8 MB for nothing.
         from nexy.helpers.server.proxy import ViteProxyMiddleware
 
-        return ViteProxyMiddleware(server, port=port)
+        base = normalize_base_path(Config().useBasePath)
+        return ViteProxyMiddleware(server, port=port, base_path=base)
 
 
 def create_app() -> ASGIApp:
