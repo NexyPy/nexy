@@ -7,21 +7,21 @@ Los ganchos leen la solicitud HTTP actual desde dentro de una página `.nexy`, u
 
 ## los ganchos
 
-| Gancho | Devuelve |
+| Gancho | Devoluciones |
 |---|---|
 | `usePathname()` | ruta de solicitud, p. `"/blog/post-1"` |
 | `useSearchParams()` | cadena de consulta como `dict[str, str]`, primer valor por clave |
 | `useParams()` | parámetros de ruta dinámica, p.e. `{"slug": "post-1"}` |
 | `useQuery()` | el nombre original de `useParams()`, conservado para las páginas existentes |
-| `useRequest()` | la solicitud Starlette, por lo que los otros ganchos no cubren |
+| `useRequest()` | la solicitud Starlette, para lo que los otros ganchos no cubren |
 | `useHeaders()` | los encabezados de solicitud como `dict[str, str]`, nombres en minúsculas |
 | `useUrl()` | la URL completa: `.scheme`, `.hostname`, `.port`, `.path`, `.query` |
 | `useIsActive(href, exact=False)` | si `href` es la página actual o una de sus padres |
 | `useRouter()` | `{"path", "base_url", "url_for"}` |
 | `useCookies()` | todas las cookies como `dict[str, str]` |
-| `useSession()` | el dictado de la sesión, `{}` cuando las sesiones no están habilitadas |
-| `useToc(depth_range="2-6")` | tabla de contenidos HTML de la página actual, `""` cuando ninguna |
-| `useViews(path, context=None)` | renderiza otra vista y devuelve un `HTMLResponse` |
+| `useSession()` | el dictado de sesión, `{}` cuando las sesiones no están habilitadas |
+| `useToc(depth_range="2-6")` | tabla de contenidos HTML para la página actual, `""` cuando no hay ninguna |
+| `useViews(path, context=None)` | representa otra vista y devuelve un `HTMLResponse` |
 
 ## Leer la solicitud
 
@@ -59,7 +59,8 @@ label: prop[str]
 
 ## Próximos pasos
 
+- [Cómo funcionan las transiciones de página](page-transitions.md): qué sucede cuando el enrutador del cliente intercambia una página
 - [Páginas](../pages/README.md): segmentos y diseños dinámicos
 - [Recetas](../../../guides/recipes.md): un flujo de inicio de sesión probado basado en `useSession()`
-- [Configuración](../../../reference/config.md): habilita sesiones y configuraciones regionales
-- [archivos .nexy](../../../views/nexy/README.md): donde normalmente se llaman los ganchos
+- [Configuración](../../../reference/config.md): habilitar sesiones y configuraciones regionales
+- [Archivos .nexy](../../../views/nexy/README.md): donde normalmente se llaman los ganchos

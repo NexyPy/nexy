@@ -7,7 +7,7 @@ Hooks membaca permintaan HTTP saat ini dari dalam halaman `.nexy`, pengendali AP
 
 ## Kaitnya
 
-| Kait | Mengembalikan |
+| Kait | Kembali |
 |---|---|
 | `usePathname()` | jalur permintaan, mis. `"/blog/post-1"` |
 | `useSearchParams()` | string kueri sebagai `dict[str, str]`, nilai pertama per kunci |
@@ -15,7 +15,7 @@ Hooks membaca permintaan HTTP saat ini dari dalam halaman `.nexy`, pengendali AP
 | `useQuery()` | nama asli `useParams()`, disimpan untuk halaman yang ada |
 | `useRequest()` | permintaan Starlette, yang tidak tercakup dalam kait lainnya |
 | `useHeaders()` | header permintaan sebagai `dict[str, str]`, nama dalam huruf kecil |
-| `useUrl()` | URL lengkap: `.scheme`, `.hostname`, `.port`, `.path`, `.query` |
+| `useUrl()` | URL lengkapnya: `.scheme`, `.hostname`, `.port`, `.path`, `.query` |
 | `useIsActive(href, exact=False)` | apakah `href` adalah halaman saat ini atau salah satu halaman induknya |
 | `useRouter()` | `{"path", "base_url", "url_for"}` |
 | `useCookies()` | semua cookie sebagai `dict[str, str]` |
@@ -59,6 +59,7 @@ label: prop[str]
 
 ## Langkah selanjutnya
 
+- [Cara kerja transisi halaman](page-transitions.md): apa yang terjadi ketika router klien menukar halaman
 - [Halaman](../pages/README.md): segmen dan tata letak dinamis
 - [Resep](../../../guides/recipes.md): alur masuk teruji yang dibangun di `useSession()`
 - [Konfigurasi](../../../reference/config.md): mengaktifkan sesi dan lokal

@@ -238,6 +238,9 @@ On a navigation, the router:
 3. dispatches a `nexy:navigated` event on `document`;
 4. scrolls to the top, or to the `#fragment` target.
 
+The page swap runs inside a browser view transition when one is available: see
+[How page transitions work](page-transitions.md).
+
 A newer navigation cancels an older one that is still rendering. If a page cannot render, the browser
 asks the server for it instead. The back and forward buttons render the page of that entry and
 restore its scroll position.

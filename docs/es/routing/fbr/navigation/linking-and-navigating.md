@@ -212,6 +212,8 @@ En una navegación, el enrutador:
 3. envía un evento `nexy:navigated` el `document`;
 4. se desplaza hacia la parte superior o hacia el objetivo `#fragment`.
 
+El intercambio de página se ejecuta dentro de una transición de vista del navegador cuando hay una disponible: consulte [Cómo funcionan las transiciones de página](page-transitions.md).
+
 Una navegación más nueva cancela una anterior que aún se está procesando. Si una página no se puede representar, el navegador la solicita al servidor. Los botones de avance y retroceso muestran la página de esa entrada y restauran su posición de desplazamiento.
 
 ```js

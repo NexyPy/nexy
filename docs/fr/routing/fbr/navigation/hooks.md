@@ -7,7 +7,7 @@ Les hooks lisent la requête HTTP actuelle depuis une page `.nexy`, un gestionna
 
 ## Les crochets
 
-| Crochet | Renvoie |
+| Crochet | Retours |
 |---|---|
 | `usePathname()` | chemin de requête, par ex. `"/blog/post-1"` |
 | `useSearchParams()` | chaîne de requête sous la forme `dict[str, str]`, première valeur par clé |
@@ -59,7 +59,8 @@ label: prop[str]
 
 ## Prochaines étapes
 
+- [Comment fonctionnent les transitions de page](page-transitions.md) : que se passe-t-il lorsque le routeur client échange une page
 - [Pages](../pages/README.md) : segments et mises en page dynamiques
-- [Recettes](../../../guides/recipes.md) : un flux de connexion testé basé sur `useSession()`
+- [Recipes](../../../guides/recipes.md) : un flux de connexion testé basé sur `useSession()`
 - [Configuration](../../../reference/config.md) : activer les sessions et les paramètres régionaux
-- [fichiers .nexy](../../../views/nexy/README.md) : où les hooks sont généralement appelés
+- [Fichiers .nexy](../../../views/nexy/README.md) : où les hooks sont généralement appelés

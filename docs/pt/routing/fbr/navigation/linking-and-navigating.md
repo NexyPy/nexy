@@ -212,6 +212,8 @@ Numa navegação, o roteador:
 3. despacha um evento `nexy:navigated` em `document`;
 4. rola para o topo ou para o alvo `#fragment`.
 
+A troca de página é executada dentro de uma transição de visualização do navegador quando há uma disponível: consulte [Como funcionam as transições de página](page-transitions.md).
+
 Uma navegação mais recente cancela uma navegação mais antiga que ainda está sendo renderizada. Se uma página não puder ser renderizada, o navegador a solicitará ao servidor. Os botões voltar e avançar renderizam a página dessa entrada e restauram sua posição de rolagem.
 
 ```js

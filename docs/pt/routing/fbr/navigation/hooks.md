@@ -7,9 +7,9 @@ Os ganchos leem a solicitação HTTP atual de dentro de uma página `.nexy`, um 
 
 ## Os ganchos
 
-| Gancho | Retorna |
+| Gancho | Devoluções |
 |---|---|
-| `usePathname()` | caminho de solicitação, por exemplo. `"/blog/post-1"` |
+| `usePathname()` | caminho de solicitação, por ex. `"/blog/post-1"` |
 | `useSearchParams()` | string de consulta como `dict[str, str]`, primeiro valor por chave |
 | `useParams()` | parâmetros de caminho dinâmico, por ex. `{"slug": "post-1"}` |
 | `useQuery()` | o nome original de `useParams()`, mantido para páginas existentes |
@@ -20,7 +20,7 @@ Os ganchos leem a solicitação HTTP atual de dentro de uma página `.nexy`, um 
 | `useRouter()` | `{"path", "base_url", "url_for"}` |
 | `useCookies()` | todos os cookies como `dict[str, str]` |
 | `useSession()` | o ditado da sessão, `{}` quando as sessões não estão habilitadas |
-| `useToc(depth_range="2-6")` | índice HTML para a página atual, `""` quando nenhum |
+| `useToc(depth_range="2-6")` | índice HTML da página atual, `""` quando nenhum |
 | `useViews(path, context=None)` | renderiza outra visualização e retorna um `HTMLResponse` |
 
 ## Leia o pedido
@@ -59,7 +59,8 @@ label: prop[str]
 
 ## Próximas etapas
 
+- [Como funcionam as transições de página](page-transitions.md): o que acontece quando o roteador do cliente troca uma página
 - [Páginas](../pages/README.md): segmentos dinâmicos e layouts
 - [Receitas](../../../guides/recipes.md): um fluxo de login testado baseado em `useSession()`
 - [Configuração](../../../reference/config.md): habilitar sessões e localidades
-- [arquivos .nexy](../../../views/nexy/README.md): onde os ganchos geralmente são chamados
+- [Arquivos .nexy](../../../views/nexy/README.md): onde os ganchos geralmente são chamados

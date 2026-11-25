@@ -74,12 +74,13 @@
 | [الميراث](routing/fbr/inheritance.md) | اقرأ ترتيب دقة التخطيطات والتبعيات وصفحات الخطأ |
 | [وضع الخادم ووضع العميل](routing/fbr/modes.md) | `useCSR`، وما يسمح به كل وضع |
 | [الارتباط والتنقل](routing/fbr/navigation/linking-and-navigating.md) | ربط الصفحات، والتنقل على العميل، والجلب المسبق |
+| [كيف تعمل انتقالات الصفحة](routing/fbr/navigation/page-transitions.md) | قم بتحريك تنقلات العميل باستخدام واجهة برمجة تطبيقات View Transitions الخاصة بالمتصفح |
 | [خطافات](routing/fbr/navigation/hooks.md) | اقرأ المسار والاستعلام وملفات تعريف الارتباط والجلسة |
 
 ### المعالجات والأخطاء {fbr}
 | الصفحة | ماذا ستفعل |
 |---|---|
-| [معالجات الطريق](routing/fbr/handlers/README.md) | أضف نقطة نهاية Python |
+| [معالجات المسار](routing/fbr/handlers/README.md) | أضف نقطة نهاية Python |
 | [التحقق من الصحة والأخطاء](routing/fbr/handlers/validation-and-errors.md) | أجيب `422` و `404`، وارفع `HTTPException` |
 | [WebSocket معالجات](routing/fbr/realtime/websocket.md) | التعامل مع اتصال `SOCKET` |
 | [التبعيات والحراس](routing/fbr/dependencies/README.md) | قم بتشغيل `dependencies.py` قبل المعالج، ورثه |
@@ -138,7 +139,7 @@
 | الصفحة | ماذا ستقرر |
 |---|---|
 | [التقديم](rendering/README.md) | ما هو وضع العرض المناسب للصفحة |
-| [الاشتراكية السوفياتية](rendering/ssr.md) | تقديم الخادم، الافتراضي |
+| [إصلاحية القطاع الخاص](rendering/ssr.md) | تقديم الخادم، الافتراضي |
 | [الجزر](rendering/islands.md) | هيدرات على الاستعلام الخامل أو المرئي أو الوسائط |
 
 ### أوضاع صفحات الملف {fbr,custom}
@@ -152,7 +153,7 @@
 ### النماذج والبيانات
 | الصفحة | ماذا ستفعل |
 |---|---|
-| [الإجراءات](guides/actions.md) | استدعاء دالة Python من نموذج أو دالة مكتوبة TypeScript |
+| [الإجراءات](guides/actions.md) | قم باستدعاء دالة Python من نموذج أو دالة TypeScript مكتوبة |
 | [قواعد البيانات](guides/databases.md) | اختر ORM وقم بتشغيل عمليات الترحيل |
 
 ### الأمن والنشر
@@ -167,13 +168,13 @@
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [Vite والتصميم](guides/frontend.md) | إعداد Vite والتصميم وبناء العميل |
-| [الاختبار](guides/testing.md) | اختبار مع pytest، `TestClient` وفيتيست |
+| [الاختبار](guides/testing.md) | اختبر ب pytest، `TestClient` و فيتيست |
 
 ### الأدوات والمساعدة
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [شريط أدوات التطوير](guides/devtools.md) | استخدم شريط الأدوات `nexy dev`، وقم بإيقاف تشغيله |
-| [تصحيح الأخطاء](guides/debugging.md) | توقف في رمز الخادم الخاص بك باستخدام `breakpoint()` أو VS Code |
+| [التصحيح](guides/debugging.md) | توقف في رمز الخادم الخاص بك باستخدام `breakpoint()` أو VS Code |
 | [وكلاء الترميز](guides/ai-agents.md) | أعط Claude Code، Codex و OpenCode قواعد مشروعك |
 | [استكشاف الأخطاء وإصلاحها](guides/troubleshooting.md) | إصلاح المشاكل الأولى التي يواجهها الناس |
 
@@ -208,10 +209,10 @@
 |---|---|
 | [من اكسبرس](coming-from/express.md) | ترجمة المسارات والبرامج الوسيطة و `req`/`res` إلى معالجات Python |
 | [من فاستيفاي](coming-from/fastify.md) | تحويل المخططات والمكونات الإضافية والخطافات إلى نماذج ومجلدات وملفات |
-| [من إليسيا](coming-from/elysia.md) | خريطة `t` المخططات والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
+| [من إليسيا](coming-from/elysia.md) | قم بتعيين مخططات `t` والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
 | [من هونو](coming-from/hono.md) | قم بتعيين المسارات والبرامج الوسيطة والعميل `hc` إلى Nexy |
 
-### أطر عمل Fullstack {fbr}
+### أطر عمل فولستاك {fbr}
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [من Next.js](coming-from/nextjs.md) | احتفظ بصفحاتك React وانقل رمز الخادم إلى Python |
@@ -220,7 +221,7 @@
 | [من سفيلتكيت](coming-from/sveltekit.md) | احتفظ بصفحاتك Svelte وانقل التحميلات والإجراءات والربطات إلى Python |
 | [من Astro](coming-from/astro.md) | اكتب Astro صفحة على شكل `.nexy` صفحة، بنفس الجزر |
 | [من لارافيل](coming-from/laravel.md) | قم بتعيين المسارات ووحدات التحكم وBlade وEloquent وقوائم الانتظار إلى Nexy |
-| [من روبي أون ريلز](coming-from/rails.md) | قم بتعيين المسارات ووحدات التحكم وERB وActive Record والوظائف إلى Nexy |
+| [من روبي أون ريلز](coming-from/rails.md) | خريطة المسارات ووحدات التحكم وERB وActive Record والوظائف إلى Nexy |
 
 ### أطر التحكم {modular}
 | الصفحة | ماذا ستفعل |

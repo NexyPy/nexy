@@ -74,6 +74,7 @@ Nouveau ici ? Lisez [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md), pui
 | [Héritage](routing/fbr/inheritance.md) | Lire l'ordre de résolution des mises en page, des dépendances et des pages d'erreur |
 | [Mode serveur et mode client](routing/fbr/modes.md) | `useCSR`, et ce que chaque mode permet |
 | [Liens et navigation](routing/fbr/navigation/linking-and-navigating.md) | Lier des pages, naviguer sur le client, pré-extraire |
+| [Comment fonctionnent les transitions de page](routing/fbr/navigation/page-transitions.md) | Animez les navigations des clients avec l'API View Transitions du navigateur |
 | [Crochets](routing/fbr/navigation/hooks.md) | Lire le chemin, la requête, les cookies et la session |
 
 ### Gestionnaires et erreurs {fbr}
@@ -166,7 +167,7 @@ Contrôleurs et modules.
 ### Construire et tester
 | Pages | Ce que tu feras |
 |---|---|
-| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la construction du client |
+| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la build client |
 | [Tests](guides/testing.md) | Testez avec pytest, `TestClient` et vitest |
 
 ### Outillage et aide
@@ -184,7 +185,7 @@ Contrôleurs et modules.
 |---|---|
 | [SQLite](databases/sqlite.md) | Utiliser un seul fichier, pas de serveur : moteur, pragmas, migrations et tests |
 | [PostgreSQL](databases/postgresql.md) | Connectez-vous avec psycopg, utilisez JSONB, les tableaux, la recherche et les upserts |
-| [Néon](databases/neon.md) | Utiliser un serveur sans serveur PostgreSQL : hôte mutualisé, suspension automatique et branches |
+| [Néon](databases/neon.md) | Utiliser sans serveur PostgreSQL : hôte mutualisé, suspension automatique et branches |
 | [MySQL et MariaDB](databases/mysql-mariadb.md) | Connectez-vous avec pymysql, utilisez utf8mb4, upserts et recherche en texte intégral |
 
 ## Venant de
@@ -207,19 +208,19 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 | Pages | Ce que tu feras |
 |---|---|
 | [Depuis Express](coming-from/express.md) | Traduire les routes, les middlewares et les `req`/`res` en Python gestionnaires |
-| [Depuis Fastify](coming-from/fastify.md) | Transformez les schémas, plugins et hooks en modèles, dossiers et fichiers |
+| [De Fastify](coming-from/fastify.md) | Transformez les schémas, plugins et hooks en modèles, dossiers et fichiers |
 | [D'Élysée](coming-from/elysia.md) | Mapper les schémas `t`, les gardes et l'Eden aux Pydantic et aux actions typées |
 | [De Hono](coming-from/hono.md) | Mapper les routes, le middleware et le client `hc` vers Nexy |
 
 ### Cadres Fullstack {fbr}
 | Pages | Ce que tu feras |
 |---|---|
-| [À partir de Next.js](coming-from/nextjs.md) | Conservez vos pages React et déplacez le code du serveur vers Python |
+| [De Next.js](coming-from/nextjs.md) | Conservez vos pages React et déplacez le code du serveur vers Python |
 | [De Remix](coming-from/remix.md) | Transformez les chargeurs et les actions en Python gestionnaires et actions |
-| [Depuis Nuxt](coming-from/nuxt.md) | Conservez vos pages Vue et déplacez `server/` vers Python |
+| [Depuis Nuxt](coming-from/nuxt.md) | Conservez vos Vue pages et déplacez `server/` vers Python |
 | [De SvelteKit](coming-from/sveltekit.md) | Conservez vos Svelte pages et déplacez les charges, actions et hooks vers Python |
 | [De Astro](coming-from/astro.md) | Écrivez Astro pages sous forme de `.nexy` pages, avec les mêmes îlots |
-| [Depuis Laravel](coming-from/laravel.md) | Cartographier les itinéraires, les contrôleurs, Blade, Eloquent et les files d'attente vers Nexy |
+| [De Laravel](coming-from/laravel.md) | Cartographier les itinéraires, les contrôleurs, Blade, Eloquent et les files d'attente vers Nexy |
 | [De Ruby sur Rails](coming-from/rails.md) | Cartographier les itinéraires, les contrôleurs, l'ERB, l'Active Record et les tâches vers Nexy |
 
 ### Cadres de contrôleurs {modular}

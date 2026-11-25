@@ -21,7 +21,7 @@
   "guides/recipes.md": "922848a3ef71f76c8a95c97b72976a9eca875143116bfe699b87ead3ef7de0cb",
   "guides/testing.md": "97c4ba553cb1db943c79e9fcc348e640c927366b3081002c8bb12500a95b9791",
   "guides/troubleshooting.md": "b06d8e4208a7662ca7994a7c38a2ad40faffaea57fc10b7cad03594aa7414e01",
-  "README.md": "db203bf8ab2646f1e55672a7df3828a14ebb8af654444599a135989a32465b4a",
+  "README.md": "75a5e0b40b4159828b548c5c8eed9e60bfa9c934aebb26f171f07664d737dc0c",
   "reference/cli.md": "48ed1137e8c312565f38a5635cd8e93c04cc0acf3684e413c832157c8bdcbb12",
   "reference/config.md": "97971bf60e0f6bb0ea9ef1be1508319451c01a8beeaeccf7d9ce10083a3eb9de",
   "reference/exceptions.md": "c08cd69458738fa1f2a97d47df879a31e33c5927ecd810a4abcf9e1e4de3c0e2",
@@ -44,8 +44,8 @@
   "routing/fbr/layouts/README.md": "fe83da50166b34f5888768665e2a6fdda198f08a59b987049606b22010f9e0e0",
   "routing/fbr/middleware/README.md": "74761c53dd88570a3f8f1bbd89fa0488e8b9a420277bc0397495afea5c3b0e67",
   "routing/fbr/modes.md": "ab2764b27bcf3a26fab912feadeb99c9050d5bc595f9bd6ba035f873835024df",
-  "routing/fbr/navigation/hooks.md": "73dd58e07f7d1e6301cf15550c9411fbcf6eefd5e3cb781ea1dbd4802962bf4f",
-  "routing/fbr/navigation/linking-and-navigating.md": "c6831b12fb9f827dbb1fb37cb058fcda0e30a3d2d9454e4ceb66db89530840bb",
+  "routing/fbr/navigation/hooks.md": "71c0477d0db2c5c48782684a629ddbe3b478182ea3e6c452d17dfe1bbe31b686",
+  "routing/fbr/navigation/linking-and-navigating.md": "daab91dc3261e3d269ac7047fb35ff3d7b13bb8f88eacc4816d9a3f14888a7d3",
   "routing/fbr/pages/dynamic-routes.md": "dff1d6477c57aa217d09937970327f3d8f6ba569a3d8b5597547d125a4ef8e19",
   "routing/fbr/pages/metadata.md": "1e1ba4185717fa3047dd77244e0a7e5471a391b80cb81533a23e6e3c97d4614f",
   "routing/fbr/pages/README.md": "83807f6453ae35c51e80c6c12698455dabf463116029bd712da6169d7a104b6b",
@@ -96,6 +96,7 @@
   "tutorial/components.md": "817ebd5a8f520a03bf6f983c6e9d1e1fc4a8c8f66e8d4ce1e49856e6684ea985",
   "tutorial/dynamic-routes.md": "c14625792c3674f778bb8f1013bbfd391d6b40602407f94a81174bc766fa2c25",
   "tutorial/pages-and-layouts.md": "87bd93917e2b885c6d1a3ed4b591e5704ea8ef78d99732d11cca481484b87342",
-  "tutorial/search-the-notes.md": "79d8c1bb6d6b512aa93f2824013ca3c9a473639aba865201731e2929c1e5d6b9"
+  "tutorial/search-the-notes.md": "79d8c1bb6d6b512aa93f2824013ca3c9a473639aba865201731e2929c1e5d6b9",
+  "routing/fbr/navigation/page-transitions.md": "85a3a26af2aca11819aa9aa2d198bcfde3f6a54e79c7aa21fdd79c8565beab3f"
  }
 }

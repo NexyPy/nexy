@@ -74,6 +74,7 @@ Nexy coloca sus páginas y su API en un Python proyecto, atendido por un servido
 | [Herencia](routing/fbr/inheritance.md) | Leer el orden de resolución de diseños, dependencias y páginas de error. |
 | [Modo servidor y modo cliente](routing/fbr/modes.md) | `useCSR`, y lo que permite cada modo |
 | [Vincular y navegar](routing/fbr/navigation/linking-and-navigating.md) | Vincular páginas, navegar en el cliente, captar previamente |
+| [Cómo funcionan las transiciones de página](routing/fbr/navigation/page-transitions.md) | Anime las navegaciones del cliente con la API View Transitions del navegador. |
 | [Ganchos](routing/fbr/navigation/hooks.md) | Leer la ruta, consulta, cookies y sesión. |
 
 ### Controladores y errores {fbr}
@@ -99,7 +100,7 @@ Controladores y módulos.
 ### Integración de enrutador personalizado {custom}
 | Página | que haras |
 |---|---|
-| [Enrutamiento personalizado](routing/custom/README.md) | Incluir una aplicación FastAPI existente |
+| [Ruta personalizada](routing/custom/README.md) | Incluir una aplicación FastAPI existente |
 
 ## Interfaz
 
@@ -217,7 +218,7 @@ Las mismas tareas, escritas en el framework que conoces y luego en Nexy.
 | [Desde Next.js](coming-from/nextjs.md) | Conserve sus páginas React y mueva el código del servidor a Python |
 | [Desde Remix](coming-from/remix.md) | Convierta cargadores y acciones en Python controladores y acciones |
 | [Desde Nuxt](coming-from/nuxt.md) | Conserva tus Vue páginas y mueve `server/` a Python |
-| [De SvelteKit](coming-from/sveltekit.md) | Conserva tus páginas Svelte y mueve cargas, acciones y enlaces a Python |
+| [De SvelteKit](coming-from/sveltekit.md) | Conserva tus Svelte páginas y mueve cargas, acciones y enlaces a Python |
 | [Desde Astro](coming-from/astro.md) | Escribe Astro páginas como `.nexy` páginas, con las mismas islas |
 | [De Laravel](coming-from/laravel.md) | Mapear rutas, controladores, Blade, Eloquent y colas a Nexy |
 | [De Ruby on Rails](coming-from/rails.md) | Asigne rutas, controladores, ERB, Active Record y trabajos a Nexy |
