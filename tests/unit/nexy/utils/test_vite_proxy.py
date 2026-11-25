@@ -27,6 +27,8 @@ from websockets.http11 import Request, Response
 from nexy.helpers.server.proxy import (
     VITE_ONLY_PREFIXES,
     ViteProxyMiddleware,
+    _upstream_url,
+    _upstream_websocket_url,
 )
 
 Scope = dict[str, Any]
@@ -212,6 +214,20 @@ async def _fake_vite_serves_all() -> AsyncIterator[int]:
 async def _echo(connection: ServerConnection) -> None:
     async for _message in connection:
         pass
+
+
+def test_proxy_forwards_the_public_prefix_to_vite() -> None:
+    scope = _http_scope("/@vite/client")
+    assert _upstream_url(scope, "127.0.0.1", 3000, "/app") == (
+        "http://127.0.0.1:3000/app/@vite/client"
+    )
+
+
+def test_proxy_forwards_the_public_prefix_to_the_socket() -> None:
+    scope = _websocket_scope(path="/_nexy/hmr")
+    assert _upstream_websocket_url(scope, "127.0.0.1", 3000, "/app") == (
+        "ws://127.0.0.1:3000/app/_nexy/hmr"
+    )
 
 
 @pytest.mark.parametrize(

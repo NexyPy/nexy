@@ -106,6 +106,15 @@ class TestLink:
 
         assert "onmouseenter" not in html
 
+    def test_the_href_and_prefetch_carry_the_prefix(self, monkeypatch) -> None:
+        from nexy.core.config import Config
+
+        monkeypatch.setattr(Config, "useBasePath", "/app")
+
+        html = link("/about", "About")
+
+        assert 'href="/app/about"' in html and "__nexy_prefetch(&quot;/app/about&quot;)" in html
+
 
 class TestLinkEscaping:
     def test_href_cannot_break_out_of_the_attribute(self):

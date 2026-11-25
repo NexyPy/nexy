@@ -1,7 +1,24 @@
 // Logic every framework adapter shares, so Link and Image behave the same in React, Preact, Solid,
 // Vue and Svelte. No framework API appears here.
 
+import { withBase } from './router.ts'
 import type { RouterLocation } from './router.ts'
+import { BASE_PATH } from './base-path.auto.ts'
+
+/** The href the browser sees; a route string stays prefix-free inside the application. */
+export function withBaseHref(href: string, base: string = BASE_PATH): string {
+  return withBase(href, base)
+}
+
+function prefixedSrcSet(value: string): string {
+  return value
+    .split(',')
+    .map(candidate => {
+      const [url, ...descriptors] = candidate.trim().split(/\s+/)
+      return [withBaseHref(url), ...descriptors].join(' ')
+    })
+    .join(', ')
+}
 
 /** The path of an href, without query, fragment or trailing slash ("/" stays "/"). */
 export function pathOf(href: string): string {
@@ -58,14 +75,14 @@ const FILL_STYLE: Record<string, string> = {
 /** The attributes of the `<img>` an Image component renders. */
 export function imageAttributes(props: ImageProps): ImageAttributes {
   const attributes: ImageAttributes = {
-    src: props.src,
+    src: withBaseHref(props.src),
     alt: props.alt,
     loading: props.loading ?? (props.priority ? 'eager' : 'lazy'),
     decoding: props.priority ? 'auto' : 'async'
   }
   if (props.priority) attributes.fetchpriority = 'high'
   if (props.sizes) attributes.sizes = props.sizes
-  if (props.srcSet) attributes.srcset = props.srcSet
+  if (props.srcSet) attributes.srcset = prefixedSrcSet(props.srcSet)
   if (props.fill) {
     attributes.style = { ...FILL_STYLE }
   } else {

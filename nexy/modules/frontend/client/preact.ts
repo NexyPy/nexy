@@ -23,6 +23,7 @@ import {
   linkClass,
   onceVisible,
   warnMissingAlt,
+  withBaseHref,
   type ImageProps,
   type Prefetch
 } from './shared.ts'
@@ -123,7 +124,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
   return h('a', {
     ...rest,
     ref: setRef,
-    href,
+    href: withBaseHref(href),
     class: linkClass(className as string | undefined, isActive(pathname, href, exact), activeClassName),
     'aria-current': isActive(pathname, href, true) ? 'page' : undefined,
     'data-nexy-link': 'true',

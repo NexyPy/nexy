@@ -38,6 +38,7 @@ import {
   linkClass,
   onceVisible,
   warnMissingAlt,
+  withBaseHref,
   type Prefetch
 } from './shared.ts'
 import {
@@ -202,7 +203,7 @@ export const Link = defineComponent({
       const anchor: Record<string, unknown> = {
         ...attrs,
         ref: element,
-        href: props.href,
+        href: withBaseHref(props.href),
         'aria-current': isActive(location.value.pathname, props.href, true) ? 'page' : undefined,
         'data-nexy-link': 'true',
         'data-nexy-replace': props.replace ? '' : undefined,

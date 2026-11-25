@@ -27,6 +27,7 @@ class NexyConfig(NexyConfigModel):
 | `useSiteUrl` | `None` | общедоступное происхождение сайта, например `"https://example.com"`; после установки Nexy обслуживает `/sitemap.xml` и `/robots.txt`. См. [Карта сайта и robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | процессы `nx start` выполняются; `0` — по одному на каждый процессор в Linux и macOS, по одному в Windows |
 | `useCSR` | `False` | режим маршрутизации на стороне клиента; `.nexy` маршруты отключены |
+| `useBasePath` | `None` | общедоступный префикс для всего приложения, например `"/app"`; запросы за его пределами отвечают 404, а сгенерированные ссылки, клиентские маршруты, вызовы действий и активы содержат префикс. См. [Развертывание](../deployment/README.md#serve-under-a-sub-path) |
 
 ## База данных
 

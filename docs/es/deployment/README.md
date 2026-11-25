@@ -2,7 +2,7 @@
 
 Dos comandos: `nx build` produce los artefactos, `nx start` los sirve.
 
-**Antes de comenzar:** un proyecto que se compila localmente con `nx build` y, para las páginas del cliente, la cadena de herramientas frontend que `nx new` instaló.
+**Antes de comenzar:** un proyecto que se construye localmente con `nx build` y, para las páginas del cliente, la cadena de herramientas frontend que `nx new` instaló.
 
 ```bash
 nx build
@@ -51,6 +51,24 @@ nx start --host 127.0.0.1 --port 8000
 
 Asegúrese de que el proxy reenvíe WebSocket actualizaciones si utiliza `SOCKET` controladores, y que reenvíe el host original; FastAPI genera URL absolutas a partir de él.
 
+### Servir bajo una ruta secundaria
+
+Establezca `useBasePath` cuando la aplicación se publique bajo un prefijo en lugar de la raíz del dominio:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useBasePath = "/app"
+```
+
+Cada respuesta pública se encuentra en `/app`: páginas, navegación del cliente, activos, acciones del servidor, documentación de API, mapa del sitio y sondas de estado. Una solicitud de `/` responde a 404. Nexy acepta `app/`, `/app/` y `/app` como la misma configuración y la normaliza a `/app`.
+
+Los archivos de ruta mantienen rutas relativas a la raíz. Una página servida en `/app/about` sigue siendo `src/routes/about.tsx` o `about.nexy`, y las rutas internas permanecen `/about`. Nexy agrega el prefijo solo a las URL escritas en el navegador.
+
+Configure el proxy para reenviar el prefijo sin cambios, por ejemplo `/app/...` a `http://127.0.0.1:8000/app/...`. WebSocket las actualizaciones necesitan el mismo prefijo. Nexy lo elimina después de que llega la solicitud, por lo que no se necesita ninguna regla de reescritura.
+
 ## control de salud
 
 <!-- router:fbr,custom -->
@@ -63,7 +81,7 @@ async def GET():
 <!-- /router -->
 
 <!-- router:modular -->
-Agregue un controlador y pruebe `/health/`, en lugar de una vista que pueda renderizarse lentamente:
+Agregue un controlador y pruebe `/health/` - en lugar de una vista que pueda renderizarse lentamente:
 
 ```python filename="src/apps/health_controller.py"
 from nexy.decorators import Controller
@@ -101,7 +119,7 @@ Nexy garantiza que ambos puntos finales permanezcan fuera del registro de acceso
 
 Nexy garantiza que ambos puntos finales respondan antes de `useTrustedHost` y `useHTTPSRedirect`, por lo que no se rechaza una sonda enviada a través de HTTP a la dirección de un pod.
 
-Por convención, mantienes tus propias rutas fuera de `/health/live` y `/health/ready` mientras `useHealth` está activada: los puntos finales de Nexy responden primero. `useHealth` es `False` de forma predeterminada, por lo que un proyecto que no lo establece mantiene ambas rutas.
+Por convención, mantienes tus propias rutas fuera de `/health/live` y `/health/ready` mientras `useHealth` está activado: los puntos finales de Nexy responden primero. `useHealth` es `False` de forma predeterminada, por lo que un proyecto que no lo establece mantiene ambas rutas.
 
 Tu aplicación es responsable de comprobar de qué depende: `/health/ready` informa el ciclo de vida del servidor, no el estado de una base de datos.
 

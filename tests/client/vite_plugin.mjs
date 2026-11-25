@@ -10,7 +10,8 @@ import { pathToFileURL } from "node:url";
 
 // `build-failed` is a build whose bundle was never written: Vite still closes it.
 const scenario = process.argv[2];
-const command = ["serve", "warmup", "log"].includes(scenario) ? "serve" : "build";
+const baseScenario = scenario === "base" || scenario === "base-prod";
+const command = ["serve", "warmup", "log", "base"].includes(scenario) ? "serve" : "build";
 const SOURCES = new URL("../../nexy/modules/frontend/", import.meta.url);
 const ran = [];
 globalThis.__nexyRan = ran;
@@ -39,6 +40,9 @@ const nexyDir = path.join(project, "__nexy__");
 fs.mkdirSync(path.join(nexyDir, "src"), { recursive: true });
 for (const name of ["vite.ts", "document.ts"]) fs.copyFileSync(new URL(name, SOURCES), path.join(nexyDir, name));
 fs.writeFileSync(path.join(nexyDir, "src", "deps.auto.ts"), "export const __NEXY_DEPS: string[] = []\n");
+if (baseScenario) {
+  fs.writeFileSync(path.join(nexyDir, "mode.auto.json"), JSON.stringify({ csr: false, framework: "", basePath: "/app" }));
+}
 process.chdir(project);
 
 const logged = [];
@@ -50,6 +54,7 @@ console.log = (...args) => logged.push(plain(args));
 console.info = (...args) => infos.push(plain(args));
 let error = null;
 let warmup = null;
+let config = null;
 try {
   const { default: nexy } = await import(pathToFileURL(path.join(nexyDir, "vite.ts")).href);
   if (scenario === "log") {
@@ -64,7 +69,7 @@ try {
   } else {
     const plugin = [nexy()].flat().find((p) => p.name === "nexy");
     const mode = command === "build" ? "production" : "development";
-    const config = await plugin.config?.({ mode }, { command, mode });
+    config = await plugin.config?.({ mode }, { command, mode });
     warmup = config?.server?.warmup?.clientFiles ?? null;
     plugin.configResolved?.({ command, mode, build: {} });
     if (scenario === "build") plugin.writeBundle?.();
@@ -79,7 +84,8 @@ try {
 }
 // `warmup` prints transformed files, `log` prints the formatted HMR lines, other scenarios print
 // what the plugin logged and the commands it ran.
-const report = scenario === "warmup" ? { warmup, error }
+const report = baseScenario ? { base: config?.base, error }
+  : scenario === "warmup" ? { warmup, error }
   : scenario === "log" ? { infos, error }
   : { logged, ran, error };
 process.stdout.write("@@" + JSON.stringify(report) + "@@");

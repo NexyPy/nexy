@@ -28,6 +28,13 @@ class TestStatusPages:
         body = _body(NotFound())
         assert "404" in body and "Page not found" in body and 'href="/"' in body
 
+    def test_the_way_home_carries_the_prefix(self, monkeypatch):
+        from nexy.core.config import Config
+
+        monkeypatch.setattr(Config, "useBasePath", "/app")
+
+        assert 'href="/app/"' in _body(NotFound())
+
     def test_the_page_never_uses_the_old_yellow_and_red(self):
         body = _body(NotFound()).lower()
         assert "yellow" not in body and "background-color:red" not in body

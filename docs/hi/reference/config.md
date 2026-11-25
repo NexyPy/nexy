@@ -27,6 +27,7 @@ class NexyConfig(NexyConfigModel):
 | `useSiteUrl` | `None` | साइट का सार्वजनिक मूल, जैसे कि `"https://example.com"`; एक बार सेट हो जाने पर, नेक्सी `/sitemap.xml` और `/robots.txt` परोसता है। [साइटमैप और robots.txt](../guides/sitemap.md) देखें |
 | `useWorkers` | `0` | प्रक्रियाएँ `nx start` चलती हैं; `0` लिनक्स और मैकओएस पर प्रति सीपीयू एक है, विंडोज़ पर एक |
 | `useCSR` | `False` | क्लाइंट-साइड रूटिंग मोड; `.nexy` मार्ग अक्षम हैं |
+| `useBasePath` | `None` | संपूर्ण एप्लिकेशन के लिए सार्वजनिक उपसर्ग, जैसे `"/app"`; इसके बाहर के अनुरोध 404 का उत्तर देते हैं, और उत्पन्न लिंक, क्लाइंट रूट, एक्शन कॉल और संपत्तियां उपसर्ग ले जाती हैं। देखें [तैनाती](../deployment/README.md#serve-under-a-sub-path) |
 
 ## डेटाबेस
 

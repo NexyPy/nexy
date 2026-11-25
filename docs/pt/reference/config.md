@@ -27,6 +27,7 @@ class NexyConfig(NexyConfigModel):
 | `useSiteUrl` | `None` | a origem pública do site, como `"https://example.com"`; uma vez definido, Nexy serve `/sitemap.xml` e `/robots.txt`. Consulte [Sitemap e robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | processa `nx start` execuções; `0` é um por CPU no Linux e macOS, um no Windows |
 | `useCSR` | `False` | modo de roteamento do lado do cliente; `.nexy` rotas estão desativadas |
+| `useBasePath` | `None` | prefixo público para todo o aplicativo, como `"/app"`; solicitações fora dele respondem 404, e links gerados, rotas de clientes, chamadas de ação e ativos carregam o prefixo. Consulte [Implantar](../deployment/README.md#serve-under-a-sub-path) |
 
 ## Banco de dados
 

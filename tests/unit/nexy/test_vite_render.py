@@ -27,6 +27,12 @@ def test_dev_without_vite_config_serves_the_reload_channel(nexy_project) -> None
     assert "/@vite/client" not in markup
 
 
+def test_the_reload_socket_carries_the_prefix(nexy_project) -> None:
+    nexy_project('useVite = True\nuseBasePath = "/app"')
+
+    assert "/app/_nexy/hmr" in Vite()
+
+
 def test_dev_with_vite_disabled_serves_the_reload_channel(nexy_project, tmp_path: Path) -> None:
     """Vite off: the project still gets live reload for every kind of file."""
     nexy_project("useVite = False")
@@ -67,6 +73,24 @@ def test_prod_mode_links_built_client(vite_project: Path) -> None:
     markup = Vite()
     assert 'src="/assets/main.js"' in markup
     assert 'href="/assets/main.css"' in markup
+
+
+def test_prod_mode_links_built_client_under_the_prefix(nexy_project, tmp_path: Path) -> None:
+    nexy_project('useVite = True\nuseBasePath = "/app"')
+    (tmp_path / "vite.config.ts").write_text("", encoding="utf-8")
+    client = tmp_path / "__nexy__" / "client" / "assets"
+    client.mkdir(parents=True)
+    (client / "main.js").write_text("", encoding="utf-8")
+    (client / "main.css").write_text("", encoding="utf-8")
+    (tmp_path / "__nexy__" / "nexy.prod").write_text("", encoding="utf-8")
+    _write_manifest(
+        tmp_path,
+        {"__nexy__/main.ts": {"file": "assets/main.js", "css": ["assets/main.css"]}},
+    )
+
+    markup = Vite()
+
+    assert 'src="/app/assets/main.js"' in markup and 'href="/app/assets/main.css"' in markup
 
 
 def test_prod_mode_inlines_built_client(

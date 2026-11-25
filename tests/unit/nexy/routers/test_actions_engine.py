@@ -70,6 +70,14 @@ def test_generated_client_points_at_the_mounted_path(tmp_path: Path) -> None:
     assert f"/_nx_{ACTIONS_STORE._generate_hash(func_id)}" in generated
 
 
+def test_generated_client_points_at_the_prefixed_path(tmp_path: Path, nexy_project) -> None:
+    nexy_project('useBasePath = "/app"')
+    func_id = ACTIONS_STORE.register(_handler)
+    ActionEngine(output_dir=str(tmp_path)).generate_client()
+    generated = (tmp_path / "actions.ts").read_text(encoding="utf-8")
+    assert f"'/app/_nx_{ACTIONS_STORE._generate_hash(func_id)}'" in generated
+
+
 def test_generated_client_ships_its_runtime(tmp_path: Path) -> None:
     ACTIONS_STORE.register(_handler)
     ActionEngine(output_dir=str(tmp_path)).generate_client()

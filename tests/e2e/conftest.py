@@ -20,6 +20,16 @@ import pytest
 
 FIXTURE_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "client_router"
 
+ACTION_SOURCE = """from nexy.decorators import Action
+
+
+@Action
+async def ping() -> str:
+    return "pong"
+"""
+
+BASE_CSS = "\nbody { --nexy-e2e: prefixed; }\n"
+
 
 def _wait_for_port(port: int, host: str = "127.0.0.1", timeout: float = 60.0) -> bool:
     """Wait until *port* accepts TCP connections."""
@@ -131,18 +141,28 @@ class DevStack:
         return f"http://127.0.0.1:{self.server_port}"
 
 
-@pytest.fixture(scope="session")
-def dev_stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[DevStack]:
-    """Boot one dev stack for the whole E2E session."""
-    project = tmp_path_factory.mktemp("nexy_e2e") / "app"
+def _prepare(project: Path, base_path: str = "") -> None:
+    """Copy the fixture and, when asked, give it a public prefix and a probe action."""
     shutil.copytree(FIXTURE_DIR, project)
+    if not base_path:
+        return
+    config = project / "nexyconfig.py"
+    config.write_text(
+        config.read_text(encoding="utf-8") + f"    useBasePath = {base_path!r}\n",
+        encoding="utf-8",
+    )
+    (project / "src" / "actions.py").write_text(ACTION_SOURCE, encoding="utf-8")
+    css = project / "src" / "globale.css"
+    css.write_text(css.read_text(encoding="utf-8") + BASE_CSS, encoding="utf-8")
 
+
+def _serve(project: Path, base_path: str = "") -> Iterator[DevStack]:
+    """Boot one dev stack for the lifetime of the requesting fixture."""
+    _prepare(project, base_path)
     _install_node_modules(project)
     _generate(project)
-
     server_port = _free_port()
     client_port = _free_port()
-
     nexy_dir = project / "__nexy__"
     (nexy_dir / "client.port").write_text(str(client_port), encoding="utf-8")
     (nexy_dir / "server.port").write_text(str(server_port), encoding="utf-8")
@@ -161,3 +181,15 @@ def dev_stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[DevStack]:
     finally:
         Server.stop_process(vite_proc)
         Server.stop_process(server_proc)
+
+
+@pytest.fixture(scope="session")
+def dev_stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[DevStack]:
+    """Boot one dev stack for the whole E2E session."""
+    yield from _serve(tmp_path_factory.mktemp("nexy_e2e") / "app")
+
+
+@pytest.fixture(scope="session")
+def base_path_stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[DevStack]:
+    """Boot a dev stack whose whole application lives under `/app`."""
+    yield from _serve(tmp_path_factory.mktemp("nexy_base_path") / "app", "/app")

@@ -1,6 +1,8 @@
 import html
 import json
 
+from nexy.modules.routers.base_path import public_url
+
 
 def link(
     href: str,
@@ -22,12 +24,13 @@ def link(
     Returns:
         The `<a>` HTML markup ready to embed.
     """
-    attrs: dict[str, str | bool] = {"href": href, "data-nexy-link": "true"}
+    target = public_url(href)
+    attrs: dict[str, str | bool] = {"href": target, "data-nexy-link": "true"}
     if class_name:
         attrs["class"] = class_name
     if prefetch:
         # The href is data, not code: a JSON string literal cannot end the JS string early.
-        call = f"window.__nexy_prefetch && window.__nexy_prefetch({json.dumps(href)})"
+        call = f"window.__nexy_prefetch && window.__nexy_prefetch({json.dumps(target)})"
         attrs["onmouseenter"] = call
         attrs["ontouchstart"] = call
     attrs.update(kwargs)

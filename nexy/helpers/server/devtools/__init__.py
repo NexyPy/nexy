@@ -14,6 +14,7 @@ from pathlib import Path
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from nexy.helpers.server.html_inject import InjectMiddleware
+from nexy.modules.routers.base_path import public_url
 
 MARKER = b'id="nexy-devtools-data"'
 STATE_PATH = "/_nexy/devtools/state"
@@ -38,7 +39,7 @@ def toolbar_markup(version: str, page: dict[str, object]) -> bytes:
     return (
         f'<script type="application/json" id="nexy-devtools-data">{_script_safe(data)}</script>'
         f'<style id="nexy-devtools-css" media="not all">{_asset("toolbar.css")}</style>'
-        f"<script>{_asset('toolbar.js')}</script>"
+        f"<script>{_asset('toolbar.js').replace(STATE_PATH, public_url(STATE_PATH))}</script>"
     ).encode()
 
 

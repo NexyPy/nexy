@@ -22,23 +22,24 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | پتہ باندھنا |
 | `useSslKeyfile`، `useSslCertfile` | `None` | HTTPS کو براہ راست پیش کریں۔ |
 | `useDevTools` | `True` | ٹول بار `nexy dev` ہر صفحہ میں اضافہ کرتا ہے (صفحہ کی معلومات، راستے، غلطیاں، تشکیل)؛ `False` اسے ہٹاتا ہے۔ پروڈکشن میں کبھی موجود نہ ہوں۔ |
-| `useHealth` | `False` | لوڈ بیلنسرز اور کبرنیٹس پروبس کے لیے `GET /health/live` اور `GET /health/ready` پیش کریں۔ دیکھیں [تعینات کریں](../deployment/README.md#built-in-endpoints) |
-| `useMaxBodySize` | `1048576` | سب سے بڑی درخواست کا باڈی جسے کارکن پڑھتا ہے، بائٹس میں (1 MiB)؛ ایک بڑا ایک `413` ہے، اور `0` حد کو بند کر دیتا ہے۔ اسے اس راستے کے لیے اٹھائیں جو فائل اپ لوڈ کرتا ہے۔ |
+| `useHealth` | `False` | لوڈ بیلنسرز اور کبرنیٹس پروبس کے لیے `GET /health/live` اور `GET /health/ready` کی خدمت کریں۔ دیکھیں [تعینات کریں](../deployment/README.md#built-in-endpoints) |
+| `useMaxBodySize` | `1048576` | سب سے بڑی درخواست باڈی جو ایک کارکن بائٹس میں پڑھتا ہے (1 MiB)؛ ایک بڑا ایک `413` ہے، اور `0` حد کو بند کر دیتا ہے۔ اسے اس راستے کے لیے اٹھائیں جو فائل اپ لوڈ کرتا ہے۔ |
 | `useSiteUrl` | `None` | سائٹ کی عوامی اصل، جیسے `"https://example.com"`؛ ایک بار سیٹ ہونے کے بعد، Nexy `/sitemap.xml` اور `/robots.txt` کی خدمت کرتا ہے۔ دیکھیں [Sitemap and robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | عمل `nx start` چلتا ہے؛ `0` لینکس اور میک او ایس پر ایک فی سی پی یو ہے، ونڈوز پر ایک |
 | `useCSR` | `False` | کلائنٹ سائڈ روٹنگ موڈ؛ `.nexy` راستے غیر فعال ہیں۔ |
+| `useBasePath` | `None` | پوری درخواست کے لیے عوامی سابقہ، جیسے `"/app"`؛ اس سے باہر کی درخواستیں 404 کا جواب دیتی ہیں، اور جنریٹڈ لنکس، کلائنٹ روٹس، ایکشن کالز اور اثاثے اس کا سابقہ ​​رکھتے ہیں۔ دیکھیں [تعینات](../deployment/README.md#serve-under-a-sub-path) |
 
 ## ڈیٹا بیس
 
 | میدان | طے شدہ | مطلب |
 |---|---|---|
-| `useORM` | `None` | پروجیکٹ کا ORM: `"SQLModel"`، `"SQLAlchemy"` یا `"Tortoise-ORM"`۔ `nx new` اسے لکھتا ہے، اور `nx migrate` اس سے Alembic یا Aerich چنتا ہے۔ اس کے بغیر، `nx migrate` پہلا ORM انسٹال ہوتا ہے۔ دیکھیں [ڈیٹا بیس](../guides/databases.md#migrations) |
+| `useORM` | `None` | پروجیکٹ کا ORM: `"SQLModel"`، `"SQLAlchemy"` یا `"Tortoise-ORM"`۔ `nx new` اسے لکھتا ہے، اور `nx migrate` اس سے Alembic یا Aerich چنتا ہے۔ اس کے بغیر، `nx migrate` پہلا ORM انسٹال ہوتا ہے۔ دیکھیں [ڈیٹا بیسز](../guides/databases.md#migrations) |
 
 ## راستے
 
 | میدان | طے شدہ | مطلب |
 |---|---|---|
-| `useRouter` | `None` | ایک `APIRouter` مثال یا کلاس فائل پر مبنی راستوں کے ساتھ نصب؛ `None` کا مطلب صرف فائل پر مبنی ہے۔ |
+| `useRouter` | `None` | ایک `APIRouter` مثال یا کلاس فائل پر مبنی راستوں کے ساتھ لگائی گئی ہے۔ `None` کا مطلب صرف فائل پر مبنی ہے۔ |
 | `excludeDirs` | `["templates", "extension", "docs"]` | راستوں کو اسکین کرتے وقت ڈائریکٹریز کو چھوڑ دیا گیا۔ |
 | `useAliases` | `None` | عرفی نام درآمد کریں، جیسے `{"@": "src"}` (`@/components/Counter.tsx` کا مطلب ہے `src/components/Counter.tsx`)؛ `nx new` لکھتا ہے جسے آپ نے منتخب کیا ہے، اور Vite اور `tsconfig.json` اس پر عمل کریں |
 
@@ -47,8 +48,8 @@ class NexyConfig(NexyConfigModel):
 | میدان | طے شدہ | مطلب |
 |---|---|---|
 | `useFF` | `None` | کلائنٹ فریم ورک فیکٹری: `react()`، `vue()`، `svelte()`، `solid()`، `preact()` |
-| `useVite` | `True` | Vite کے ساتھ کلائنٹ بنڈل بنائیں اور پیش کریں۔ |
-| `useMarkdownExtensions` | `[]` | `.md`/`.mdx` رینڈرنگ کے لیے اضافی ایکسٹینشنز |
+| `useVite` | `True` | Vite کے ساتھ کلائنٹ بنڈل بنائیں اور پیش کریں |
+| `useMarkdownExtensions` | `[]` | `.md`/`.mdx` رینڈرنگ کے لیے اضافی توسیع |
 | `useWatchExtensions` | `None` | اضافی ایکسٹینشنز جو ڈیو سرور دیکھتا ہے۔ |
 | `useWatchExcludePatterns` | `None` | گلوب پیٹرن جنہیں ڈیو سرور نظر انداز کرتا ہے۔ |
 
@@ -56,7 +57,7 @@ class NexyConfig(NexyConfigModel):
 
 ## محفوظ فائل کے نام
 
-ہر فیلڈ ایک مخصوص کردار میں توسیعات کا اضافہ کرتا ہے۔ `useLayoutExtensions = ["md"]` `layout.md` کو مخصوص کرتا ہے، بالکل `layout.nexy` کی طرح۔
+ہر فیلڈ ایک مخصوص کردار میں توسیعات کا اضافہ کرتا ہے۔ `useLayoutExtensions = ["md"]` `layout.md` کو مخصوص بناتا ہے، بالکل `layout.nexy` کی طرح۔
 
 | میدان | میں توسیعات شامل کرتا ہے۔ |
 |---|---|
@@ -78,7 +79,7 @@ class NexyConfig(NexyConfigModel):
 
 ### منصوبے کے ایک صفحے کے لیے مفت `/docs`
 
-API کا حوالہ کسی بھی راستے سے پہلے `/docs` کا جواب دیتا ہے، اس لیے وہاں کبھی بھی `src/routes/docs.nexy` یا `src/routes/docs/[[...slug]].nexy` پیش نہیں کیا جاتا۔ `nx dev` اور `nx start` شروع میں ایسے صفحہ کا نام دیں۔ حوالہ `useDocsUrl` کے ساتھ منتقل کریں:
+API کا حوالہ کسی بھی راستے سے پہلے `/docs` کا جواب دیتا ہے، اس لیے وہاں کبھی بھی `src/routes/docs.nexy` یا `src/routes/docs/[[...slug]].nexy` پیش نہیں کیا جاتا۔ `nx dev` اور `nx start` شروع کے وقت ایسے صفحہ کا نام دیں۔ حوالہ کو `useDocsUrl` کے ساتھ منتقل کریں:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -88,7 +89,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-یا اسے `useDocs = False` کے ساتھ بند کر دیں، جس سے سرونگ بھی بند ہو جاتی ہے `/openapi.json`۔ جب حوالہ آن ہو، پروجیکٹ کے راستوں کو اس راستے سے دور رکھیں۔
+یا اسے `useDocs = False` کے ساتھ بند کر دیں، جس سے سرونگ بھی بند ہو جائے `/openapi.json`۔ جب حوالہ آن ہو، پروجیکٹ کے راستوں کو اس راستے سے دور رکھیں۔
 
 ## مڈل ویئر
 

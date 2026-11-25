@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from nexy.core.config import Config
+from nexy.modules.routers.base_path import public_url
 
 _CLIENT = Path("__nexy__/client")
 _MANIFEST = _CLIENT / ".vite" / "manifest.json"
@@ -34,8 +35,12 @@ def Vite() -> str:
 
 
 @cache
-def _hmr_client() -> str:
+def _hmr_template() -> str:
     return _HMR_CLIENT.read_text(encoding="utf-8")
+
+
+def _hmr_client() -> str:
+    return _hmr_template().replace("/_nexy/hmr", public_url("/_nexy/hmr"))
 
 
 # In development the stylesheet reaches the page through JavaScript, after the first paint. The
@@ -53,8 +58,8 @@ def _development_tags() -> str:
     return f"""
     {_BOOT_GATE}
     {_hmr_client()}
-    <script type="module" src="/@vite/client"></script>
-    <script type="module" src="/__nexy__/main.ts"></script>
+    <script type="module" src="{public_url("/@vite/client")}"></script>
+    <script type="module" src="{public_url("/__nexy__/main.ts")}"></script>
     """
 
 
@@ -102,6 +107,8 @@ def _inline_tags(entry: dict[str, Any]) -> str:
 
 def _linked_tags(entry: dict[str, Any]) -> str:
     links = "".join(
-        f'<link rel="stylesheet" href="/{name.lstrip("/")}" />' for name in entry.get("css") or []
+        f'<link rel="stylesheet" href="{public_url("/" + name.lstrip("/"))}" />'
+        for name in entry.get("css") or []
     )
-    return f'{links}<script type="module" src="/{entry["file"].lstrip("/")}"></script>'
+    script = public_url("/" + entry["file"].lstrip("/"))
+    return f'{links}<script type="module" src="{script}"></script>'

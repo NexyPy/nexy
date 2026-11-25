@@ -27,6 +27,7 @@ class NexyConfig(NexyConfigModel):
 | `useSiteUrl` | `None` | 网站的公共来源，例如 `"https://example.com"`；一旦设置，Nexy 将服务 `/sitemap.xml` 和 `/robots.txt`。请参阅[站点地图和 robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | 进程 `nx start` 运行； `0` 是 Linux 和 macOS 上每个 CPU 一个，Windows 上一个 |
 | `useCSR` | `False` | 客户端路由模式； `.nexy` 路线已禁用 |
+| `useBasePath` | `None` | 整个应用程序的公共前缀，例如 `"/app"`；外部的请求回答 404，生成的链接、客户端路由、操作调用和资产都带有前缀。请参阅[部署](../deployment/README.md#serve-under-a-sub-path) |
 
 ## 数据库
 
@@ -56,7 +57,7 @@ class NexyConfig(NexyConfigModel):
 
 ## 保留文件名
 
-每个字段都会为保留角色添加扩展。 `useLayoutExtensions = ["md"]` 使 `layout.md` 保留，与 `layout.nexy` 完全相同。
+每个字段都会为保留角色添加扩展。 `useLayoutExtensions = ["md"]` 保留 `layout.md`，与 `layout.nexy` 完全相同。
 
 | 领域 | 添加扩展 |
 |---|---|
@@ -97,7 +98,7 @@ class NexyConfig(NexyConfigModel):
 | `useMiddlewares` | `[]` | ASGI中间件类 |
 | `useCORS` | `None` | 夸格斯 `CORSMiddleware` |
 | `useGZip` | `None` | 夸格斯 `GZipMiddleware` |
-| `useTrustedHost` | `None` | kwargs 为 `TrustedHostMiddleware` |
+| `useTrustedHost` | `None` | 夸格斯 `TrustedHostMiddleware` |
 | `useSession` | `None` | 夸格斯 `SessionMiddleware` |
 | `useAuth` | `None` | 身份验证中间件配置 |
 | `useHTTPSRedirect` | `False` | 将 HTTP 重定向到 HTTPS |

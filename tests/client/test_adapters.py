@@ -17,6 +17,8 @@ HERE = Path(__file__).resolve().parent
 NODE = shutil.which("node")
 
 FRAMEWORKS = ("react", "preact", "solid", "vue", "svelte")
+ADAPTER_SOURCES = ("react.ts", "preact.ts", "vue.ts", "solid.tsx", "Link.svelte")
+CLIENT_DIR = Path(__file__).resolve().parents[2] / "nexy" / "modules" / "frontend" / "client"
 
 
 def _node(*args: str, browser: bool = True) -> subprocess.CompletedProcess[str]:
@@ -30,6 +32,19 @@ def _node(*args: str, browser: bool = True) -> subprocess.CompletedProcess[str]:
         check=False,
         cwd=HERE,
     )
+
+
+@pytest.mark.parametrize("source", ADAPTER_SOURCES)
+def test_every_adapter_prefixes_its_links(source: str) -> None:
+    text = (CLIENT_DIR / source).read_text(encoding="utf-8")
+    assert "withBaseHref(" in text
+
+
+def test_a_link_renders_the_prefixed_url() -> None:
+    done = _node("base_path_adapter.mjs")
+    assert "@@" in done.stdout, (done.stdout + done.stderr)[-1500:]
+    report = json.loads(done.stdout.split("@@")[1])
+    assert report["href"] == "/app/about"
 
 
 def _run(framework: str) -> dict:

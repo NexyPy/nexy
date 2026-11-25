@@ -4,7 +4,7 @@
   import type { HTMLAnchorAttributes } from 'svelte/elements'
   import { location, type Href } from './client.ts'
   import { getRouter } from './router.ts'
-  import { isActive, linkClass, onceVisible, type Prefetch } from './shared.ts'
+  import { isActive, linkClass, onceVisible, withBaseHref, type Prefetch } from './shared.ts'
 
   type Props = Omit<HTMLAnchorAttributes, 'href'> & {
     href: Href
@@ -52,7 +52,7 @@
 <a
   bind:this={anchor}
   {...rest}
-  {href}
+  href={withBaseHref(href)}
   class={linkClass(className ?? undefined, isActive($location.pathname, href, exact), activeClass ?? activeClassName)}
   aria-current={isActive($location.pathname, href, true) ? 'page' : undefined}
   data-nexy-link="true"

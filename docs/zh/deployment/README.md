@@ -51,10 +51,28 @@ nx start --host 127.0.0.1 --port 8000
 
 如果您使用 `SOCKET` 处理程序，请确保代理转发 WebSocket 升级，并且它转发原始主机 - FastAPI 从中构建绝对 URL。
 
+### 在子路径下服务
+
+当应用程序在前缀而不是域根下发布时设置 `useBasePath`：
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useBasePath = "/app"
+```
+
+每个公共答案都位于 `/app` 下：页面、客户端导航、资产、服务器操作、API 文档、站点地图和运行状况探测。对 `/` 的请求回答404。Nexy接受 `app/`、`/app/` 和 `/app` 作为相同的设置并将其标准化为 `/app`。
+
+路由文件保留根相对路径。在 `/app/about` 上提供的页面仍然是 `src/routes/about.tsx` 或 `about.nexy`，并且内部路径仍然是 `/about`。 Nexy 仅将前缀添加到写入浏览器的 URL。
+
+配置代理以不变地转发前缀，例如 `/app/...` 到 `http://127.0.0.1:8000/app/...`。 WebSocket 升级需要相同的前缀。 Nexy 在请求到达后将其剥离，因此不需要重写规则。
+
 ## 健康检查
 
 <!-- router:fbr,custom -->
-添加处理程序文件 `src/routes/api/health.py` 和探针 `/api/health` - 而不是可能渲染缓慢的页面：
+添加处理程序文件 `src/routes/api/health.py` 和探测 `/api/health` - 而不是可能渲染缓慢的页面：
 
 ```python filename="src/routes/api/health.py"
 async def GET():
@@ -75,7 +93,7 @@ class HealthController:
         return {"status": "ok"}
 ```
 
-将其列在根模块的 `controllers` 中。
+将其列出在根模块的 `controllers` 中。
 <!-- /router -->
 
 ### 内置端点
@@ -101,7 +119,7 @@ Nexy 保证两个端点都不在访问日志和 OpenAPI 模式之外。
 
 Nexy 保证两个端点在 `useTrustedHost` 和 `useHTTPSRedirect` 之前应答，因此通过 HTTP 发送到 pod 地址的探测不会被拒绝。
 
-按照惯例，当 `useHealth` 打开时，您将自己的路由保持在 `/health/live` 和 `/health/ready` 关闭状态：Nexy 的端点首先应答。默认情况下，`useHealth` 为 `False`，因此未设置它的项目将保留这两个路径。
+按照惯例，当 `useHealth` 打开时，您将自己的路由保持在 `/health/live` 和 `/health/ready` 关闭状态：Nexy 的端点首先应答。默认情况下，`useHealth` 为 `False`，因此未设置它的项目会保留这两个路径。
 
 您的应用程序负责检查它所依赖的内容：`/health/ready` 报告服务器的生命周期，而不是数据库的状态。
 
@@ -158,6 +176,6 @@ spec:
 
 ## 后续步骤
 
-- [配置](../reference/config.md)：HTTPS、受信任的主机、会话
+- [配置](../reference/config.md)：HTTPS、可信主机、会话
 - [前端](../guides/frontend.md)：Vite 构建什么
 - [测试](../guides/testing.md)：在 CI 中运行的命令
