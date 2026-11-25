@@ -8,6 +8,7 @@ from nexy.modules.frontend.assets import copy_ssg_scripts, copy_vite_config, wri
 from nexy.modules.frontend.frameworks import preact, react, solid, svelte, vue
 from nexy.modules.frontend.manifest import RouteManifestBuilder
 from nexy.modules.frontend.vite_entry import generate_vite_entry
+from nexy.modules.images.manifest import load_manifest, write_image_typescript
 
 _NOCHECK = "// @ts-nocheck\n"
 
@@ -33,6 +34,7 @@ class FrontendGenerator:
     def generate(self, ssg: bool = False) -> None:
         self._write_route_manifest()
         generate_vite_entry(self.config.useFF)
+        write_image_typescript(load_manifest())
         copy_vite_config()
         write_aliases()
         if ssg:
