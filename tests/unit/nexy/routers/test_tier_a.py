@@ -44,6 +44,16 @@ class TestStaticAssets:
         assert "/public" in mounts
         assert "/assets" not in mounts  # __nexy__/client/assets does not exist
 
+    @pytest.mark.usefixtures("nexy_project")
+    def test_generated_images_are_served_from_their_own_mount(self, tmp_path) -> None:
+        server = FastAPI()
+        (tmp_path / "__nexy__/client/images").mkdir(parents=True)
+
+        setup_static_files(server)
+
+        mounts = [r.path for r in server.routes if isinstance(r, Mount)]
+        assert "/images" in mounts
+
 
 def _page_request():
     from starlette.requests import Request

@@ -80,7 +80,11 @@ class PublicFilesMiddleware:
 
 def setup_static_files(server: FastAPI) -> None:
     """Mounts directories if they exist."""
-    mounts = {"/public": "public", "/assets": "__nexy__/client/assets"}
+    mounts = {
+        "/public": "public",
+        "/assets": "__nexy__/client/assets",
+        "/images": "__nexy__/client/images",
+    }
     for path, directory in mounts.items():
         if os.path.isdir(directory):
             server.mount(path, StaticFiles(directory=directory), name=directory)
