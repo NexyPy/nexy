@@ -2,7 +2,7 @@
 
 **Uma Python estrutura para aplicações web fullstack.**
 
-Nexy coloca suas páginas e sua API em um Python projeto, servido por um servidor. A versão 2.2 é construída em FastAPI: cada rota API é uma rota FastAPI, listada em um esquema OpenAPI que Scalar mostra em `/docs`.
+Nexy coloca suas páginas e sua API em um Python projeto, servido por um servidor. A versão 2.2 é construída em FastAPI: cada rota de API é uma rota FastAPI, listada em um esquema OpenAPI que Scalar mostra em `/docs`.
 
 - **Python primeiro.** Páginas, endpoints, formulários e ações são Python, e uma página não precisa de JavaScript.
 - **Um frontend quando você quiser.** React, Vue, Svelte, Solid ou Preact, para um componente ou para todo o site.
@@ -74,6 +74,7 @@ Novo aqui? Leia [O que é Nexy?](getting-started/what-is-nexy.md), depois o [In�
 | [Herança](routing/fbr/inheritance.md) | Leia a ordem de resolução de layouts, dependências e páginas de erro |
 | [Modo servidor e modo cliente](routing/fbr/modes.md) | `useCSR`, e o que cada modo permite |
 | [Vinculando e navegando](routing/fbr/navigation/linking-and-navigating.md) | Vincular páginas, navegar no cliente, pré-buscar |
+| [Como funcionam as transições de página](routing/fbr/navigation/page-transitions.md) | Anime as navegações do cliente com a API View Transitions do navegador |
 | [Ganchos](routing/fbr/navigation/hooks.md) | Leia o caminho, consulta, cookies e sessão |
 
 ### Manipuladores e erros {fbr}
@@ -166,7 +167,7 @@ Controladores e módulos.
 ### Construir e testar
 | Página | O que você fará |
 |---|---|
-| [Vite e estilo](guides/frontend.md) | Configure Vite, o estilo e a construção do cliente |
+| [Vite e estilo](guides/frontend.md) | Configure Vite, estilo e construção do cliente |
 | [Teste](guides/testing.md) | Teste com pytest, `TestClient` e vitest |
 
 ### Ferramentas e ajuda
@@ -226,7 +227,7 @@ As mesmas tarefas, escritas no framework que você conhece e depois no Nexy.
 | Página | O que você fará |
 |---|---|
 | [De NestJS](coming-from/nestjs.md) | Mova controladores, módulos, provedores e proteções para o roteador modular |
-| [Da inicialização do Spring](coming-from/spring-boot.md) | Mova controladores, serviços e filtros para o roteador modular |
+| [Da inicialização Spring](coming-from/spring-boot.md) | Mova controladores, serviços e filtros para o roteador modular |
 
 ## Referência
 

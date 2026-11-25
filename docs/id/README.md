@@ -74,15 +74,16 @@ Baru di sini? Baca [Apa itu Nexy?](getting-started/what-is-nexy.md), lalu [Mulai
 | [Warisan](routing/fbr/inheritance.md) | Baca urutan resolusi tata letak, dependensi, dan halaman kesalahan |
 | [Mode server dan mode klien](routing/fbr/modes.md) | `useCSR`, dan apa yang dimungkinkan oleh setiap mode |
 | [Menghubungkan dan menavigasi](routing/fbr/navigation/linking-and-navigating.md) | Tautkan halaman, navigasikan di klien, ambil terlebih dahulu |
+| [Cara kerja transisi halaman](routing/fbr/navigation/page-transitions.md) | Menganimasikan navigasi klien dengan View Transitions API browser |
 | [Kait](routing/fbr/navigation/hooks.md) | Baca jalur, kueri, cookie, dan sesi |
 
 ### Penangan dan kesalahan {fbr}
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
-| [Pengendali rute](routing/fbr/handlers/README.md) | Tambahkan titik akhir Python |
-| [Validasi dan kesalahan](routing/fbr/handlers/validation-and-errors.md) | Jawab `422` dan `404`, dan naikkan `HTTPException` |
+| [Penangan rute](routing/fbr/handlers/README.md) | Tambahkan titik akhir Python |
+| [Validasi dan kesalahan](routing/fbr/handlers/validation-and-errors.md) | Jawab `422` dan `404`, dan angkat `HTTPException` |
 | [WebSocket penangan](routing/fbr/realtime/websocket.md) | Tangani koneksi `SOCKET` |
-| [Ketergantungan dan penjaga](routing/fbr/dependencies/README.md) | Jalankan `dependencies.py` sebelum seorang pengendali, dan mewarisinya |
+| [Ketergantungan dan penjaga](routing/fbr/dependencies/README.md) | Jalankan `dependencies.py` sebelum handler, dan warisi |
 | [File middleware](routing/fbr/middleware/README.md) | Bungkus permintaan dengan `middleware.py`, yang diwarisi berdasarkan direktori |
 | [Halaman kesalahan](routing/fbr/errors/README.md) | Jawab dengan kesalahan `notfound.nexy`, `errors.nexy` dan JSON |
 | [Halaman kesalahan per folder](routing/fbr/errors/folder-pages.md) | Kasus tepi: kesalahan dari sub-folder |

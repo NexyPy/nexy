@@ -74,16 +74,17 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | [وراثت](routing/fbr/inheritance.md) | لے آؤٹ، انحصار اور خرابی والے صفحات کا ریزولوشن آرڈر پڑھیں |
 | [سرور موڈ اور کلائنٹ موڈ](routing/fbr/modes.md) | `useCSR`، اور جس کی ہر موڈ اجازت دیتا ہے۔ |
 | [لنک کرنا اور نیویگیٹ کرنا](routing/fbr/navigation/linking-and-navigating.md) | صفحات کو لنک کریں، کلائنٹ پر نیویگیٹ کریں، پری فیچ کریں۔ |
+| [صفحہ کی منتقلی کیسے کام کرتی ہے](routing/fbr/navigation/page-transitions.md) | براؤزر کے ویو ٹرانزیشن API کے ساتھ کلائنٹ نیویگیشن کو متحرک کریں۔ |
 | [کانٹے](routing/fbr/navigation/hooks.md) | راستہ، استفسار، کوکیز اور سیشن پڑھیں |
 
 ### ہینڈلر اور غلطیاں {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [روٹ سنبھالنے والے](routing/fbr/handlers/README.md) | ایک Python اختتامی نقطہ شامل کریں۔ |
-| [توثیق اور غلطیاں](routing/fbr/handlers/validation-and-errors.md) | جواب دیں `422` اور `404`، اور بلند کریں `HTTPException` |
+| [روٹ ہینڈلر](routing/fbr/handlers/README.md) | ایک Python اختتامی نقطہ شامل کریں۔ |
+| [توثیق اور غلطیاں](routing/fbr/handlers/validation-and-errors.md) | جواب دیں `422` اور `404`، اور ایک `HTTPException` اٹھائیں |
 | [WebSocket ہینڈلر](routing/fbr/realtime/websocket.md) | ایک `SOCKET` کنکشن کو ہینڈل کریں۔ |
 | [انحصار اور محافظ](routing/fbr/dependencies/README.md) | ہینڈلر سے پہلے `dependencies.py` چلائیں، اور اسے وارث بنائیں |
-| [مڈل ویئر فائلیں](routing/fbr/middleware/README.md) | درخواستوں کو `middleware.py` کے ساتھ لپیٹنا، ڈائرکٹری سے وراثت میں ملا |
+| [مڈل ویئر فائلیں](routing/fbr/middleware/README.md) | درخواستوں کو `middleware.py` کے ساتھ لپیٹیں، جو ڈائرکٹری سے وراثت میں ملی ہیں۔ |
 | [خرابی کے صفحات](routing/fbr/errors/README.md) | `notfound.nexy`، `errors.nexy` اور JSON کی غلطیوں کے ساتھ جواب دیں۔ |
 | [خامی صفحات فی فولڈر](routing/fbr/errors/folder-pages.md) | ایج کیس: ذیلی فولڈرز سے غلطیاں |
 
@@ -91,7 +92,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 کنٹرولرز اور ماڈیولز۔
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [ماڈیولر روٹنگ](routing/modular/README.md) | ماؤنٹ کنٹرولرز اور ماڈیولز |
+| [ماڈیولر روٹنگ ](routing/modular/README.md) | ماؤنٹ کنٹرولرز اور ماڈیولز |
 | [انحصار انجکشن](routing/modular/dependency-injection.md) | خدمات، ان کے دائرہ کار اور کنٹینر کی وضاحت کریں۔ |
 | [گارڈز اور میٹا ڈیٹا](routing/modular/guards-and-metadata.md) | راستوں کی حفاظت اور دستاویز کریں۔ |
 | [ماڈیولر روٹر بمقابلہ NestJS](routing/modular/vs-nestjs.md) | کے ساتھ موازنہ NestJS |
@@ -126,7 +127,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### فریم ورک کے اختلافات
 | صفحہ | کیا تبدیلیاں |
 |---|---|
-| [React اختلافات](views/react/differences.md) | اجزاء، کانٹے اور `layout.tsx` {new} |
+| [React اختلافات](views/react/differences.md) | اجزاء، ہکس اور `layout.tsx` {new} |
 | [Vue اختلافات](views/vue/differences.md) | SFCs، refs اور `layout.vue` {new} |
 | [Svelte اختلافات](views/svelte/differences.md) | رنز، اسٹورز اور `layout.svelte` {new} |
 | [Solid اختلافات](views/solid/differences.md) | سگنلز، ایکسیسرز اور `layout.tsx` {new} |
@@ -137,14 +138,14 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### موڈز
 | صفحہ | جو آپ فیصلہ کریں گے۔ |
 |---|---|
-| [انجام دینا](rendering/README.md) | کون سا رینڈرنگ موڈ کسی صفحے پر فٹ بیٹھتا ہے۔ |
-| [SSR](rendering/ssr.md) | سرور رینڈرنگ، ڈیفالٹ |
+| [رینڈرنگ ](rendering/README.md) | کون سا رینڈرنگ موڈ کسی صفحے پر فٹ بیٹھتا ہے۔ |
+| [ایس ایس آر](rendering/ssr.md) | سرور رینڈرنگ، ڈیفالٹ |
 | [جزائر](rendering/islands.md) | غیر فعال، مرئی یا میڈیا کے استفسار پر ہائیڈریٹ کریں۔ |
 
 ### فائل کے صفحات کے طریقوں {fbr,custom}
 | صفحہ | جو آپ فیصلہ کریں گے۔ |
 |---|---|
-| [آئی ایس آر](rendering/isr.md) | stale-while-revalidate کے ساتھ صفحات کیش کریں۔ |
+| [آئی ایس آر ](rendering/isr.md) | stale-while-revalidate کے ساتھ صفحات کیش کریں۔ |
 | [CSR](rendering/csr.md) | کلائنٹ سائیڈ روٹنگ |
 
 ## گائیڈز
@@ -172,9 +173,9 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### ٹولنگ اور مدد
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [دیو ٹول بار](guides/devtools.md) | `nexy dev` کا ٹول بار استعمال کریں، اور اسے آف کریں۔ |
+| [دیو ٹول بار](guides/devtools.md) | ٹول بار کا استعمال کریں `nexy dev`، اور اسے بند کر دیں۔ |
 | [ڈیبگنگ](guides/debugging.md) | اپنے سرور کوڈ میں `breakpoint()` یا VS کوڈ کے ساتھ رکیں۔ |
-| [کوڈنگ ایجنٹ](guides/ai-agents.md) | اپنے پروجیکٹ کے قواعد Claude Code، Codex اور OpenCode کو بتائیں |
+| [کوڈنگ ایجنٹ](guides/ai-agents.md) | اپنے پروجیکٹ کے قواعد Claude Code، Codex اور OpenCode بتائیں |
 | [خرابیوں کا سراغ لگانا](guides/troubleshooting.md) | لوگوں کے پہلے مسائل کو حل کریں۔ |
 
 ## ڈیٹا بیس
@@ -199,9 +200,9 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### Python فریم ورک {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [سے FastAPI](coming-from/fastapi.md) | اپنا FastAPI کوڈ رکھیں: صرف `@app.get` فائل بن جاتی ہے۔ |
+| [منجانب FastAPI](coming-from/fastapi.md) | اپنا FastAPI کوڈ رکھیں: صرف `@app.get` فائل بن جاتی ہے۔ |
 | [سے Flask](coming-from/flask.md) | نظارے، بلیو پرنٹس، ٹیمپلیٹس اور فارمز کو Nexy روٹس میں تبدیل کریں۔ |
-| [سے Django](coming-from/django.md) | نقشہ کے نظارے، ٹیمپلیٹس، ماڈل، فارم اور ترتیبات Nexy پر |
+| [منجانب Django](coming-from/django.md) | نقشہ کے نظارے، ٹیمپلیٹس، ماڈل، فارم اور ترتیبات Nexy پر |
 
 ### JavaScript پسدید {fbr}
 | صفحہ | آپ کیا کریں گے |
@@ -209,23 +210,23 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | [ایکسپریس سے ](coming-from/express.md) | روٹس، مڈل ویئر اور `req`/`res` کو Python ہینڈلرز میں ترجمہ کریں |
 | [فاسٹائف ](coming-from/fastify.md) سے | اسکیموں، پلگ انز اور ہکس کو ماڈلز، فولڈرز اور فائلوں میں تبدیل کریں۔ |
 | [ایلیسیا سے](coming-from/elysia.md) | نقشہ `t` اسکیماس، گارڈز اور ایڈن سے Pydantic اور ٹائپ کردہ اعمال |
-| [ہونو سے ](coming-from/hono.md) | نقشے کے راستے، مڈل ویئر اور `hc` کلائنٹ کو Nexy تک |
+| [ہونو سے ](coming-from/hono.md) | نقشے کے راستوں، مڈل ویئر اور `hc` کلائنٹ کو Nexy تک |
 
 ### فل اسٹیک فریم ورک {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [سے Next.js](coming-from/nextjs.md) | اپنے React صفحات رکھیں اور سرور کوڈ کو Python پر منتقل کریں۔ |
-| [سے Remix](coming-from/remix.md) | لوڈرز اور ایکشن کو Python ہینڈلرز اور ایکشنز میں تبدیل کریں۔ |
+| [سے Next.js](coming-from/nextjs.md) | اپنے React صفحات کو رکھیں اور سرور کوڈ کو Python پر منتقل کریں۔ |
+| [سے Remix](coming-from/remix.md) | لوڈرز اور اعمال کو Python ہینڈلرز اور ایکشنز میں تبدیل کریں۔ |
 | [Nuxt ](coming-from/nuxt.md) سے | اپنے Vue صفحات کو رکھیں اور `server/` کو Python پر منتقل کریں۔ |
-| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات کو رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
+| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
 | [سے Astro](coming-from/astro.md) | اسی جزیرے کے ساتھ Astro صفحات کو `.nexy` صفحات کے طور پر لکھیں |
-| [لاراویل سے ](coming-from/laravel.md) | نقشے کے راستے، کنٹرولرز، بلیڈ، فصاحت اور Nexy کے لیے قطاریں۔ |
+| [لاراویل سے ](coming-from/laravel.md) | نقشے کے راستوں، کنٹرولرز، بلیڈ، فصاحت اور Nexy کے لیے قطاریں۔ |
 | [روبی آن ریلز سے ](coming-from/rails.md) | نقشے کے راستے، کنٹرولرز، ERB، ایکٹو ریکارڈ اور Nexy کے لیے نوکریاں |
 
 ### کنٹرولر فریم ورک {modular}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [سے NestJS](coming-from/nestjs.md) | کنٹرولرز، ماڈیولز، فراہم کنندگان اور گارڈز کو ماڈیولر راؤٹر میں منتقل کریں۔ |
+| [منجانب NestJS](coming-from/nestjs.md) | کنٹرولرز، ماڈیولز، پرووائیڈرز اور گارڈز کو ماڈیولر راؤٹر میں منتقل کریں۔ |
 | [اسپرنگ بوٹ سے ](coming-from/spring-boot.md) | کنٹرولرز، سروسز اور فلٹرز کو ماڈیولر روٹر میں منتقل کریں۔ |
 
 ## حوالہ
@@ -251,7 +252,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | صفحہ | آپ کیا کریں گے |
 |---|---|
 | [لغت ](reference/glossary.md) | الفاظ جو یہ دستاویزات استعمال کرتے ہیں۔ |
-| [سیکورٹی](reference/security.md) | ورژن فرش، قواعد Nexy کی پیروی کرتا ہے، آڈٹ |
+| [سلامتی](reference/security.md) | ورژن فرش، قواعد Nexy کی پیروی کرتا ہے، آڈٹ |
 
 ## لے آؤٹ
 ```text

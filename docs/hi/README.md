@@ -74,16 +74,17 @@
 | [वंशानुक्रम](routing/fbr/inheritance.md) | लेआउट, निर्भरता और त्रुटि पृष्ठों का रिज़ॉल्यूशन क्रम पढ़ें |
 | [सर्वर मोड और क्लाइंट मोड](routing/fbr/modes.md) | `useCSR`, और प्रत्येक मोड क्या अनुमति देता है |
 | [लिंक करना और नेविगेट करना](routing/fbr/navigation/linking-and-navigating.md) | पेज लिंक करें, क्लाइंट पर नेविगेट करें, प्रीफ़ेच करें |
+| [पेज ट्रांज़िशन कैसे काम करता है](routing/fbr/navigation/page-transitions.md) | ब्राउज़र के व्यू ट्रांज़िशन एपीआई के साथ क्लाइंट नेविगेशन को एनिमेट करें |
 | [हुक्स](routing/fbr/navigation/hooks.md) | पथ, क्वेरी, कुकीज़ और सत्र पढ़ें |
 
 ### हैंडलर और त्रुटियाँ {fbr}
 | पेज | तुम क्या करोगे |
 |---|---|
 | [मार्ग संचालक](routing/fbr/handlers/README.md) | एक Python समापन बिंदु जोड़ें |
-| [सत्यापन और त्रुटियाँ](routing/fbr/handlers/validation-and-errors.md) | `422` और `404` का उत्तर दें, और एक `HTTPException` बढ़ाएँ |
+| [सत्यापन और त्रुटियाँ](routing/fbr/handlers/validation-and-errors.md) | `422` और `404` का उत्तर दें, और एक `HTTPException` उठाएँ |
 | [WebSocket संचालक](routing/fbr/realtime/websocket.md) | `SOCKET` कनेक्शन संभालें |
 | [निर्भरताएँ और रक्षक](routing/fbr/dependencies/README.md) | हैंडलर से पहले `dependencies.py` चलाएँ और उसे इनहेरिट करें |
-| [मिडलवेयर फ़ाइलें](routing/fbr/middleware/README.md) | `middleware.py` के साथ अनुरोध लपेटें, जो निर्देशिका द्वारा विरासत में मिला है |
+| [मिडलवेयर फ़ाइलें](routing/fbr/middleware/README.md) | अनुरोधों को `middleware.py` के साथ लपेटें, जो निर्देशिका द्वारा विरासत में मिला है |
 | [त्रुटि पृष्ठ](routing/fbr/errors/README.md) | `notfound.nexy`, `errors.nexy` और JSON त्रुटियों के साथ उत्तर दें |
 | [प्रति फ़ोल्डर त्रुटि पृष्ठ](routing/fbr/errors/folder-pages.md) | एज केस: उप-फ़ोल्डर्स से त्रुटियाँ |
 
@@ -291,7 +292,7 @@ docs/
 
 | पेज | तुम क्या करोगे |
 |---|---|
-| [नेक्सी कैसे काम करती है](getting-started/how-nexy-works.md) | देखें कि फ़ाइल और पृष्ठ के बीच क्या होता है, और नेक्सी आपके लिए क्या छोड़ता है |
+| [नेक्सी कैसे काम करती है](getting-started/how-nexy-works.md) | देखें कि फ़ाइल और पेज के बीच क्या होता है, और नेक्सी आपके लिए क्या छोड़ता है |
 | [2.2 में अपग्रेड किया जा रहा है](getting-started/upgrading.md) | 2.1 से 2.2 पर माइग्रेट करें |
 | [अंतर्राष्ट्रीयकरण (i18n)](guides/i18n.md) | अपनी पसंद की लाइब्रेरी से अनुवाद जोड़ें |
 | [रेसिपी](guides/recipes.md) | उदाहरण और पैटर्न, ट्यूटोरियल नहीं |
