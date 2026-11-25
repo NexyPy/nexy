@@ -73,5 +73,25 @@ class TestImage:
         assert responsive["sizes"] == "100vw" and responsive["srcset"].startswith("/a.png 1x")
 
 
+class TestBasePath:
+    def test_a_route_gets_the_prefix(self, seen):
+        assert seen["base"]["route"] == "/app/about"
+
+    def test_the_root_gets_the_prefix(self, seen):
+        assert seen["base"]["root"] == "/app/"
+
+    def test_an_already_prefixed_route_is_not_prefixed_twice(self, seen):
+        assert seen["base"]["twice"] == "/app/about"
+
+    def test_an_external_url_is_left_alone(self, seen):
+        assert seen["base"]["external"] == "https://example.com/a"
+
+    def test_a_fragment_is_left_alone(self, seen):
+        assert seen["base"]["anchor"] == "#top"
+
+    def test_a_protocol_relative_url_is_left_alone(self, seen):
+        assert seen["base"]["protocolless"] == "//example.com/a"
+
+
 def test_style_objects_become_css_text(seen):
     assert seen["css"] == {"camel": "max-width:100%;object-fit:cover", "empty": ""}

@@ -1,5 +1,5 @@
 // The pure helpers every adapter shares (nexy/modules/frontend/client/shared.ts).
-import { cssText, imageAttributes, isActive, pathOf } from "../../nexy/modules/frontend/client/shared.ts";
+import { cssText, imageAttributes, isActive, pathOf, withBaseHref } from "../../nexy/modules/frontend/client/shared.ts";
 
 const out = {
   paths: ["/", "/about", "/about/", "/about?x=1#top", "", "/a/b//"].map(pathOf),
@@ -21,6 +21,14 @@ const out = {
     fill: imageAttributes({ src: "/a.png", alt: "", fill: true, width: 10, height: 10 }),
     explicitLoading: imageAttributes({ src: "/a.png", alt: "", loading: "eager" }),
     responsive: imageAttributes({ src: "/a.png", alt: "", sizes: "100vw", srcSet: "/a.png 1x, /b.png 2x" }),
+  },
+  base: {
+    route: withBaseHref("/about", "/app"),
+    root: withBaseHref("/", "/app"),
+    twice: withBaseHref("/app/about", "/app"),
+    external: withBaseHref("https://example.com/a", "/app"),
+    anchor: withBaseHref("#top", "/app"),
+    protocolless: withBaseHref("//example.com/a", "/app"),
   },
   css: {
     camel: cssText({ maxWidth: "100%", objectFit: "cover" }),
