@@ -214,6 +214,22 @@ async def _echo(connection: ServerConnection) -> None:
         pass
 
 
+def test_proxy_forwards_the_public_prefix_to_vite() -> None:
+    middleware = ViteProxyMiddleware(_FakeApp(), port=3000, base_path="/app")
+    assert (
+        middleware._upstream_url(_http_scope("/@vite/client"))
+        == "http://127.0.0.1:3000/app/@vite/client"
+    )
+
+
+def test_proxy_forwards_the_public_prefix_to_the_socket() -> None:
+    middleware = ViteProxyMiddleware(_FakeApp(), port=3000, base_path="/app")
+    assert (
+        middleware._upstream_websocket_url(_websocket_scope(path="/_nexy/hmr"))
+        == "ws://127.0.0.1:3000/app/_nexy/hmr"
+    )
+
+
 @pytest.mark.parametrize(
     "path",
     [
