@@ -10,13 +10,13 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import type { ViteDevServer } from 'vite'
 
-type Mode = { csr: boolean; framework: string }
+type Mode = { csr: boolean; framework: string; basePath?: string }
 
 export function readMode(): Mode {
   try {
     return JSON.parse(fs.readFileSync(path.resolve(process.cwd(), '__nexy__/mode.auto.json'), 'utf8'))
   } catch {
-    return { csr: false, framework: '' }
+    return { csr: false, framework: '', basePath: '' }
   }
 }
 

@@ -1,6 +1,7 @@
 type CompMod = { default: unknown }
 type Importer = () => Promise<CompMod>
 type Importers = Record<string, Importer>
+import { BASE_PATH } from '@nexy/base-path.auto.ts';
 import { __NEXY_KEYS } from '@nexy/keys.auto.ts';
 import { NEXY_ROUTES, type NexyRoute } from '@nexy/routes.client.auto.ts';
 import { createRouter } from '@nexy/router.ts';
@@ -69,6 +70,7 @@ async function renderRoute(file: string, params: Record<string, string>, layouts
   }
 }
 const router = createRouter({
+  basePath: BASE_PATH,
   match: (pathname: string) => {
     const { route, params } = matchRoute(pathname);
     return route ? { file: route.file, layouts: route.layouts || [], params } : null;

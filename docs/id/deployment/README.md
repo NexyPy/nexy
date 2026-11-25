@@ -51,10 +51,28 @@ nx start --host 127.0.0.1 --port 8000
 
 Pastikan proxy meneruskan WebSocket peningkatan jika Anda menggunakan penangan `SOCKET`, dan meneruskan host asli - FastAPI membuat URL absolut darinya.
 
+### Sajikan di bawah sub-jalur
+
+Tetapkan `useBasePath` ketika aplikasi diterbitkan dengan awalan, bukan akar domain:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useBasePath = "/app"
+```
+
+Setiap jawaban publik kemudian berada di bawah `/app`: halaman, navigasi klien, aset, tindakan server, dokumentasi API, peta situs, dan pemeriksaan kesehatan. Permintaan untuk `/` menjawab 404. Nexy menerima `app/`, `/app/` dan `/app` sebagai pengaturan yang sama dan menormalkannya ke `/app`.
+
+File rute menyimpan jalur relatif root. Laman yang disajikan di `/app/about` tetap `src/routes/about.tsx` atau `about.nexy`, dan jalur internal tetap `/about`. Nexy menambahkan awalan hanya ke URL yang ditulis ke browser.
+
+Konfigurasikan proxy untuk meneruskan awalan tanpa perubahan, misalnya `/app/...` ke `http://127.0.0.1:8000/app/...`. WebSocket peningkatan memerlukan awalan yang sama. Nexy menghapusnya setelah permintaan tiba, jadi tidak diperlukan aturan penulisan ulang.
+
 ## Pemeriksaan kesehatan
 
 <!-- router:fbr,custom -->
-Tambahkan file pengendali, `src/routes/api/health.py`, dan selidiki `/api/health` - daripada halaman yang mungkin dirender dengan lambat:
+Tambahkan file handler, `src/routes/api/health.py`, dan selidiki `/api/health` - daripada halaman yang mungkin dirender dengan lambat:
 
 ```python filename="src/routes/api/health.py"
 async def GET():

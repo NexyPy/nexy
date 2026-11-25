@@ -18,7 +18,7 @@ const match = (pathname) => {
 // Every window opened, closed before the process exits.
 const windows = [];
 
-function world({ url = "http://localhost/", render } = {}) {
+function world({ url = "http://localhost/", render, basePath } = {}) {
   const dom = new JSDOM(`<!DOCTYPE html><body><main id="m"></main><h2 id="section">S</h2></body>`, {
     url,
     pretendToBeVisual: true,
@@ -59,6 +59,7 @@ function world({ url = "http://localhost/", render } = {}) {
   const router = createRouter({
     match,
     win,
+    basePath,
     render: render ?? (async (m) => void rendered.push(m.file)),
     prefetch: (m) => prefetched.push(m.file),
   });
@@ -320,6 +321,21 @@ const out = {};
   const blockedOk = await w.router.navigate("/");
   blocked();
   out.hold = { freeOk, guardedOk, blockedOk };
+}
+
+// 17. Under `useBasePath`, matching is prefix-free and history writes carry the prefix.
+{
+  const w = world({ url: "http://localhost/app/about", basePath: "/app" });
+  const initial = w.router.getLocation().pathname;
+  const ok = await w.router.navigate("/");
+  out.basePath = {
+    initial,
+    ok,
+    path: w.real.location.pathname,
+    local: w.router.getLocation().pathname,
+    rendered: w.rendered,
+    events: w.events,
+  };
 }
 
 for (const window of windows) window.close();

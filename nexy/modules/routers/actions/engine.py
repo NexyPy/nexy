@@ -14,6 +14,7 @@ from nexy.modules.routers.actions.endpoint import make_endpoint
 from nexy.modules.routers.actions.spec import ActionSpec, build_spec
 from nexy.modules.routers.actions.store import ACTIONS_STORE
 from nexy.modules.routers.actions.typescript import Declarations, ts_type
+from nexy.modules.routers.base_path import public_url
 
 # The router imports the route files and reports the ones that fail: not reported twice.
 _ROUTES = Config.ROUTER_PATH.replace("/", ".") + "."
@@ -96,8 +97,9 @@ class ActionEngine:
         declarations: Declarations = {}
         lines = []
         for spec in self.specs():
-            url = ACTIONS_STORE.path_map.get(spec.func_id) or (
-                f"/_nx_{ACTIONS_STORE._generate_hash(spec.func_id)}"
+            url = public_url(
+                ACTIONS_STORE.path_map.get(spec.func_id)
+                or f"/_nx_{ACTIONS_STORE._generate_hash(spec.func_id)}"
             )
             lines.append(
                 f"export const {spec.name} = defineAction<{self._input(spec, declarations)}, "

@@ -33,6 +33,7 @@ import {
   linkClass,
   onceVisible,
   warnMissingAlt,
+  withBaseHref,
   type ImageProps,
   type Prefetch
 } from './shared.ts'
@@ -180,7 +181,7 @@ export function Link(props: LinkProps): JSX.Element {
         anchor = element
         own.ref?.(element)
       }}
-      href={own.href}
+      href={withBaseHref(own.href)}
       class={linkClass(own.class, isActive(location().pathname, own.href, own.exact), own.activeClassName)}
       aria-current={isActive(location().pathname, own.href, true) ? 'page' : undefined}
       data-nexy-link="true"

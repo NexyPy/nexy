@@ -6,6 +6,8 @@ from html import escape
 from fastapi import Response
 from fastapi.responses import HTMLResponse
 
+from nexy.modules.routers.base_path import public_url
+
 
 @dataclass(frozen=True)
 class NexyCompileError(Exception):
@@ -73,7 +75,7 @@ a:hover{{opacity:.85}}
 <span class="code">{code}</span>
 <h1>{title}</h1>
 <p>{message}</p>
-{reference}<a href="/">Back to home</a>
+{reference}<a href="{home}">Back to home</a>
 </main>
 </body>
 </html>
@@ -100,7 +102,11 @@ def error_page(
     """
     ref = f'<p class="ref">Reference: {escape(reference)}</p>' if reference else ""
     body = _PAGE.format(
-        code=status_code, title=escape(title), message=escape(message), reference=ref
+        code=status_code,
+        title=escape(title),
+        message=escape(message),
+        reference=ref,
+        home=public_url("/"),
     )
     return HTMLResponse(content=body, status_code=status_code)
 

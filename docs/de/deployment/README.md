@@ -51,6 +51,24 @@ nx start --host 127.0.0.1 --port 8000
 
 Stellen Sie sicher, dass der Proxy WebSocket Upgrades weiterleitet, wenn Sie `SOCKET`-Handler verwenden, und dass er den ursprünglichen Host weiterleitet – FastAPI erstellt daraus absolute URLs.
 
+### Unter einem Unterpfad servieren
+
+Legen Sie `useBasePath` fest, wenn die Anwendung unter einem Präfix statt unter dem Domänenstamm veröffentlicht wird:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useBasePath = "/app"
+```
+
+Jede öffentliche Antwort lebt dann unter `/app`: Seiten, Client-Navigation, Assets, Serveraktionen, API-Dokumentation, Sitemap und Gesundheitsprüfungen. Eine Anfrage nach `/` antwortet mit 404. Nexy akzeptiert `app/`, `/app/` und `/app` als dieselbe Einstellung und normalisiert sie auf `/app`.
+
+Routendateien behalten Root-relative Pfade bei. Eine Seite, die unter `/app/about` bereitgestellt wird, ist immer noch `src/routes/about.tsx` oder `about.nexy`, und interne Pfade bleiben `/about`. Nexy fügt das Präfix nur URLs hinzu, die in den Browser geschrieben werden.
+
+Konfigurieren Sie den Proxy so, dass er das Präfix unverändert weiterleitet, zum Beispiel `/app/...` an `http://127.0.0.1:8000/app/...`. WebSocket Upgrades benötigen das gleiche Präfix. Nexy entfernt es, nachdem die Anfrage eingegangen ist, sodass keine Umschreiberegel erforderlich ist.
+
 ## Gesundheitscheck
 
 <!-- router:fbr,custom -->
@@ -148,7 +166,7 @@ Jede Seite ist HTML, aber Nexy geht von einem Server für das Routing und für A
 
 ## Checkliste
 
-- [ ] `nx build` in CI keine Warnungen für Routen, die voraussichtlich auf dem Server gerendert werden
+- [ ] `nx build` in CI keine Warnungen für Routen, von denen Sie erwarten, dass sie auf dem Server gerendert werden
 - [ ] `nx start` wird mit Code 1 beendet und startet nichts, wenn eine Routendatei nicht geladen werden kann
 - [ ] `NEXY_ACTION_SECRET` gesetzt oder `__nexy__/action.key` mit dem Build beibehalten
 - [ ] `useDocs` bleibt bei `"dev"`, daher dient die Produktion weder `/docs` noch `/openapi.json`

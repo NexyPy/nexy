@@ -26,6 +26,7 @@ from nexy.helpers.server.health import HealthMiddleware
 from nexy.helpers.server.security_headers import SecurityHeadersMiddleware
 from nexy.modules.routers.actions.engine import ACTION_ENGINE
 from nexy.modules.routers.actions.store import ACTIONS_STORE
+from nexy.modules.routers.base_path import BasePathMiddleware, normalize_base_path, public_url
 from nexy.modules.routers.crash import handle_crash, is_dev
 from nexy.modules.routers.error_handlers import (
     handle_http_exception,
@@ -92,6 +93,12 @@ def _add_access_log(server: FastAPI) -> None:
     server.add_middleware(AccessLogMiddleware, quiet=quiet, names=ACTIONS_STORE.name_of)
 
 
+def _with_base_path(app: ASGIApp) -> ASGIApp:
+    """Refuse paths outside the prefix before anything else sees them."""
+    base = normalize_base_path(Config().useBasePath)
+    return BasePathMiddleware(app, base) if base else app
+
+
 class AppServer:
     """Assembles the FastAPI application from config, routers, middleware and routes."""
 
@@ -111,8 +118,8 @@ class AppServer:
     async def scalar_html(self) -> HTMLResponse:
         openapi_url: str | None = self.server.openapi_url if self.server else None
         return get_scalar_api_reference(
-            scalar_favicon_url="/favicon.ico",
-            openapi_url=openapi_url,
+            scalar_favicon_url=public_url("/favicon.ico"),
+            openapi_url=public_url(openapi_url) if openapi_url else None,
             title="Nexy - scalar API",
             telemetry=True,
             dark_mode=True,
@@ -202,7 +209,7 @@ class AppServer:
         # is only used when no OpenTelemetry SDK can be listening.
         if not _otel_sdk_installed():
             install_fast_path(server.router)
-        return self._with_vite_proxy(server)
+        return _with_base_path(self._with_vite_proxy(server))
 
     @staticmethod
     def _with_vite_proxy(server: FastAPI) -> ASGIApp:
@@ -218,7 +225,8 @@ class AppServer:
         # Imported here: httpx and websockets cost a production worker 70 ms and 8 MB for nothing.
         from nexy.helpers.server.proxy import ViteProxyMiddleware
 
-        return ViteProxyMiddleware(server, port=port)
+        base = normalize_base_path(Config().useBasePath)
+        return ViteProxyMiddleware(server, port=port, base_path=base)
 
 
 def create_app() -> ASGIApp:

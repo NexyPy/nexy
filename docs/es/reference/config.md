@@ -27,6 +27,7 @@ class NexyConfig(NexyConfigModel):
 | `useSiteUrl` | `None` | el origen público del sitio, como `"https://example.com"`; una vez colocada, Nexy sirve a `/sitemap.xml` y `/robots.txt`. Consulte [Mapa del sitio y robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | procesa `nx start` ejecuciones; `0` es uno por CPU en Linux y macOS, uno en Windows |
 | `useCSR` | `False` | modo de enrutamiento del lado del cliente; `.nexy` rutas están deshabilitadas |
+| `useBasePath` | `None` | prefijo público para toda la aplicación, como `"/app"`; las solicitudes fuera de él responden 404, y los enlaces generados, las rutas de clientes, las llamadas a la acción y los activos llevan el prefijo. Consulte [Implementar](../deployment/README.md#serve-under-a-sub-path) |
 
 ## Base de datos
 
@@ -38,7 +39,7 @@ class NexyConfig(NexyConfigModel):
 
 | campo | Predeterminado | Significado |
 |---|---|---|
-| `useRouter` | `None` | una instancia o clase `APIRouter` montada junto a las rutas basadas en archivos; `None` significa basado únicamente en archivos |
+| `useRouter` | `None` | una `APIRouter` instancia o clase montada junto a las rutas basadas en archivos; `None` significa basado únicamente en archivos |
 | `excludeDirs` | `["templates", "extension", "docs"]` | directorios omitidos al escanear rutas |
 | `useAliases` | `None` | importar alias, p. `{"@": "src"}` (`@/components/Counter.tsx` significa `src/components/Counter.tsx`); `nx new` escribe el que elegiste, y Vite y `tsconfig.json` lo siguen |
 
@@ -46,7 +47,7 @@ class NexyConfig(NexyConfigModel):
 
 | campo | Predeterminado | Significado |
 |---|---|---|
-| `useFF` | `None` | fábrica de marcos de clientes: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
+| `useFF` | `None` | fábrica de marco de cliente: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
 | `useVite` | `True` | crear y servir paquetes de clientes con Vite |
 | `useMarkdownExtensions` | `[]` | extensiones adicionales para el renderizado `.md`/`.mdx` |
 | `useWatchExtensions` | `None` | extensiones adicionales que observa el servidor de desarrollo |
@@ -96,7 +97,7 @@ O apáguelo con `useDocs = False`, que también deja de servir `/openapi.json`. 
 |---|---|---|
 | `useMiddlewares` | `[]` | Clases de middleware ASGI |
 | `useCORS` | `None` | kwargs por `CORSMiddleware` |
-| `useGZip` | `None` | kwargs por `GZipMiddleware` |
+| `useGZip` | `None` | kwargs para `GZipMiddleware` |
 | `useTrustedHost` | `None` | kwargs para `TrustedHostMiddleware` |
 | `useSession` | `None` | kwargs para `SessionMiddleware` |
 | `useAuth` | `None` | configuración del middleware de autenticación |

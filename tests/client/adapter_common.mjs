@@ -10,12 +10,14 @@ const SOURCES = new URL("../../nexy/modules/frontend/client/", import.meta.url);
 const STAGE = new URL("./.generated/adapters/", import.meta.url);
 
 /** Copy an adapter next to router.ts and shared.ts as the generated project does (client.<ext>). */
-export function stage(framework, adapter, extras = []) {
+export function stage(framework, adapter, extras = [], base = '') {
   const dir = new URL(`${framework}/`, STAGE);
   fs.mkdirSync(dir, { recursive: true });
   const copy = (from, to) => fs.copyFileSync(new URL(from, SOURCES), new URL(to, dir));
   copy("router.ts", "router.ts");
   copy("shared.ts", "shared.ts");
+  copy("base-path.auto.ts", "base-path.auto.ts");
+  if (base) fs.writeFileSync(new URL("base-path.auto.ts", dir), `export const BASE_PATH = '${base}'\n`);
   copy("actions.ts", "action-runtime.ts");
   copy("fetch.ts", "fetch-runtime.ts");
   copy(adapter, `client${path.extname(adapter)}`);

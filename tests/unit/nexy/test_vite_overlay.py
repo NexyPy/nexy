@@ -69,3 +69,11 @@ class TestViteTagsAreSameOrigin:
     @pytest.mark.usefixtures("dev_project")
     def test_no_hardcoded_localhost(self):
         assert "localhost" not in Vite()
+
+    def test_the_client_tags_carry_the_prefix(self, nexy_project, tmp_path: Path) -> None:
+        nexy_project('useVite = True\nuseBasePath = "/app"')
+        (tmp_path / "vite.config.ts").write_text(MINIMAL_VITE_CONFIG, encoding="utf-8")
+
+        markup = Vite()
+
+        assert 'src="/app/@vite/client"' in markup and 'src="/app/__nexy__/main.ts"' in markup

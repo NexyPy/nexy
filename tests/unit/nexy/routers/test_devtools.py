@@ -59,6 +59,13 @@ class TestMarkup:
     def test_the_style_does_not_apply_to_the_page(self):
         assert 'id="nexy-devtools-css" media="not all"' in toolbar_markup("1", {}).decode()
 
+    def test_the_state_request_carries_the_prefix(self, monkeypatch):
+        from nexy.core.config import Config
+
+        monkeypatch.setattr(Config, "useBasePath", "/app")
+
+        assert "fetch('/app/_nexy/devtools/state')" in toolbar_markup("1", {}).decode()
+
 
 class TestMiddleware:
     def test_an_html_page_gets_the_toolbar(self):

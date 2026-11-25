@@ -14,6 +14,10 @@ def test_the_glob_covers_every_navigable_extension():
     assert f"'/src/**/*.{navigable_glob()}'" in runtime_source()
 
 
+def test_the_router_receives_the_generated_base_path():
+    assert "basePath: BASE_PATH" in runtime_source()
+
+
 def test_the_extension_list_is_the_constant():
     listed = ", ".join(f"'{ext}'" for ext in NAVIGABLE_EXTS)
     assert f"const NAVIGABLE_EXTS = [{listed}];" in runtime_source()

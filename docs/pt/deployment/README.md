@@ -51,6 +51,24 @@ nx start --host 127.0.0.1 --port 8000
 
 Certifique-se de que o proxy encaminhe WebSocket atualizações se você usar manipuladores `SOCKET` e que ele encaminhe o host original - FastAPI cria URLs absolutos a partir dele.
 
+### Servir sob um subcaminho
+
+Defina `useBasePath` quando o aplicativo for publicado sob um prefixo em vez da raiz do domínio:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useBasePath = "/app"
+```
+
+Cada resposta pública fica em `/app`: páginas, navegação do cliente, ativos, ações do servidor, documentação da API, mapa do site e sondagens de integridade. Uma solicitação para `/` responde 404. Nexy aceita `app/`, `/app/` e `/app` como a mesma configuração e normaliza-a para `/app`.
+
+Os arquivos de rota mantêm caminhos relativos à raiz. Uma página servida em `/app/about` ainda é `src/routes/about.tsx` ou `about.nexy`, e os caminhos internos permanecem `/about`. Nexy adiciona o prefixo apenas aos URLs gravados no navegador.
+
+Configure o proxy para encaminhar o prefixo inalterado, por exemplo `/app/...` para `http://127.0.0.1:8000/app/...`. WebSocket atualizações precisam do mesmo prefixo. Nexy o remove após a chegada da solicitação, portanto, nenhuma regra de reescrita é necessária.
+
 ## Verificação de saúde
 
 <!-- router:fbr,custom -->
@@ -101,7 +119,7 @@ Nexy garante que ambos os endpoints fiquem fora do log de acesso e do esquema Op
 
 Nexy garante que ambos os endpoints respondam antes de `useTrustedHost` e `useHTTPSRedirect`, portanto, uma investigação enviada por HTTP para o endereço de um pod não é recusada.
 
-Por convenção, você mantém suas próprias rotas desativadas `/health/live` e `/health/ready` enquanto `useHealth` está ativado: os pontos finais do Nexy respondem primeiro. `useHealth` é `False` por padrão, portanto, um projeto que não o define mantém os dois caminhos.
+Por convenção, você mantém suas próprias rotas desativadas `/health/live` e `/health/ready` enquanto `useHealth` está ativado: os pontos finais do Nexy respondem primeiro. `useHealth` é `False` por padrão, então um projeto que não o define mantém os dois caminhos.
 
 Sua aplicação é responsável por verificar do que depende: `/health/ready` relata o ciclo de vida do servidor, não o estado de um banco de dados.
 

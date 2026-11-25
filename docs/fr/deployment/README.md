@@ -51,6 +51,24 @@ nx start --host 127.0.0.1 --port 8000
 
 Assurez-vous que le proxy transfère les mises à niveau de WebSocket si vous utilisez les gestionnaires `SOCKET` et qu'il transfère l'hôte d'origine - FastAPI crée des URL absolues à partir de celui-ci.
 
+### Servir sous un sous-chemin
+
+Définissez `useBasePath` lorsque l'application est publiée sous un préfixe au lieu de la racine du domaine :
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useBasePath = "/app"
+```
+
+Chaque réponse publique réside ensuite sous `/app` : pages, navigation client, actifs, actions du serveur, documentation API, plan du site et sondes d'intégrité. Une demande pour `/` répond à 404. Nexy accepte `app/`, `/app/` et `/app` comme le même paramètre et le normalise à `/app`.
+
+Les fichiers de route conservent les chemins relatifs à la racine. Une page servie à `/app/about` est toujours `src/routes/about.tsx` ou `about.nexy`, et les chemins internes restent `/about`. Nexy ajoute le préfixe uniquement aux URL écrites dans le navigateur.
+
+Configurez le proxy pour transférer le préfixe inchangé, par exemple `/app/...` vers `http://127.0.0.1:8000/app/...`. Les mises à niveau WebSocket nécessitent le même préfixe. Nexy le supprime après l'arrivée de la demande, aucune règle de réécriture n'est donc nécessaire.
+
 ## Bilan de santé
 
 <!-- router:fbr,custom -->

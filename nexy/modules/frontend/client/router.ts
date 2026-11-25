@@ -48,6 +48,37 @@ export type RouterOptions = {
   prefetch?: (match: RouteMatch) => unknown
   /** The window to drive. Default: the global one. */
   win?: Window & typeof globalThis
+  /** Public prefix from `useBasePath`; internal paths stay prefix-free. */
+  basePath?: string
+}
+
+/** Accept `/app/`, `app` and `/` as one prefix, always stored as `/app`. */
+export function normalizeBase(base: string | undefined): string {
+  const parts = (base ?? '').split('/').filter(Boolean)
+  return parts.length ? '/' + parts.join('/') : ''
+}
+
+/** The path internal code sees: the public prefix removed. */
+export function stripBase(pathname: string, base: string): string {
+  if (!base) return pathname
+  if (pathname === base) return '/'
+  if (pathname.startsWith(base + '/')) return pathname.slice(base.length) || '/'
+  return pathname
+}
+
+/** The path the browser sees: the public prefix added. */
+export function withBase(pathname: string, base: string): string {
+  if (!base || !pathname.startsWith('/') || pathname.startsWith('//')) return pathname
+  if (pathname === '/' || pathname === base) return base + '/'
+  if (pathname.startsWith(base + '/')) return pathname
+  return base + pathname
+}
+
+function withBaseUrl(url: URL, base: string): URL {
+  if (!base) return url
+  const next = new URL(url.href)
+  next.pathname = withBase(url.pathname, base)
+  return next
 }
 
 // `index` numbers the entries this router wrote, so a blocked back or forward knows how to return.
@@ -77,6 +108,7 @@ export function searchParamsOf(search: string): Record<string, string> {
 
 export function createRouter(options: RouterOptions) {
   const win = options.win ?? (window as Window & typeof globalThis)
+  const base = normalizeBase(options.basePath)
   const listeners = new Set<() => void>()
   const prefetched = new Set<string>()
   const blockers = new Set<Blocker>()
@@ -93,7 +125,8 @@ export function createRouter(options: RouterOptions) {
   const transitionListeners = new Set<() => void>()
 
   function read(): RouterLocation {
-    const { pathname, search, hash } = win.location
+    const { search, hash } = win.location
+    const pathname = stripBase(win.location.pathname, base)
     return { pathname, search, hash, params: options.match(pathname)?.params ?? {} }
   }
 
@@ -120,13 +153,15 @@ export function createRouter(options: RouterOptions) {
   /** Add (or replace) the history entry of `url`, numbered after the current one. */
   function write(url: URL, replace: boolean | undefined): void {
     const at = replace ? index : index + 1
-    win.history[replace ? 'replaceState' : 'pushState']({ nexy: true, index: at }, '', url.href)
+    const target = withBaseUrl(url, base)
+    win.history[replace ? 'replaceState' : 'pushState']({ nexy: true, index: at }, '', target.href)
     index = at
   }
 
   function locationOf(url: URL): RouterLocation {
-    const params = options.match(url.pathname)?.params ?? {}
-    return { pathname: url.pathname, search: url.search, hash: url.hash, params }
+    const pathname = stripBase(url.pathname, base)
+    const params = options.match(pathname)?.params ?? {}
+    return { pathname, search: url.search, hash: url.hash, params }
   }
 
   /** Ask every blocker: a string (the reason), or a promise of one, refuses the move. */
@@ -183,29 +218,33 @@ export function createRouter(options: RouterOptions) {
 
   /** Show `url` without touching history; resolves false when the server has to take over. */
   async function show(url: URL, id: number): Promise<boolean> {
-    const match = options.match(url.pathname)
+    const target = withBaseUrl(url, base)
+    const match = options.match(stripBase(url.pathname, base))
     if (!match) {
-      win.location.assign(url.href)
+      win.location.assign(target.href)
       return false
     }
     try {
       await transition(() => options.render(match))
     } catch (error) {
       console.error('[Nexy] Client navigation failed:', error)
-      if (id === navigation) win.location.assign(url.href)
+      if (id === navigation) win.location.assign(target.href)
       return false
     }
     return id === navigation
   }
 
   async function navigate(href: string, opts: NavigateOptions = {}): Promise<boolean> {
-    const url = parse(win, href)
-    if (!url || url.origin !== win.location.origin) {
-      if (url) win.location.assign(url.href)
+    const parsed = parse(win, href)
+    if (!parsed || parsed.origin !== win.location.origin) {
+      if (parsed) win.location.assign(parsed.href)
       return false
     }
+    const url = withBaseUrl(parsed, base)
     const current = win.location
-    const samePage = url.pathname === current.pathname && url.search === current.search
+    const samePage =
+      stripBase(url.pathname, base) === stripBase(current.pathname, base) &&
+      url.search === current.search
     if (samePage && url.hash === current.hash) return true
 
     const next = locationOf(url)
@@ -239,7 +278,7 @@ export function createRouter(options: RouterOptions) {
   async function restore(): Promise<void> {
     const url = new URL(win.location.href)
     const state = win.history.state as Partial<HistoryState> | null
-    const samePage = url.pathname === location.pathname && url.search === location.search
+    const samePage = stripBase(url.pathname, base) === location.pathname && url.search === location.search
     if (samePage) {
       commit(read())
       scrollAfter(url.hash, true, state?.scroll)
@@ -255,7 +294,7 @@ export function createRouter(options: RouterOptions) {
   function prefetch(href: string): void {
     const url = parse(win, href)
     if (!url || url.origin !== win.location.origin) return
-    const match = options.match(url.pathname)
+    const match = options.match(stripBase(url.pathname, base))
     if (!match || prefetched.has(match.file)) return
     prefetched.add(match.file)
     const warming = options.prefetch?.(match)
@@ -274,7 +313,7 @@ export function createRouter(options: RouterOptions) {
     if (!href || href.startsWith('#')) return false
     const url = parse(win, href)
     if (!url || url.origin !== win.location.origin) return false
-    return options.match(url.pathname) !== null
+    return options.match(stripBase(url.pathname, base)) !== null
   }
 
   function onClick(event: MouseEvent): void {
@@ -358,7 +397,7 @@ export function createRouter(options: RouterOptions) {
     shouldIntercept,
     /** Match `pathname` against the routes, without subscribing. */
     matchPath(pathname: string): RouteMatchInfo {
-      const match = options.match(pathname) ?? null
+      const match = options.match(stripBase(pathname, base)) ?? null
       return { match, found: match !== null }
     },
     /** Register a blocker that can abort a client navigation. Returns an unsubscribe function. */

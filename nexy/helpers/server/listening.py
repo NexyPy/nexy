@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
 from nexy.modules.i18n import t
+from nexy.modules.routers.base_path import public_url
 
 _LOOPBACK = ("127.0.0.1", "localhost")
 _ALL_INTERFACES = "0.0.0.0"  # nosec B104 - compared with, never bound to
@@ -33,7 +34,7 @@ class Endpoint:
 def served_docs_path(use_docs: bool | str, docs_url: str, *, dev: bool) -> str | None:
     """Where the API reference answers under this command; `useDocs = "dev"` serves it in dev."""
     served = dev if use_docs == "dev" else bool(use_docs)
-    return docs_url if served else None
+    return public_url(docs_url) if served else None
 
 
 def print_listening(

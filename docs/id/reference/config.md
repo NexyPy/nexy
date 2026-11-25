@@ -27,6 +27,7 @@ class NexyConfig(NexyConfigModel):
 | `useSiteUrl` | `None` | asal mula situs tersebut, seperti `"https://example.com"`; setelah diatur, Nexy melakukan servis `/sitemap.xml` dan `/robots.txt`. Lihat [Peta Situs dan robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | proses `nx start` berjalan; `0` adalah satu per CPU di Linux dan macOS, satu di Windows |
 | `useCSR` | `False` | mode perutean sisi klien; `.nexy` rute dinonaktifkan |
+| `useBasePath` | `None` | awalan publik untuk keseluruhan aplikasi, seperti `"/app"`; permintaan di luarnya menjawab 404, dan tautan yang dihasilkan, rute klien, panggilan tindakan, dan aset membawa awalan. Lihat [Menerapkan](../deployment/README.md#serve-under-a-sub-path) |
 
 ## Basis data
 
@@ -40,7 +41,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useRouter` | `None` | sebuah instance atau kelas `APIRouter` yang dipasang di sebelah rute berbasis file; `None` berarti hanya berbasis file |
 | `excludeDirs` | `["templates", "extension", "docs"]` | direktori dilewati saat memindai rute |
-| `useAliases` | `None` | alias impor, mis. `{"@": "src"}` (`@/components/Counter.tsx` berarti `src/components/Counter.tsx`); `nx new` tulis yang Anda pilih, dan Vite dan `tsconfig.json` mengikutinya |
+| `useAliases` | `None` | alias impor, mis. `{"@": "src"}` (`@/components/Counter.tsx` berarti `src/components/Counter.tsx`); `nx new` tulis yang Anda pilih, dan Vite dan `tsconfig.json` ikuti |
 
 ## Bagian depan
 
@@ -107,7 +108,7 @@ Atau matikan dengan `useDocs = False`, yang juga berhenti ditayangkan `/openapi.
 | Bidang | Bawaan | Artinya |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | tingkat judul yang disertakan dalam daftar isi |
-| `useTocTitle` | `"Table of Contents"` | Judul TOC |
+| `useTocTitle` | `"Table of Contents"` | Judul Daftar Isi |
 | `useTocAuto` | `True` | menghasilkan daftar isi untuk Markdown halaman |
 
 ## Rute di luar pohon file
