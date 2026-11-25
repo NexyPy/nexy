@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [Unreleased]
 
+### Fixed
+
+- **`npx tsc --noEmit` passes on a new project.** Generated TypeScript under `__nexy__` carries a
+  `// @ts-nocheck` header, so the starter's strict settings no longer report errors in files Nexy
+  wrote (#546).
+
 ## [2.11.1] - 2026-11-24
 
 ### Fixed
