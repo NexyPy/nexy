@@ -1,0 +1,1 @@
+"""Build-time responsive images."""
