@@ -17,6 +17,10 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
+from PIL import Image as PillowImage
+
+from nexy.modules.images.generator import prepare_images, write_image_files
+from nexy.modules.images.manifest import write_image_typescript
 
 FIXTURE_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "client_router"
 
@@ -154,6 +158,24 @@ def _prepare(project: Path, base_path: str = "") -> None:
     (project / "src" / "actions.py").write_text(ACTION_SOURCE, encoding="utf-8")
     css = project / "src" / "globale.css"
     css.write_text(css.read_text(encoding="utf-8") + BASE_CSS, encoding="utf-8")
+    _add_responsive_image(project)
+
+
+def _add_responsive_image(project: Path) -> None:
+    """Give the prefixed stack one local image with two generated widths."""
+    (project / "public").mkdir(exist_ok=True)
+    PillowImage.new("RGB", (800, 400), "blue").save(project / "public" / "logo.png")
+    route = project / "src" / "routes" / "index.tsx"
+    source = route.read_text(encoding="utf-8")
+    source = "import { Image } from '@nexy/client'\n\n" + source
+    source = source.replace(
+        "    </main>",
+        '      <Image data-testid="home-image" src="/logo.png" alt="Logo" />\n    </main>',
+    )
+    route.write_text(source, encoding="utf-8")
+    build = prepare_images(project, widths=[320, 640])
+    write_image_files(build, project)
+    write_image_typescript(build.manifest, project)
 
 
 def _serve(project: Path, base_path: str = "") -> Iterator[DevStack]:
