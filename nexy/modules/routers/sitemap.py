@@ -11,6 +11,9 @@ from fastapi.responses import HTMLResponse, PlainTextResponse, Response
 from fastapi.routing import APIRoute
 from starlette.routing import BaseRoute
 
+from nexy.core.config import Config
+from nexy.modules.routers.base_path import normalize_base_path
+
 SITEMAP_NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9"
 
 
@@ -54,15 +57,16 @@ def setup_sitemap(server: FastAPI, site_url: str) -> None:
     The sitemap reads the routes on each request, so it lists every page the application has.
     A file in `public/` is served before any route, so it wins too.
     """
+    base = normalize_base_path(Config().useBasePath)
     if not _taken(server, "/sitemap.xml"):
 
         @server.get("/sitemap.xml", include_in_schema=False)
         def sitemap() -> Response:
-            body = sitemap_xml(site_url, page_paths(server.routes))
-            return Response(body, media_type="application/xml")
+            paths = [base + path for path in page_paths(server.routes)]
+            return Response(sitemap_xml(site_url, paths), media_type="application/xml")
 
     if not _taken(server, "/robots.txt"):
 
         @server.get("/robots.txt", include_in_schema=False)
         def robots() -> Response:
-            return PlainTextResponse(robots_txt(site_url))
+            return PlainTextResponse(robots_txt(site_url + base))

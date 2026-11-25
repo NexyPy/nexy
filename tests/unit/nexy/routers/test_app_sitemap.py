@@ -22,6 +22,18 @@ def test_the_sitemap_lists_a_page_of_the_project(nexy_project):
     assert "<loc>https://example.com/about</loc>" in _client(nexy_project).get("/sitemap.xml").text
 
 
+def test_the_sitemap_uses_the_base_path(nexy_project):
+    attrs = 'useSiteUrl = "https://example.com"\nuseBasePath = "/app"'
+    client = _client(nexy_project, attrs)
+    assert "<loc>https://example.com/app/about</loc>" in client.get("/app/sitemap.xml").text
+
+
+def test_robots_txt_points_at_the_prefixed_sitemap(nexy_project):
+    attrs = 'useSiteUrl = "https://example.com"\nuseBasePath = "/app"'
+    client = _client(nexy_project, attrs)
+    assert "Sitemap: https://example.com/app/sitemap.xml" in client.get("/app/robots.txt").text
+
+
 def test_the_sitemap_leaves_an_api_route_out(nexy_project):
     assert "/api/users" not in _client(nexy_project).get("/sitemap.xml").text
 
