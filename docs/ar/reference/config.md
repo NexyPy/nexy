@@ -27,12 +27,13 @@ class NexyConfig(NexyConfigModel):
 | `useSiteUrl` | `None` | الأصل العام للموقع، مثل `"https://example.com"`؛ بمجرد ضبطه، يخدم Nexy `/sitemap.xml` و `/robots.txt`. راجع [خريطة الموقع وملف robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | تشغيل العمليات `nx start`؛ `0` هو واحد لكل وحدة معالجة مركزية على Linux وmacOS، وواحد على Windows |
 | `useCSR` | `False` | وضع التوجيه من جانب العميل؛ `.nexy` الطرق معطلة |
+| `useBasePath` | `None` | البادئة العامة للتطبيق بأكمله، مثل `"/app"`؛ الطلبات خارجها تجيب على 404، والروابط التي تم إنشاؤها ومسارات العميل ونداءات الإجراء والأصول تحمل البادئة. راجع [نشر](../deployment/README.md#serve-under-a-sub-path) |
 
 ## قاعدة البيانات
 
 | الميدان | الافتراضي | معنى |
 |---|---|---|
-| `useORM` | `None` | ORM للمشروع: `"SQLModel"`، `"SQLAlchemy"` أو `"Tortoise-ORM"`. `nx new` يكتبه، ويلتقط `nx migrate` منه Alembic أو Aerich منه؛ بدونه، `nx migrate` يأخذ أول ORM مثبتًا. انظر [قواعد البيانات](../guides/databases.md#migrations) |
+| `useORM` | `None` | ORM للمشروع: `"SQLModel"`، `"SQLAlchemy"` أو `"Tortoise-ORM"`. `nx new` يكتبه، و `nx migrate` ينتقي منه Alembic أو Aerich منه؛ بدونه، `nx migrate` يأخذ أول ORM مثبتًا. انظر [قواعد البيانات](../guides/databases.md#migrations) |
 
 ## الطرق
 
@@ -76,7 +77,7 @@ class NexyConfig(NexyConfigModel):
 | `useRedocsUrl` | `"/redocs"` | تم الإعلان عنه ولكن لم يتم تثبيت أي طريق |
 | `useTitle` | `"Nexy App"` | OpenAPI العنوان وعنوان الصفحة (`"Nexy"` في `NexyConfigModel`) |
 
-### `/docs` مجانا لصفحة من المشروع
+### مجاناً `/docs` لصفحة من المشروع
 
 يجيب مرجع واجهة برمجة التطبيقات (API) على `/docs` قبل أي مسار، لذلك لا يتم عرض `src/routes/docs.nexy` أو `src/routes/docs/[[...slug]].nexy` هناك أبدًا. `nx dev` و `nx start` قم بتسمية هذه الصفحة عند بدء التشغيل. انقل المرجع بـ `useDocsUrl`:
 

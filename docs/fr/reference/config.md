@@ -27,12 +27,13 @@ class NexyConfig(NexyConfigModel):
 | `useSiteUrl` | `None` | l'origine publique du site, telle que `"https://example.com"` ; une fois réglé, Nexy sert `/sitemap.xml` et `/robots.txt`. Voir [Plan du site et robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | traite `nx start` exécutions ; `0` est un par processeur sous Linux et macOS, un sous Windows |
 | `useCSR` | `False` | mode de routage côté client ; `.nexy` les itinéraires sont désactivés |
+| `useBasePath` | `None` | préfixe public pour l'ensemble de l'application, tel que `"/app"` ; les requêtes en dehors de celui-ci répondent 404, et les liens générés, les itinéraires clients, les appels à l'action et les actifs portent le préfixe. Voir [Déployer](../deployment/README.md#serve-under-a-sub-path) |
 
 ## Base de données
 
 | Champ | Par défaut | Signification |
 |---|---|---|
-| `useORM` | `None` | l'ORM du projet : `"SQLModel"`, `"SQLAlchemy"` ou `"Tortoise-ORM"`. `nx new` l'écrit et `nx migrate` en choisit Alembic ou Aerich ; sans cela, `nx migrate` prend le premier ORM installé. Voir [Bases de données](../guides/databases.md#migrations) |
+| `useORM` | `None` | l'ORM du projet : `"SQLModel"`, `"SQLAlchemy"` ou `"Tortoise-ORM"`. `nx new` l'écrit et `nx migrate` en sélectionne Alembic ou Aerich ; sans cela, `nx migrate` prend le premier ORM installé. Voir [Bases de données](../guides/databases.md#migrations) |
 
 ## Itinéraires
 
