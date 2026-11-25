@@ -312,7 +312,7 @@ def test_terminate_sends_sigkill_when_the_owner_holds_on(monkeypatch):
     monkeypatch.setattr(port_owner, "owner_pid", lambda _port: 42)
     monkeypatch.setattr(port_owner.os, "kill", lambda pid, sig: called.append((pid, sig)))
     port_owner._terminate(42, 3000)
-    assert called == [(42, signal.SIGTERM), (42, signal.SIGKILL)]
+    assert called == [(42, signal.SIGTERM), (42, port_owner._SIGKILL)]
 
 
 def test_terminate_ignores_a_process_that_is_gone(monkeypatch):

@@ -27,6 +27,7 @@ _AF_INET = 2
 _TCP_TABLE_OWNER_PID_LISTENER = 3
 _INSUFFICIENT_BUFFER = 122
 _PROCESS_TERMINATE = 0x0001
+_SIGKILL = getattr(signal, "SIGKILL", 9)
 _KILL_GRACE = 0.1
 _PROC_TCP_FILES = ("/proc/net/tcp", "/proc/net/tcp6")
 _PROC_ROOT = "/proc"
@@ -188,7 +189,7 @@ def _terminate(pid: int, port: int) -> None:
         os.kill(pid, signal.SIGTERM)
     if _still_listening(pid, port):
         with contextlib.suppress(ProcessLookupError, PermissionError):
-            os.kill(pid, signal.SIGKILL)
+            os.kill(pid, _SIGKILL)
 
 
 class OccupiedPort:
