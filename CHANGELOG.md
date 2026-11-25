@@ -5,11 +5,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [Unreleased]
 
+## [2.11.2] - 2026-11-25
+
 ### Fixed
 
+- **`useBasePath` serves the whole application under a prefix such as `/app`.** Requests outside the
+  prefix answer 404, while generated HTML, links, images, actions, sitemap, API docs, Vite assets,
+  HMR and dev tools use prefixed public URLs. The client router matches prefix-free paths and writes
+  prefixed URLs to browser history, and React, Preact, Vue, Solid and Svelte links carry the prefix
+  (#468).
 - **`npx tsc --noEmit` passes on a new project.** Generated TypeScript under `__nexy__` carries a
   `// @ts-nocheck` header, so the starter's strict settings no longer report errors in files Nexy
   wrote (#546).
+
+### Documentation
+
+- **The config reference and deployment guide explain serving under a sub-path** (#468).
 
 ## [2.11.1] - 2026-11-24
 
