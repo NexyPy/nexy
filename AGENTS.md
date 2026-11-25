@@ -107,6 +107,9 @@ uv pip install -e . --group dev
 ## Conventions
 
 - **Branches**: `feature/*`, `fix/*`, `docs/*`, `perf/*`
+- **Pull requests**: every PR names one issue on its own line with `Closes #N`, `Fixes #N` or
+  `Resolves #N`. The `Issue link` check rejects a description without that line, and a bot closes
+  the linked issues when the PR is merged.
 - **Commits**: Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `perf:`, `test:`, `chore:`)
 - **One commit, one unit** - a function, a logic, or a structure, never two at once:
   - *a function*: the function, its test and its doc line;
