@@ -126,6 +126,8 @@ revalidate("/users")    # that page, if it is the one open
 
 La respuesta lleva las rutas en un encabezado `x-nexy-revalidate`. Luego, el cliente vuelve a buscar la página actual a través del enrutador o la recarga cuando no hay ningún enrutador cliente.
 
+En el servidor, la misma llamada elimina esas rutas del [almacenamiento ISR](../rendering/isr.md#choose-a-store) configurado. Sin ningún argumento, se elimina la ruta de la página de referencia; sin un referente, `/` se elimina. Se ignora un error en la tienda, por lo que la acción aún se realiza correctamente. El encabezado sigue siendo la instrucción del navegador: Nexy no purga una CDN delante de la aplicación.
+
 ## Formularios sin JavaScript
 
 Una acción también toma un formato HTML estándar, por lo que la página funciona antes de que se cargue cualquier script:
@@ -148,7 +150,7 @@ Una acción lee campos, no archivos: la entrada de un archivo llega como una cad
 ## Seguridad
 
 ### La oscuridad del camino no es autorización.
-La ruta de acción es `/_nx_` seguida de un hash del módulo de la función, su nombre y un secreto del proyecto. Lo establece `NEXY_ACTION_SECRET`, o lo guarda en `__nexy__/action.key`, que `nx build` crea para que el paquete del cliente y `nx start` acuerden: conservar ese archivo con la compilación. La ruta oculta el punto final del descubrimiento casual y **la ruta generada no es un mecanismo de autorización**.
+La ruta de acción es `/_nx_` seguida de un hash del módulo de la función, su nombre y un secreto del proyecto. Lo establece `NEXY_ACTION_SECRET`, o lo guarda en `__nexy__/action.key`, lo cual `nx build` crea para que el paquete del cliente y `nx start` acuerden: conservar ese archivo con la compilación. La ruta oculta el punto final del descubrimiento casual y **la ruta generada no es un mecanismo de autorización**.
 
 Cualquiera que conozca el camino puede iniciar la acción. Tú **debes** verificar la identidad y los permisos del usuario dentro de la acción:
 ```python

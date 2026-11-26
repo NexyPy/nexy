@@ -130,6 +130,8 @@ revalidate("/users")    # that page, if it is the one open
 
 The answer carries the paths in an `x-nexy-revalidate` header. The client then re-fetches the current page through the router, or reloads it when there is no client router.
 
+On the server, the same call removes those paths from the configured [ISR store](../rendering/isr.md#choose-a-store). With no argument, the path of the referring page is purged; without a referer, `/` is purged. A store failure is ignored, so the action still succeeds. The header remains the browser instruction: Nexy does not purge a CDN in front of the application.
+
 ## Forms without JavaScript
 
 An action also takes a standard HTML form, so the page works before any script loads:

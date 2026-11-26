@@ -1,6 +1,6 @@
 # Tindakan
 
-Sebuah `@Action` mengubah fungsi Python menjadi titik akhir `POST`. Berbeda dengan pengendali API standar, ia dirancang sebagai jembatan komunikasi yang diketik: Nexy secara otomatis menghasilkan klien TypeScript, memvalidasi masukan, dan menangani respons.
+Sebuah `@Action` mengubah fungsi Python menjadi titik akhir `POST`. Tidak seperti pengendali API standar, ia dirancang sebagai jembatan komunikasi yang diketik: Nexy secara otomatis menghasilkan klien TypeScript, memvalidasi masukan, dan menangani respons.
 
 **Sebelum Anda memulai:** proyek yang dibuat oleh [Mulai cepat](../getting-started/quick-start.md). Tindakan ada di sebelah halaman, di `src/actions/`.
 
@@ -126,6 +126,8 @@ revalidate("/users")    # that page, if it is the one open
 
 Jawabannya membawa jalur dalam header `x-nexy-revalidate`. Klien kemudian mengambil kembali halaman saat ini melalui router, atau memuat ulang ketika tidak ada router klien.
 
+Di server, panggilan yang sama menghapus jalur tersebut dari [penyimpanan ISR](../rendering/isr.md#choose-a-store) yang dikonfigurasi. Tanpa argumen, jalur halaman rujukan akan dihapus; tanpa referensi, `/` dihapus. Kegagalan penyimpanan diabaikan, sehingga tindakan tetap berhasil. Header tetap menjadi instruksi browser: Nexy tidak membersihkan CDN di depan aplikasi.
+
 ## Formulir tanpa JavaScript
 
 Suatu tindakan juga mengambil bentuk HTML standar, sehingga halaman berfungsi sebelum skrip apa pun dimuat:
@@ -139,7 +141,7 @@ Suatu tindakan juga mengambil bentuk HTML standar, sehingga halaman berfungsi se
 
 Dalam templat `.nexy`, `__actions_path["name"]` adalah jalurnya, `__actions["name"]` adalah fungsinya, dan fungsi tersebut juga berada dalam cakupan dengan namanya sendiri.
 
-Jika berhasil, pengunjung akan dikirim kembali ke halaman tempat formulir berada, dengan status `303`. Untuk menjawab berbeda, kembalikan objek `Response` (misalnya, `RedirectResponse("/done", status_code=303)`).
+Jika berhasil, pengunjung akan dikirim kembali ke halaman tempat formulir berada, dengan status `303`. Untuk menjawab secara berbeda, kembalikan objek `Response` (misalnya, `RedirectResponse("/done", status_code=303)`).
 
 Formulir yang dikirim sebagai `application/x-www-form-urlencoded`, yang dilakukan browser secara default, tidak memerlukan paket tambahan. Tambahkan `enctype="multipart/form-data"` dan panggilan memerlukan `python-multipart`: tanpanya tindakan akan menjawab `500` dengan pesan yang menyebutkan perintah, `uv add python-multipart`.
 
@@ -160,7 +162,7 @@ async def delete_user(user_id: str, request: Request):
 ```
 
 ### Perlindungan asal
-Untuk mencegah Pemalsuan Permintaan Lintas Situs (CSRF), Nexy menolak permintaan yang `Origin` merupakan situs lain atau yang ditandai oleh browser `Sec-Fetch-Site: cross-site` dengan `403`. Cantumkan situs yang mungkin menyerukan tindakan Anda di `NEXY_ALLOWED_ORIGINS`. Panggilan tanpa `Origin` (seperti `curl`) diterima.
+Untuk mencegah Pemalsuan Permintaan Lintas Situs (CSRF), Nexy menolak permintaan yang `Origin` merupakan situs lain atau yang ditandai oleh browser `Sec-Fetch-Site: cross-site` dengan `403`. Cantumkan situs yang mungkin memerlukan tindakan Anda di `NEXY_ALLOWED_ORIGINS`. Panggilan tanpa `Origin` (seperti `curl`) diterima.
 
 ## Kesalahan impor
 
