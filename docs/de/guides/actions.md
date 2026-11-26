@@ -113,7 +113,7 @@ Eine Aktion kann in verschiedenen Phasen fehlschlagen. Sie sollten in Ihrer Benu
 4.  **Netzwerkfehler**: Die Anfrage hat den Server nie erreicht, z. B. eine Zeitüberschreitung oder ein Verbindungsverlust.
 5.  **Autorisierungsfehler (401, 403)**: Ihr eigener Scheck hat den Anrufer abgelehnt. Nexy entscheidet dies nicht für Sie.
 
-Bei der unten beschriebenen Ursprungsprüfung handelt es sich um einen CSRF-Schutz, nicht um eine Autorisierung: Sie sagt aus, woher der Anruf kam, niemals, wer ihn tätigen darf.
+Bei der unten beschriebenen Herkunftsprüfung handelt es sich um einen CSRF-Schutz, nicht um eine Autorisierung: Sie sagt aus, woher der Anruf kam, niemals, wer ihn tätigen darf.
 
 ## Aktualisieren Sie die Seite nach einer Aktion
 
@@ -125,6 +125,8 @@ revalidate("/users")    # that page, if it is the one open
 ```
 
 Die Antwort trägt die Pfade in einem `x-nexy-revalidate`-Header. Der Client ruft dann die aktuelle Seite erneut über den Router ab oder lädt sie neu, wenn kein Client-Router vorhanden ist.
+
+Auf dem Server entfernt derselbe Aufruf diese Pfade aus dem konfigurierten [ISR-Speicher](../rendering/isr.md#choose-a-store). Ohne Argument wird der Pfad der verweisenden Seite gelöscht; Ohne Referrer wird `/` gelöscht. Ein Speicherfehler wird ignoriert, sodass die Aktion trotzdem erfolgreich ist. Der Header bleibt die Browseranweisung: Nexy löscht kein CDN vor der Anwendung.
 
 ## Formulare ohne JavaScript
 
@@ -148,7 +150,7 @@ Eine Aktion liest Felder, keine Dateien: Eine Dateieingabe erreicht sie als Zeic
 ## Sicherheit
 
 ### Pfadunklarheit ist keine Autorisierung
-Der Aktionspfad ist `/_nx_`, gefolgt von einem Hash des Funktionsmoduls, seinem Namen und einem Geheimnis des Projekts. Es wird von `NEXY_ACTION_SECRET` festgelegt oder in `__nexy__/action.key` gespeichert, das `nx build` erstellt, sodass das Client-Bundle und `nx start` zustimmen: Behalten Sie diese Datei beim Build. Der Pfad verbirgt den Endpunkt vor zufälliger Entdeckung und **der generierte Pfad ist kein Autorisierungsmechanismus**.
+Der Aktionspfad ist `/_nx_`, gefolgt von einem Hash des Funktionsmoduls, seinem Namen und einem Geheimnis des Projekts. Es wird von `NEXY_ACTION_SECRET` festgelegt oder in `__nexy__/action.key` gespeichert, das `nx build` erstellt, sodass das Client-Bundle und `nx start` vereinbaren: Behalten Sie diese Datei beim Build. Der Pfad verbirgt den Endpunkt vor zufälliger Entdeckung und **der generierte Pfad ist kein Autorisierungsmechanismus**.
 
 Jeder, der den Weg kennt, kann die Aktion aufrufen. Sie **müssen** die Identität und Berechtigungen des Benutzers innerhalb der Aktion überprüfen:
 ```python

@@ -29,6 +29,7 @@ class NexyConfig(NexyConfigModel):
 | `useCSR` | `False` | modo de roteamento do lado do cliente; `.nexy` rotas estão desativadas |
 | `useBasePath` | `None` | prefixo público para todo o aplicativo, como `"/app"`; solicitações fora dele respondem 404, e links gerados, rotas de clientes, chamadas de ação e ativos carregam o prefixo. Consulte [Implantar](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | larguras de pixels `nx build` geradas para imagens locais; a conversão precisa de `Pillow`, e sem ela as imagens mantêm sua URL original. Veja [Imagem](../routing/fbr/navigation/linking-and-navigating.md#image) |
+| `useISRCache` | `None` | Armazenamento ISR: `None` ou `"memory"` para um processo, `"file"` para um host, `"redis"` para vários trabalhadores, um mapeamento com `type` e opções, ou um objeto com `get`, `set` e `invalidate`. Veja [ISR](../rendering/isr.md#choose-a-store) |
 
 ## Banco de dados
 

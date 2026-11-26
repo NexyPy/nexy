@@ -15,7 +15,7 @@ class TestRevalidateCache:
 
         cache.set("/route", "html", revalidate=10)
 
-        assert cache.get("/route") == "html"
+        assert cache.get("/route").value == "html"
         assert cache.is_stale("/route") is False
 
     def test_ignores_routes_without_revalidate_window(self) -> None:
@@ -42,8 +42,8 @@ class TestRevalidateCache:
         cache.set("/c", "c", revalidate=10)  # evicts the oldest entry
 
         assert cache.get("/a") is None
-        assert cache.get("/b") == "b"
-        assert cache.get("/c") == "c"
+        assert cache.get("/b").value == "b"
+        assert cache.get("/c").value == "c"
 
 
 class TestAssembledApp:

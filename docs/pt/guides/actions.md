@@ -126,6 +126,8 @@ revalidate("/users")    # that page, if it is the one open
 
 A resposta carrega os caminhos em um cabeçalho `x-nexy-revalidate`. O cliente então busca novamente a página atual através do roteador ou a recarrega quando não há nenhum roteador cliente.
 
+No servidor, a mesma chamada remove esses caminhos do [armazenamento ISR](../rendering/isr.md#choose-a-store) configurado. Sem discussão, o caminho da página de referência é eliminado; sem um referenciador, `/` é eliminado. Uma falha de armazenamento é ignorada, portanto a ação ainda é bem-sucedida. O cabeçalho continua sendo a instrução do navegador: Nexy não limpa um CDN na frente do aplicativo.
+
 ## Formulários sem JavaScript
 
 Uma ação também assume um formato HTML padrão, para que a página funcione antes de qualquer script ser carregado:

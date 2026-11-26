@@ -29,6 +29,7 @@ class NexyConfig(NexyConfigModel):
 | `useCSR` | `False` | mode de routage côté client ; `.nexy` les itinéraires sont désactivés |
 | `useBasePath` | `None` | préfixe public pour l'ensemble de l'application, tel que `"/app"` ; les requêtes en dehors de celui-ci répondent 404, et les liens générés, les itinéraires clients, les appels à l'action et les actifs portent le préfixe. Voir [Déployer](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | les largeurs de pixels `nx build` génèrent pour les images locales ; la conversion nécessite `Pillow`, et sans cela, les images conservent leur URL d'origine. Voir [Image](../routing/fbr/navigation/linking-and-navigating.md#image) |
+| `useISRCache` | `None` | Magasin ISR : `None` ou `"memory"` pour un processus, `"file"` pour un hôte, `"redis"` pour plusieurs Workers, un mappage avec `type` et des options, ou un objet avec `get`, `set` et `invalidate`. Voir [ISR](../rendering/isr.md#choose-a-store) |
 
 ## Base de données
 
@@ -40,7 +41,7 @@ class NexyConfig(NexyConfigModel):
 
 | Champ | Par défaut | Signification |
 |---|---|---|
-| `useRouter` | `None` | une instance ou une classe `APIRouter` montée à côté des routes basées sur des fichiers ; `None` signifie basé sur un fichier uniquement |
+| `useRouter` | `None` | une `APIRouter` instance ou classe montée à côté des routes basées sur des fichiers ; `None` signifie basé sur un fichier uniquement |
 | `excludeDirs` | `["templates", "extension", "docs"]` | répertoires ignorés lors de l'analyse des itinéraires |
 | `useAliases` | `None` | importer des alias, par ex. `{"@": "src"}` (`@/components/Counter.tsx` signifie `src/components/Counter.tsx`) ; `nx new` écrit celui que vous avez choisi, et Vite et `tsconfig.json` le suivent |
 

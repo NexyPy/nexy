@@ -12,10 +12,10 @@ def render(response):
 
 @pytest.fixture
 def clock(monkeypatch):
-    """Moves time forward without waiting: the cache reads time.monotonic()."""
-    start = time.monotonic()
+    """Moves time forward without waiting: the stores read time.time()."""
+    start = time.time()
     offset = [0.0]
-    monkeypatch.setattr(time, "monotonic", lambda: start + offset[0])
+    monkeypatch.setattr(time, "time", lambda: start + offset[0])
     return offset
 
 

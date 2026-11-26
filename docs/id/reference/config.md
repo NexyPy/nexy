@@ -27,8 +27,9 @@ class NexyConfig(NexyConfigModel):
 | `useSiteUrl` | `None` | asal mula situs tersebut, seperti `"https://example.com"`; setelah diatur, Nexy melakukan servis `/sitemap.xml` dan `/robots.txt`. Lihat [Peta Situs dan robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | proses `nx start` berjalan; `0` adalah satu per CPU di Linux dan macOS, satu di Windows |
 | `useCSR` | `False` | mode perutean sisi klien; `.nexy` rute dinonaktifkan |
-| `useBasePath` | `None` | awalan publik untuk seluruh aplikasi, seperti `"/app"`; permintaan di luarnya menjawab 404, dan tautan yang dihasilkan, rute klien, panggilan tindakan, dan aset membawa awalan. Lihat [Menerapkan](../deployment/README.md#serve-under-a-sub-path) |
+| `useBasePath` | `None` | awalan publik untuk keseluruhan aplikasi, seperti `"/app"`; permintaan di luarnya menjawab 404, dan tautan yang dihasilkan, rute klien, panggilan tindakan, dan aset membawa awalan. Lihat [Menerapkan](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | lebar piksel `nx build` yang dihasilkan untuk gambar lokal; konversi memerlukan `Pillow`, dan tanpa itu gambar tetap menggunakan URL aslinya. Lihat [Gambar](../routing/fbr/navigation/linking-and-navigating.md#image) |
+| `useISRCache` | `None` | Penyimpanan ISR: `None` atau `"memory"` untuk satu proses, `"file"` untuk satu host, `"redis"` untuk beberapa pekerja, pemetaan dengan `type` dan opsi, atau objek dengan `get`, `set` dan `invalidate`. Lihat [ISR](../rendering/isr.md#choose-a-store) |
 
 ## Basis data
 

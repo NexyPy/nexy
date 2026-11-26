@@ -126,6 +126,8 @@ revalidate("/users")    # that page, if it is the one open
 
 La réponse comporte les chemins dans un en-tête `x-nexy-revalidate`. Le client récupère ensuite la page actuelle via le routeur ou la recharge lorsqu'il n'y a pas de routeur client.
 
+Sur le serveur, le même appel supprime ces chemins du [magasin ISR](../rendering/isr.md#choose-a-store) configuré. Sans argument, le chemin de la page référente est purgé ; sans référent, `/` est purgé. Un échec de magasin est ignoré, donc l’action réussit toujours. L'en-tête reste l'instruction du navigateur : Nexy ne purge pas un CDN devant l'application.
+
 ## Formulaires sans JavaScript
 
 Une action prend également une forme HTML standard, de sorte que la page fonctionne avant le chargement de tout script :
@@ -141,9 +143,9 @@ Dans un modèle `.nexy`, `__actions_path["name"]` est le chemin, `__actions["nam
 
 En cas de succès, le visiteur est renvoyé vers la page sur laquelle se trouvait le formulaire, avec le statut `303`. Pour répondre différemment, renvoyez un objet `Response` (par exemple, `RedirectResponse("/done", status_code=303)`).
 
-Un formulaire envoyé en `application/x-www-form-urlencoded`, ce que fait un navigateur par défaut, ne demande aucun paquet supplémentaire. Ajoutez `enctype="multipart/form-data"` et l'appel a besoin de `python-multipart` : sans lui, l'action répond `500` avec un message qui nomme la commande, `uv add python-multipart`.
+Un formulaire envoyé sous la forme `application/x-www-form-urlencoded`, ce que fait un navigateur par défaut, ne nécessite aucun package supplémentaire. Ajoutez `enctype="multipart/form-data"` et l'appel a besoin de `python-multipart` : sans cela, l'action répond à `500` avec un message nommant la commande, `uv add python-multipart`.
 
-Une action lit des champs, pas des fichiers : un champ fichier lui parvient sous forme de chaîne. Pour recevoir un envoi de fichier, écrivez une route dans `src/routes/api/` avec un paramètre `File` ou `UploadFile`.
+Une action lit les champs, pas les fichiers : une entrée de fichier y atteint sous forme de chaîne. Pour recevoir un téléchargement, écrivez une route dans `src/routes/api/` avec un paramètre `File` ou `UploadFile`.
 
 ## Sécurité
 

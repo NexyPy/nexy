@@ -198,6 +198,9 @@ class NexyConfigModel:
     useBasePath: str | None = None
     # Widths, in pixels, of the responsive variants `nx build` writes for local images.
     useImageWidths: list[int] | None = None
+    # ISR store: None or "memory" for this process, "file" for one host, "redis" for several
+    # workers, a mapping with "type" and its options, or an object with get/set/invalidate.
+    useISRCache: Any = None
     # The public origin of the site, such as "https://example.com": the sitemap writes its URLs
     # with it, and /sitemap.xml and /robots.txt are served only once it is set.
     useSiteUrl: str | None = None

@@ -126,7 +126,9 @@ revalidate("/users")    # that page, if it is the one open
 
 答案在 `x-nexy-revalidate` 标头中携带路径。然后客户端通过路由器重新获取当前页面，或者在没有客户端路由器时重新加载当前页面。
 
-## 没有 JavaScript 的表格
+在服务器上，相同的调用会从配置的 [ISR 存储 ](../rendering/isr.md#choose-a-store) 中删除这些路径。如果没有参数，引用页面的路径将被清除；如果没有引用，`/` 就会被清除。存储故障将被忽略，因此操作仍然会成功。标头仍然是浏览器指令：Nexy 不会清除应用程序前面的 CDN。
+
+## 不带 JavaScript 的表格
 
 操作也采用标准 HTML 表单，因此页面在加载任何脚本之前即可运行：
 
@@ -143,12 +145,12 @@ revalidate("/users")    # that page, if it is the one open
 
 作为 `application/x-www-form-urlencoded` 发送的表单（这是浏览器默认执行的操作）不需要额外的包。添加 `enctype="multipart/form-data"` 并且调用需要 `python-multipart`：如果没有它，操作会回答 `500`，并带有一条命名命令 `uv add python-multipart` 的消息。
 
-操作读取字段，而不是文件：文件输入作为字符串到达​​它。要接收上传，请在 `src/routes/api/` 中使用 `File` 或 `UploadFile` 参数编写路由。
+操作读取字段，而不是文件：文件输入以字符串形式到达它。要接收上传，请在 `src/routes/api/` 中使用 `File` 或 `UploadFile` 参数编写路由。
 
 ## 安全
 
 ### 路径模糊不等于授权
-操作路径是 `/_nx_`，后跟函数模块的哈希值、其名称和项目的秘密。它由 `NEXY_ACTION_SECRET` 设置，或保存在 `__nexy__/action.key` 中，由 `nx build` 创建，因此客户端捆绑包和 `nx start` 同意：将该文件与构建一起保留。该路径隐藏端点以防止偶然发现，并且 **生成的路径不是授权机制**。
+操作路径是 `/_nx_`，后跟函数模块的哈希值、其名称和项目的秘密。它由 `NEXY_ACTION_SECRET` 设置，或保存在 `__nexy__/action.key` 中，由 `nx build` 创建，因此客户端包和 `nx start` 同意：将该文件与构建一起保留。该路径隐藏端点以防止偶然发现，并且 **生成的路径不是授权机制**。
 
 任何知道路径的人都可以调用该操作。您 **必须** 在操作中验证用户的身份和权限：
 ```python
@@ -160,11 +162,11 @@ async def delete_user(user_id: str, request: Request):
 ```
 
 ### 原产地保护
-为了防止跨站点请求伪造 (CSRF)，Nexy 拒绝 `Origin` 是另一个站点或浏览器用 `403` 标记 `Sec-Fetch-Site: cross-site` 的请求。在 `NEXY_ALLOWED_ORIGINS` 中列出可能调用您的操作的站点。接受没有 `Origin`（例如 `curl`）的呼叫。
+为了防止跨站点请求伪造 (CSRF)，Nexy 拒绝 `Origin` 是另一个站点或浏览器用 `403` 标记 `Sec-Fetch-Site: cross-site` 的请求。在 `NEXY_ALLOWED_ORIGINS` 中列出可能调用您的操作的站点。接受没有 `Origin`（如 `curl`）的呼叫。
 
 ## 导入错误
 
-启动时，Nexy 导入 `src/` 的每个模块以查找操作。报某个模块导入失败，其他的依然加载：
+启动时，Nexy 导入 `src/` 的每个模块来查找操作。报某个模块导入失败，其他的依然加载：
 
 ```text
   x src.actions.billing: src/actions/billing.py:3  ModuleNotFoundError: No module named 'stripe'

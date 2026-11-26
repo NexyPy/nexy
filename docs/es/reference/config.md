@@ -27,8 +27,9 @@ class NexyConfig(NexyConfigModel):
 | `useSiteUrl` | `None` | el origen público del sitio, como `"https://example.com"`; una vez colocada, Nexy sirve a `/sitemap.xml` y `/robots.txt`. Consulte [Mapa del sitio y robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | procesa `nx start` ejecuciones; `0` es uno por CPU en Linux y macOS, uno en Windows |
 | `useCSR` | `False` | modo de enrutamiento del lado del cliente; `.nexy` rutas están deshabilitadas |
-| `useBasePath` | `None` | prefijo público para toda la aplicación, como `"/app"`; las solicitudes fuera de él responden 404, y los enlaces generados, las rutas de clientes, las llamadas a la acción y los activos llevan el prefijo. Consulte [Implementar](../deployment/README.md#serve-under-a-sub-path) |
+| `useBasePath` | `None` | prefijo público para toda la aplicación, como `"/app"`; las solicitudes fuera de él responden a 404, y los enlaces generados, las rutas de clientes, las llamadas a la acción y los activos llevan el prefijo. Consulte [Implementar](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | anchos de píxeles `nx build` generan para imágenes locales; la conversión necesita `Pillow`, y sin él las imágenes mantienen su URL original. Ver [Imagen](../routing/fbr/navigation/linking-and-navigating.md#image) |
+| `useISRCache` | `None` | Almacén ISR: `None` o `"memory"` para un proceso, `"file"` para un host, `"redis"` para varios trabajadores, un mapeo con `type` y opciones, o un objeto con `get`, `set` y `invalidate`. Ver [ISR](../rendering/isr.md#choose-a-store) |
 
 ## Base de datos
 
@@ -48,7 +49,7 @@ class NexyConfig(NexyConfigModel):
 
 | campo | Predeterminado | Significado |
 |---|---|---|
-| `useFF` | `None` | fábrica de marco de cliente: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
+| `useFF` | `None` | fábrica de marcos de clientes: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
 | `useVite` | `True` | crear y servir paquetes de clientes con Vite |
 | `useMarkdownExtensions` | `[]` | extensiones adicionales para renderizado `.md`/`.mdx` |
 | `useWatchExtensions` | `None` | extensiones adicionales que observa el servidor de desarrollo |
@@ -97,9 +98,9 @@ O apáguelo con `useDocs = False`, que también deja de servir `/openapi.json`. 
 | campo | Predeterminado | Significado |
 |---|---|---|
 | `useMiddlewares` | `[]` | Clases de middleware ASGI |
-| `useCORS` | `None` | kwargs para `CORSMiddleware` |
+| `useCORS` | `None` | kwargs por `CORSMiddleware` |
 | `useGZip` | `None` | kwargs para `GZipMiddleware` |
-| `useTrustedHost` | `None` | kwargs por `TrustedHostMiddleware` |
+| `useTrustedHost` | `None` | kwargs para `TrustedHostMiddleware` |
 | `useSession` | `None` | kwargs para `SessionMiddleware` |
 | `useAuth` | `None` | configuración del middleware de autenticación |
 | `useHTTPSRedirect` | `False` | redirigir HTTP a HTTPS |
