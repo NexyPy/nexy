@@ -19,14 +19,28 @@ from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 
-def _validate(requests: int, per: float) -> None:
+def _is_number(value: object) -> bool:
+    """True for an int or a float; a bool is an int to Python, not a count to a person."""
+    return isinstance(value, int | float) and not isinstance(value, bool)
+
+
+def _validate(requests: int, per: float, paths: list[str] | None) -> None:
     """Raise ValueError, naming `useRateLimit`, when a setting cannot work."""
-    if not isinstance(requests, int) or requests < 1:
+    if not (_is_number(requests) and isinstance(requests, int) and requests >= 1):
         raise ValueError(
             f"useRateLimit: 'requests' must be an integer of at least 1, got {requests!r}"
         )
-    if not isinstance(per, int | float) or per <= 0:
+    if not (_is_number(per) and math.isfinite(per) and per > 0):
         raise ValueError(f"useRateLimit: 'per' must be a number of seconds above 0, got {per!r}")
+    if paths is not None and not _is_prefix_list(paths):
+        raise ValueError(f"useRateLimit: 'paths' must be a list of path prefixes, got {paths!r}")
+
+
+def _is_prefix_list(paths: object) -> bool:
+    """True for a non-empty list or tuple of strings."""
+    if not isinstance(paths, list | tuple) or not paths:
+        return False
+    return all(isinstance(path, str) for path in paths)
 
 
 class RateLimitMiddleware:
@@ -52,11 +66,11 @@ class RateLimitMiddleware:
         Raises:
             ValueError: When `requests` or `per` is not usable.
         """
-        _validate(requests, per)
+        _validate(requests, per, paths)
         self.app = app
         self.requests = requests
         self.per = per
-        self.paths = tuple(paths) if paths else None
+        self.paths = None if paths is None else tuple(paths)
         self._clock = clock
         self._window = -1
         self._counts: dict[str, int] = {}

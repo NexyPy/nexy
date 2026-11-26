@@ -204,15 +204,20 @@ async def _noop(message):
 
 
 class TestSettings:
-    @pytest.mark.parametrize("requests", [0, -1, "10", 1.5])
+    @pytest.mark.parametrize("requests", [0, -1, "10", 1.5, True])
     def test_rate_limit_requests_below_one_is_rejected(self, requests):
         with pytest.raises(ValueError, match="useRateLimit: 'requests'"):
             RateLimitMiddleware(_fallback, requests=requests, per=60)
 
-    @pytest.mark.parametrize("per", [0, -5, "60"])
+    @pytest.mark.parametrize("per", [0, -5, "60", True, float("nan"), float("inf")])
     def test_rate_limit_per_not_positive_is_rejected(self, per):
         with pytest.raises(ValueError, match="useRateLimit: 'per'"):
             RateLimitMiddleware(_fallback, requests=60, per=per)
+
+    @pytest.mark.parametrize("paths", ["/api/", [], ["/api/", 1]])
+    def test_rate_limit_paths_not_a_list_of_prefixes_is_rejected(self, paths):
+        with pytest.raises(ValueError, match="useRateLimit: 'paths'"):
+            RateLimitMiddleware(_fallback, requests=60, per=60, paths=paths)
 
     def test_rate_limit_a_fractional_window_is_accepted(self):
         assert RateLimitMiddleware(_fallback, requests=1, per=0.5).per == 0.5
