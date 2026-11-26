@@ -29,6 +29,7 @@ class NexyConfig(NexyConfigModel):
 | `useCSR` | `False` | mode perutean sisi klien; `.nexy` rute dinonaktifkan |
 | `useBasePath` | `None` | awalan publik untuk keseluruhan aplikasi, seperti `"/app"`; permintaan di luarnya menjawab 404, dan tautan yang dihasilkan, rute klien, panggilan tindakan, dan aset membawa awalan. Lihat [Menerapkan](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | lebar piksel `nx build` yang dihasilkan untuk gambar lokal; konversi memerlukan `Pillow`, dan tanpa itu gambar tetap menggunakan URL aslinya. Lihat [Gambar](../routing/fbr/navigation/linking-and-navigating.md#image) |
+| `useISRCache` | `None` | Penyimpanan ISR: `None` atau `"memory"` untuk satu proses, `"file"` untuk satu host, `"redis"` untuk beberapa pekerja, pemetaan dengan `type` dan opsi, atau objek dengan `get`, `set` dan `invalidate`. Lihat [ISR](../rendering/isr.md#choose-a-store) |
 
 ## Basis data
 
@@ -109,7 +110,7 @@ Atau matikan dengan `useDocs = False`, yang juga berhenti ditayangkan `/openapi.
 | Bidang | Bawaan | Artinya |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | tingkat judul yang disertakan dalam daftar isi |
-| `useTocTitle` | `"Table of Contents"` | Judul Daftar Isi |
+| `useTocTitle` | `"Table of Contents"` | Judul TOC |
 | `useTocAuto` | `True` | menghasilkan daftar isi untuk Markdown halaman |
 
 ## Rute di luar pohon file

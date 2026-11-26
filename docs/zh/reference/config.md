@@ -29,6 +29,7 @@ class NexyConfig(NexyConfigModel):
 | `useCSR` | `False` | 客户端路由模式； `.nexy` 路线已禁用 |
 | `useBasePath` | `None` | 整个应用程序的公共前缀，例如 `"/app"`；外部的请求回答 404，生成的链接、客户端路由、操作调用和资产都带有前缀。请参阅[部署](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | 像素宽度 `nx build` 为局部图像生成；转换需要 `Pillow`，如果没有它，图像将保留其原始 URL。请参阅[图片](../routing/fbr/navigation/linking-and-navigating.md#image) |
+| `useISRCache` | `None` | ISR 存储：`None` 或 `"memory"` 用于一个进程，`"file"` 用于一台主机，`"redis"` 用于多个工作进程，带有 `type` 和选项的映射，或者带有 `get`、`set` 和 `invalidate` 的对象。参见[ISR](../rendering/isr.md#choose-a-store) |
 
 ## 数据库
 
@@ -58,7 +59,7 @@ class NexyConfig(NexyConfigModel):
 
 ## 保留文件名
 
-每个字段都会为保留角色添加扩展。 `useLayoutExtensions = ["md"]` 保留 `layout.md`，与 `layout.nexy` 完全相同。
+每个字段都会为保留角色添加扩展。 `useLayoutExtensions = ["md"]` 使 `layout.md` 保留，与 `layout.nexy` 完全相同。
 
 | 领域 | 添加扩展 |
 |---|---|
@@ -98,7 +99,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useMiddlewares` | `[]` | ASGI中间件类 |
 | `useCORS` | `None` | 夸格斯 `CORSMiddleware` |
-| `useGZip` | `None` | kwargs 为 `GZipMiddleware` |
+| `useGZip` | `None` | 夸格斯 `GZipMiddleware` |
 | `useTrustedHost` | `None` | 夸格斯 `TrustedHostMiddleware` |
 | `useSession` | `None` | 夸格斯 `SessionMiddleware` |
 | `useAuth` | `None` | 身份验证中间件配置 |

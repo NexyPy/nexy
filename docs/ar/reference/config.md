@@ -29,12 +29,13 @@ class NexyConfig(NexyConfigModel):
 | `useCSR` | `False` | وضع التوجيه من جانب العميل؛ `.nexy` الطرق معطلة |
 | `useBasePath` | `None` | البادئة العامة للتطبيق بأكمله، مثل `"/app"`؛ الطلبات خارجها تجيب على 404، والروابط التي تم إنشاؤها ومسارات العميل ونداءات الإجراء والأصول تحمل البادئة. راجع [نشر](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | عروض البكسل `nx build` تولد للصور المحلية؛ يحتاج التحويل إلى `Pillow`، وبدونه تحتفظ الصور بعنوان URL الأصلي الخاص بها. انظر [الصورة](../routing/fbr/navigation/linking-and-navigating.md#image) |
+| `useISRCache` | `None` | مخزن ISR: `None` أو `"memory"` لعملية واحدة، `"file"` لمضيف واحد، `"redis"` لعدة عاملين، تعيين مع `type` والخيارات، أو كائن مع `get`، `set` و `invalidate`. انظر [ISR](../rendering/isr.md#choose-a-store) |
 
 ## قاعدة البيانات
 
 | الميدان | الافتراضي | معنى |
 |---|---|---|
-| `useORM` | `None` | ORM للمشروع: `"SQLModel"`، `"SQLAlchemy"` أو `"Tortoise-ORM"`. `nx new` يكتبه، ويلتقط `nx migrate` منه Alembic أو Aerich منه؛ بدونه، `nx migrate` يأخذ أول ORM مثبتًا. انظر [قواعد البيانات](../guides/databases.md#migrations) |
+| `useORM` | `None` | ORM للمشروع: `"SQLModel"`، `"SQLAlchemy"` أو `"Tortoise-ORM"`. `nx new` يكتبه، و `nx migrate` ينتقي منه Alembic أو Aerich منه؛ بدونه، `nx migrate` يأخذ أول ORM مثبتًا. انظر [قواعد البيانات](../guides/databases.md#migrations) |
 
 ## الطرق
 
@@ -54,11 +55,11 @@ class NexyConfig(NexyConfigModel):
 | `useWatchExtensions` | `None` | ملحقات إضافية يشاهدها خادم التطوير |
 | `useWatchExcludePatterns` | `None` | أنماط الكرة الأرضية التي يتجاهلها خادم التطوير |
 
-> **من المفيد أن نعرف**: `NexyConfigModel` يعلن `useVite = False`؛ وقت التشغيل `Config` الافتراضي هو `True`.
+> **من المفيد معرفة**: `NexyConfigModel` يعلن `useVite = False`؛ وقت التشغيل `Config` الافتراضي هو `True`.
 
 ## أسماء الملفات المحجوزة
 
-يضيف كل حقل ملحقات إلى دور محجوز. `useLayoutExtensions = ["md"]` يجعل `layout.md` محجوزاً، تماماً مثل `layout.nexy`.
+يضيف كل حقل ملحقات إلى دور محجوز. `useLayoutExtensions = ["md"]` يجعل `layout.md` محجوزاً، مثل `layout.nexy` تماماً.
 
 | الميدان | يضيف ملحقات إلى |
 |---|---|
@@ -80,7 +81,7 @@ class NexyConfig(NexyConfigModel):
 
 ### مجاناً `/docs` لصفحة من المشروع
 
-يجيب مرجع واجهة برمجة التطبيقات (API) على `/docs` قبل أي مسار، لذلك لا يتم عرض `src/routes/docs.nexy` أو `src/routes/docs/[[...slug]].nexy` هناك أبدًا. `nx dev` و `nx start` قم بتسمية هذه الصفحة عند بدء التشغيل. انقل المرجع بـ `useDocsUrl`:
+يجيب مرجع واجهة برمجة التطبيقات (API) على `/docs` قبل أي مسار، لذلك لا يتم عرض `src/routes/docs.nexy` أو `src/routes/docs/[[...slug]].nexy` هناك أبدًا. `nx dev` و `nx start` تسمية مثل هذه الصفحة عند بدء التشغيل. انقل المرجع بـ `useDocsUrl`:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel

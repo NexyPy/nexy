@@ -25,16 +25,17 @@ class NexyConfig(NexyConfigModel):
 | `useHealth` | `False` | लोड बैलेंसर्स और कुबेरनेट्स जांच के लिए `GET /health/live` और `GET /health/ready` परोसें; देखें [तैनाती](../deployment/README.md#built-in-endpoints) |
 | `useMaxBodySize` | `1048576` | एक कार्यकर्ता द्वारा पढ़ा जाने वाला सबसे बड़ा अनुरोध निकाय, बाइट्स में (1 MiB); बड़ा वाला एक `413` है, और `0` सीमा को बंद कर देता है। फ़ाइल अपलोड करने वाले रूट के लिए इसे बढ़ाएं |
 | `useSiteUrl` | `None` | साइट का सार्वजनिक मूल, जैसे कि `"https://example.com"`; एक बार सेट हो जाने पर, नेक्सी `/sitemap.xml` और `/robots.txt` परोसता है। [साइटमैप और robots.txt](../guides/sitemap.md) देखें |
-| `useWorkers` | `0` | प्रक्रियाएँ `nx start` चलती हैं; `0` लिनक्स और मैकओएस पर प्रति सीपीयू एक है, विंडोज़ पर एक |
+| `useWorkers` | `0` | प्रक्रियाएँ `nx start` चलती हैं; `0` लिनक्स और मैकओएस पर प्रति सीपीयू एक है, विंडोज़ पर एक है |
 | `useCSR` | `False` | क्लाइंट-साइड रूटिंग मोड; `.nexy` मार्ग अक्षम हैं |
 | `useBasePath` | `None` | संपूर्ण एप्लिकेशन के लिए सार्वजनिक उपसर्ग, जैसे `"/app"`; इसके बाहर के अनुरोध 404 का उत्तर देते हैं, और उत्पन्न लिंक, क्लाइंट रूट, एक्शन कॉल और संपत्तियां उपसर्ग ले जाती हैं। देखें [तैनाती](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | पिक्सेल चौड़ाई `nx build` स्थानीय छवियों के लिए उत्पन्न होती है; रूपांतरण के लिए `Pillow` की आवश्यकता होती है, और इसके बिना छवियां अपना मूल यूआरएल बनाए रखती हैं। देखें [छवि](../routing/fbr/navigation/linking-and-navigating.md#image) |
+| `useISRCache` | `None` | आईएसआर स्टोर: `None` या `"memory"` एक प्रक्रिया के लिए, `"file"` एक होस्ट के लिए, `"redis"` कई श्रमिकों के लिए, `type` और विकल्पों के साथ एक मैपिंग, या `get`, `set` और `invalidate` के साथ एक ऑब्जेक्ट। देखें [आईएसआर](../rendering/isr.md#choose-a-store) |
 
 ## डेटाबेस
 
 | मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
-| `useORM` | `None` | परियोजना का ORM: `"SQLModel"`, `"SQLAlchemy"` या `"Tortoise-ORM"`। `nx new` इसे लिखता है, और `nx migrate` इसमें से Alembic या Aerich चुनता है; इसके बिना, `nx migrate` पहला ORM इंस्टाल करता है। देखें [डेटाबेस](../guides/databases.md#migrations) |
+| `useORM` | `None` | परियोजना का ओआरएम: `"SQLModel"`, `"SQLAlchemy"` या `"Tortoise-ORM"`। `nx new` इसे लिखता है, और `nx migrate` इसमें से Alembic या Aerich चुनता है; इसके बिना, `nx migrate` पहला ORM इंस्टाल करता है। देखें [डेटाबेस](../guides/databases.md#migrations) |
 
 ## मार्ग
 
@@ -73,10 +74,10 @@ class NexyConfig(NexyConfigModel):
 
 | मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
-| `useDocs` | `"dev"` | जहां स्केलर संदर्भ पृष्ठ और `/openapi.json` परोसे जाते हैं: `"dev"` केवल `nx dev` पर, `True` उत्पादन में भी (स्कीमा हर मार्ग और सर्वर कार्रवाई को सूचीबद्ध करता है), `False` कहीं नहीं |
+| `useDocs` | `"dev"` | जहां स्केलर संदर्भ पृष्ठ और `/openapi.json` परोसा जाता है: `"dev"` केवल `nx dev` पर, `True` उत्पादन में भी (स्कीमा हर मार्ग और सर्वर कार्रवाई को सूचीबद्ध करता है), `False` कहीं नहीं |
 | `useDocsUrl` | `"/docs"` | एपीआई संदर्भ पृष्ठ का पथ |
 | `useRedocsUrl` | `"/redocs"` | घोषित किया गया है लेकिन कोई रूट तय नहीं किया गया है |
-| `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` में `NexyConfigModel`) |
+| `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` `NexyConfigModel` में) |
 
 ### परियोजना के एक पृष्ठ के लिए निःशुल्क `/docs`
 
@@ -136,7 +137,7 @@ class NexyConfig(NexyConfigModel):
 
 ## घोषित, अभी पढ़ा नहीं
 
-ये फ़ील्ड `NexyConfigModel` में मौजूद हैं लेकिन कोई भी कोड उनका उपभोग नहीं करता है। उन्हें सेट करने से कोई प्रभाव नहीं पड़ता:
+ये फ़ील्ड `NexyConfigModel` में मौजूद हैं लेकिन कोई भी कोड इनका उपभोग नहीं करता है। उन्हें सेट करने से कोई प्रभाव नहीं पड़ता:
 
 `useViteDevUrl`, `useRTL`।
 

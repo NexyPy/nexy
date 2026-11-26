@@ -29,12 +29,13 @@ class NexyConfig(NexyConfigModel):
 | `useCSR` | `False` | mode de routage côté client ; `.nexy` les itinéraires sont désactivés |
 | `useBasePath` | `None` | préfixe public pour l'ensemble de l'application, tel que `"/app"` ; les requêtes en dehors de celui-ci répondent 404, et les liens générés, les itinéraires clients, les appels à l'action et les actifs portent le préfixe. Voir [Déployer](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | les largeurs de pixels `nx build` génèrent pour les images locales ; la conversion nécessite `Pillow`, et sans cela, les images conservent leur URL d'origine. Voir [Image](../routing/fbr/navigation/linking-and-navigating.md#image) |
+| `useISRCache` | `None` | Magasin ISR : `None` ou `"memory"` pour un processus, `"file"` pour un hôte, `"redis"` pour plusieurs Workers, un mappage avec `type` et des options, ou un objet avec `get`, `set` et `invalidate`. Voir [ISR](../rendering/isr.md#choose-a-store) |
 
 ## Base de données
 
 | Champ | Par défaut | Signification |
 |---|---|---|
-| `useORM` | `None` | l'ORM du projet : `"SQLModel"`, `"SQLAlchemy"` ou `"Tortoise-ORM"`. `nx new` l'écrit et `nx migrate` en choisit Alembic ou Aerich ; sans cela, `nx migrate` prend le premier ORM installé. Voir [Bases de données](../guides/databases.md#migrations) |
+| `useORM` | `None` | l'ORM du projet : `"SQLModel"`, `"SQLAlchemy"` ou `"Tortoise-ORM"`. `nx new` l'écrit, et `nx migrate` en choisit Alembic ou Aerich ; sans cela, `nx migrate` prend le premier ORM installé. Voir [Bases de données](../guides/databases.md#migrations) |
 
 ## Itinéraires
 

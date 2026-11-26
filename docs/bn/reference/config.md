@@ -29,6 +29,7 @@ class NexyConfig(NexyConfigModel):
 | `useCSR` | `False` | ক্লায়েন্ট-সাইড রাউটিং মোড; `.nexy` রুট নিষ্ক্রিয় করা হয়েছে |
 | `useBasePath` | `None` | সম্পূর্ণ অ্যাপ্লিকেশনের জন্য সর্বজনীন উপসর্গ, যেমন `"/app"`; এর বাইরের অনুরোধগুলি 404 উত্তর দেয় এবং জেনারেট করা লিঙ্ক, ক্লায়েন্ট রুট, অ্যাকশন কল এবং সম্পদগুলি উপসর্গ বহন করে। দেখুন [মোতায়েন](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | স্থানীয় ছবির জন্য পিক্সেল প্রস্থ `nx build` তৈরি করে; রূপান্তরের প্রয়োজন `Pillow`, এবং এটি ছাড়া ছবিগুলি তাদের আসল URL রাখে। দেখুন [চিত্র](../routing/fbr/navigation/linking-and-navigating.md#image) |
+| `useISRCache` | `None` | আইএসআর স্টোর: `None` বা `"memory"` একটি প্রক্রিয়ার জন্য, `"file"` একটি হোস্টের জন্য, `"redis"` একাধিক কর্মীদের জন্য, `type` এবং বিকল্পগুলির সাথে একটি ম্যাপিং, বা `get`, `set` এবং `invalidate` সহ একটি বস্তু। [ISR](../rendering/isr.md#choose-a-store) দেখুন |
 
 ## ডাটাবেস
 
@@ -58,7 +59,7 @@ class NexyConfig(NexyConfigModel):
 
 ## সংরক্ষিত ফাইলের নাম
 
-প্রতিটি ক্ষেত্র একটি সংরক্ষিত ভূমিকায় এক্সটেনশন যোগ করে। `useLayoutExtensions = ["md"]` `layout.md` কে সংরক্ষিত করে তোলে, ঠিক `layout.nexy` এর মতো।
+প্রতিটি ক্ষেত্র একটি সংরক্ষিত ভূমিকায় এক্সটেনশন যোগ করে। `useLayoutExtensions = ["md"]` `layout.md` সংরক্ষিত করে তোলে, ঠিক `layout.nexy` এর মতো।
 
 | মাঠ | এ এক্সটেনশন যোগ করে |
 |---|---|
@@ -76,7 +77,7 @@ class NexyConfig(NexyConfigModel):
 | `useDocs` | `"dev"` | যেখানে স্কেলার রেফারেন্স পৃষ্ঠা এবং `/openapi.json` পরিবেশন করা হয়: `"dev"` শুধুমাত্র `nx dev` এ, `True` উৎপাদনেও (স্কিমা প্রতিটি রুট এবং সার্ভারের ক্রিয়াকে তালিকাভুক্ত করে), `False` কোথাও নেই |
 | `useDocsUrl` | `"/docs"` | API রেফারেন্স পৃষ্ঠার পথ |
 | `useRedocsUrl` | `"/redocs"` | ঘোষিত কিন্তু কোন রুট মাউন্ট করা হয় না |
-| `useTitle` | `"Nexy App"` | OpenAPI শিরোনাম এবং পৃষ্ঠার শিরোনাম (`"Nexy"` `NexyConfigModel`]) |
+| `useTitle` | `"Nexy App"` | OpenAPI শিরোনাম এবং পৃষ্ঠার শিরোনাম (`"Nexy"` `NexyConfigModel`] |
 
 ### প্রকল্পের একটি পৃষ্ঠার জন্য বিনামূল্যে `/docs`
 
@@ -98,7 +99,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useMiddlewares` | `[]` | ASGI মিডলওয়্যার ক্লাস |
 | `useCORS` | `None` | জন্য kwargs `CORSMiddleware` |
-| `useGZip` | `None` | `GZipMiddleware` জন্য kwargs |
+| `useGZip` | `None` | জন্য kwargs `GZipMiddleware` |
 | `useTrustedHost` | `None` | জন্য kwargs `TrustedHostMiddleware` |
 | `useSession` | `None` | জন্য kwargs `SessionMiddleware` |
 | `useAuth` | `None` | প্রমাণীকরণ মিডলওয়্যার কনফিগারেশন |
