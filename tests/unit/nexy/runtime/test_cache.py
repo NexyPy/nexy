@@ -1,10 +1,36 @@
 import asyncio
 import time
 import types
+from typing import Any
 
+import pytest
+
+from nexy.modules.routers.fbrouter import handlers
 from nexy.modules.routers.fbrouter.handlers import make_isr_handler
 from nexy.modules.routers.fbrouter.registrar import revalidate_window
-from nexy.modules.runtime.cache import REVALIDATE_CACHE, RevalidateCache
+from nexy.modules.runtime.cache import (
+    REVALIDATE_CACHE,
+    CacheEntry,
+    RevalidateCache,
+    reset_isr_cache,
+)
+
+
+class UnreadableCache(RevalidateCache):
+    def get(self, _path: str) -> CacheEntry | None:
+        raise OSError("store down")
+
+
+class UnwritableCache(RevalidateCache):
+    def set(self, _path: str, _value: str, _revalidate: int | None = None) -> None:
+        raise OSError("store down")
+
+
+@pytest.fixture(autouse=True)
+def _fresh_isr_store() -> Any:
+    reset_isr_cache()
+    yield
+    reset_isr_cache()
 
 
 class TestRevalidateCache:
@@ -17,7 +43,7 @@ class TestRevalidateCache:
     def test_set_then_get_returns_value(self):
         cache = RevalidateCache()
         cache.set("/blog", "<h1>Blog</h1>", revalidate=60)
-        assert cache.get("/blog") == "<h1>Blog</h1>"
+        assert cache.get("/blog").value == "<h1>Blog</h1>"
 
     def test_fresh_route_is_not_stale(self):
         cache = RevalidateCache()
@@ -60,11 +86,16 @@ class TestIsrHandler:
 
         return make_isr_handler(_blog, revalidate)
 
-    async def _fetch(self, handler):
+    async def _response(self, handler):
         from fastapi import Request
 
         request = Request({"type": "http", "method": "GET", "path": "/blog", "headers": []})
-        resp = await handler(request)
+        response = await handler(request)
+        await asyncio.sleep(0)
+        return response
+
+    async def _fetch(self, handler):
+        resp = await self._response(handler)
         if hasattr(resp, "body_iterator"):
             chunks = [c async for c in resp.body_iterator]
             return b"".join(chunks).decode()
@@ -87,19 +118,40 @@ class TestIsrHandler:
         first = asyncio.run(self._fetch(handler))
         assert first == "<h1>Blog 1</h1>"
 
-    def test_isr_response_has_cache_control_header(self):
+    @pytest.mark.parametrize("window", [1, 60, 300])
+    def test_a_fresh_page_carries_its_window_in_the_header(self, window: int):
         self._reset()
-        calls: list[int] = []
-        handler = self._handler(60, calls)
+        handler = self._handler(window, [])
+        response = asyncio.run(self._response(handler))
+        assert response.headers["cache-control"] == (
+            f"public, s-maxage={window}, stale-while-revalidate={window}"
+        )
 
-        async def run():
-            from fastapi import Request
+    def test_a_stale_page_keeps_the_same_header(self):
+        self._reset()
+        REVALIDATE_CACHE._entries["/blog"] = CacheEntry("old", 0.0, 60)
+        response = asyncio.run(self._response(self._handler(60, [])))
+        assert response.headers["cache-control"] == (
+            "public, s-maxage=60, stale-while-revalidate=60"
+        )
 
-            request = Request({"type": "http", "method": "GET", "path": "/blog", "headers": []})
-            return await handler(request)
+    def test_a_failing_store_still_sends_the_header(self, monkeypatch: pytest.MonkeyPatch):
+        self._reset()
+        monkeypatch.setattr(handlers, "get_isr_cache", UnwritableCache)
+        response = asyncio.run(self._response(self._handler(60, [])))
+        assert response.headers["cache-control"] == (
+            "public, s-maxage=60, stale-while-revalidate=60"
+        )
 
-        resp = asyncio.run(run())
-        assert resp.headers.get("cache-control") is not None
+    def test_an_unreadable_store_renders_a_fresh_page(self, monkeypatch: pytest.MonkeyPatch):
+        self._reset()
+        monkeypatch.setattr(handlers, "get_isr_cache", UnreadableCache)
+        assert asyncio.run(self._fetch(self._handler(60, []))) == "<h1>Blog 1</h1>"
+
+    def test_an_unwritable_store_returns_the_rendered_page(self, monkeypatch: pytest.MonkeyPatch):
+        self._reset()
+        monkeypatch.setattr(handlers, "get_isr_cache", UnwritableCache)
+        assert asyncio.run(self._fetch(self._handler(60, []))) == "<h1>Blog 1</h1>"
 
     def test_scan_reads_revalidate_from_module(self):
         mod = types.ModuleType("routes.blog")

@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import functools
 import importlib
 import inspect
+import time
 from collections.abc import Callable
 from typing import Any
 
@@ -13,7 +15,7 @@ from fastapi import Request
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import HTMLResponse, Response, StreamingResponse
 
-from nexy.modules.runtime.cache import REVALIDATE_CACHE
+from nexy.modules.runtime.cache import CacheEntry, ISRCache, get_isr_cache
 
 _CASTS: dict[Any, Callable[[str], Any]] = {int: int, float: float}
 _INHERITED = ("__nexy_guards__", "__nexy_middlewares__")
@@ -110,13 +112,21 @@ class _IncrementalPage:
         self._component = component
         self._signature = inspect.signature(component)
         self._revalidate = revalidate
+        self._cache: ISRCache = get_isr_cache()
 
     def _render(self, params: dict[str, str]) -> str:
         result = self._component(**coerce_path_params(self._signature, params))
         return result if isinstance(result, str) else "".join(result)
 
+    def _read(self, key: str) -> CacheEntry | None:
+        try:
+            return self._cache.get(key)
+        except Exception:
+            return None
+
     def _store(self, key: str, body: str) -> str:
-        REVALIDATE_CACHE.set(key, body, self._revalidate)
+        with contextlib.suppress(Exception):
+            self._cache.set(key, body, self._revalidate)
         return body
 
     def response(self, body: str | None) -> HTMLResponse:
@@ -130,12 +140,12 @@ class _IncrementalPage:
     async def handle(self, request: Request) -> HTMLResponse:
         """Serve the page of this URL: each URL of a dynamic route is cached on its own."""
         key, params = request.scope["path"], dict(request.path_params)
-        cached = REVALIDATE_CACHE.get(key)
-        if cached is None:
+        entry = self._read(key)
+        if entry is None:
             return self.response(self._store(key, self._render(params)))
-        if REVALIDATE_CACHE.is_stale(key):
+        if time.time() > entry.expires_at:
             asyncio.create_task(self._regenerate(key, params))
-        return self.response(cached)
+        return self.response(entry.value)
 
 
 def make_isr_handler(component: Callable[..., str], revalidate: int) -> Callable[..., Any]:
