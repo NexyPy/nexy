@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import importlib.util
 import inspect
 import json
@@ -19,6 +20,7 @@ from nexy.modules.routers.actions.origin import is_same_origin
 from nexy.modules.routers.actions.revalidate import HEADER, header_value, start_collecting
 from nexy.modules.routers.actions.spec import ActionSpec
 from nexy.modules.routers.fastpath import encode_json, mark_raw
+from nexy.modules.runtime.cache import get_isr_cache
 
 
 def _is_json(request: Request) -> bool:
@@ -109,6 +111,16 @@ def _with_headers_of(answer: Response, response: Response) -> Response:
     return answer
 
 
+def _invalidate(paths: list[str], request: Request) -> None:
+    """Purge the ISR entries an action made stale; a broken store never fails the call."""
+    if not paths:
+        return
+    cache = get_isr_cache()
+    for path in paths:
+        with contextlib.suppress(Exception):
+            cache.invalidate(urlparse(_back(request)).path if path == "*" else path)
+
+
 def _answer(result: Any, request: Request, collected: Any) -> Response:
     """A redirect back for a plain form post, JSON for a script; revalidated paths in a header."""
     if _is_json(request):
@@ -136,6 +148,7 @@ def make_endpoint(spec: ActionSpec) -> Callable[[Request], Awaitable[Response]]:
         collected = start_collecting()
         response = Response()
         result = await _call(spec, values, request, response)
+        _invalidate(collected, request)
         if isinstance(result, Response):
             return result
         answer = _answer(result, request, collected)

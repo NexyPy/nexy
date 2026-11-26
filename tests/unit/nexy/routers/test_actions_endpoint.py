@@ -19,6 +19,7 @@ from nexy.modules.routers.actions.engine import ActionEngine
 from nexy.modules.routers.actions.revalidate import revalidate
 from nexy.modules.routers.actions.secret import forget_secret
 from nexy.modules.routers.actions.store import ACTIONS_STORE
+from nexy.modules.runtime.cache import RevalidateCache
 
 
 class Profile(BaseModel):
@@ -265,6 +266,33 @@ class TestRevalidate:
 
     def test_outside_an_action_it_does_nothing(self):
         revalidate("/users")
+
+    def test_the_path_is_removed_from_the_configured_store(self, monkeypatch):
+        store = RevalidateCache()
+        store.set("/users", "body", 60)
+        monkeypatch.setattr(endpoint, "get_isr_cache", lambda: store)
+        _client(refresh_users).post(_url(refresh_users), json={})
+        assert store.get("/users") is None
+
+    def test_no_path_uses_the_referer_as_the_current_page(self, monkeypatch):
+        store = RevalidateCache()
+        store.set("/users", "body", 60)
+        monkeypatch.setattr(endpoint, "get_isr_cache", lambda: store)
+        _client(refresh_current).post(
+            _url(refresh_current),
+            json={},
+            headers={"referer": "http://testserver/users?page=2"},
+        )
+        assert store.get("/users") is None
+
+    def test_a_store_failure_does_not_break_the_action(self, monkeypatch):
+        class BrokenCache:
+            def invalidate(self, _path: str) -> None:
+                raise OSError("store down")
+
+        monkeypatch.setattr(endpoint, "get_isr_cache", BrokenCache)
+        response = _client(refresh_users).post(_url(refresh_users), json={})
+        assert response.status_code == 200
 
 
 def test_the_path_depends_on_the_secret(monkeypatch):
