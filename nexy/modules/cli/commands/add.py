@@ -123,7 +123,7 @@ def add(
 ) -> None:
     if components and components[0].lower() in PLATFORM_FILES:
         if ui or url or all or sha256:
-            error(t("add.platform_flags", "A deployment platform takes no component flags."))
+            error(t("add.usage_text", "nexy add [COMPONENT_NAME or URL]..."))
         else:
             _add_platform(components)
         return
@@ -140,7 +140,7 @@ def add(
 def _add_platform(names: list[str]) -> None:
     """Write the files of one deployment platform; never mix it with components."""
     if len(names) != 1:
-        error(t("add.platform_one", "A deployment platform is added on its own."))
+        error(t("add.usage_text", "nexy add [COMPONENT_NAME or URL]..."))
         return
     files = PLATFORM_FILES[names[0].lower()]
     for path, content in files.items():
