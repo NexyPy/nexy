@@ -7,15 +7,15 @@
 
 ## السنانير
 
-| الخطاف | يُرجع |
+| هوك | المرتجعات |
 |---|---|
-| `usePathname()` | مسار الطلب، على سبيل المثال: `"/blog/post-1"` |
+| `usePathname()` | مسار الطلب، على سبيل المثال `"/blog/post-1"` |
 | `useSearchParams()` | سلسلة الاستعلام كـ `dict[str, str]`، القيمة الأولى لكل مفتاح |
-| `useParams()` | معلمات المسار الديناميكي، على سبيل المثال. `{"slug": "post-1"}` |
+| `useParams()` | معلمات المسار الديناميكي، على سبيل المثال `{"slug": "post-1"}` |
 | `useQuery()` | الاسم الأصلي لـ `useParams()`، محفوظ للصفحات الموجودة |
-| `useRequest()` | الطلب Starlette، لما لا تغطيه سائر الخطافات |
+| `useRequest()` | الطلب Starlette، بما لا تغطيه سائر الخطافات |
 | `useHeaders()` | رؤوس الطلب كـ `dict[str, str]`، الأسماء بالأحرف الصغيرة |
-| `useUrl()` | الرابط الكامل: `.scheme`، `.hostname`، `.port`، `.path`، `.query` |
+| `useUrl()` | عنوان URL الكامل: `.scheme`، `.hostname`، `.port`، `.path`، `.query` |
 | `useIsActive(href, exact=False)` | سواء كانت `href` هي الصفحة الحالية أو أحد أصولها |
 | `useRouter()` | `{"path", "base_url", "url_for"}` |
 | `useCookies()` | جميع ملفات تعريف الارتباط كـ `dict[str, str]` |
@@ -55,11 +55,12 @@ label: prop[str]
 - `useQuery()` يُرجع معلمات **المسار**، وليس سلسلة الاستعلام، ولهذا السبب يوجد `useParams()`. سلسلة الاستعلام هي `useSearchParams()`.
 - `useRouter()` هنا رابط الطلب. ليس حقل التكوين `useRouter` هو الذي يقوم بتثبيت `APIRouter`.
 - `useSession()` يحتاج إلى `useSession = {...}` في `nexyconfig.py`؛ بدونها الإملاء فارغ.
-- `useViews("about.tsx", {"title": "About"})` يُرجع HTML: يتم تقديم عرض `.nexy` بواسطة الوحدة المترجمة الخاصة به، ويصبح العرض `.tsx`/`.jsx`/`.vue`/`.svelte`/`.mdx` حاوية تحميل العميل.
+- `useViews("about.tsx", {"title": "About"})` يُرجع HTML: يتم تقديم عرض `.nexy` بواسطة الوحدة المترجمة الخاصة به، ويصبح العرض `.tsx`/`.jsx`/`.vue`/`.svelte`/`.mdx` حاوية تحميل عميل.
 
 ## الخطوات التالية
 
+- [كيف تعمل انتقالات الصفحة](page-transitions.md): ماذا يحدث عندما يقوم جهاز توجيه العميل بتبديل الصفحة
 - [الصفحات](../pages/README.md): المقاطع والتخطيطات الديناميكية
-- [الوصفات](../../../guides/recipes.md): تدفق تسجيل دخول تم اختباره مبني على `useSession()`
-- [التكوين](../../../reference/config.md): تمكين الجلسات واللغات
-- [ملفات .nexy](../../../views/nexy/README.md): حيث يتم استدعاء الخطافات عادةً
+- [الوصفات](../../../guides/recipes.md): تدفق تسجيل دخول تم اختباره ومبني على `useSession()`
+- [التكوين ](../../../reference/config.md): تمكين الجلسات واللغات
+- [ملفات .nexy](../../../views/nexy/README.md): حيث يتم عادةً استدعاء الخطافات

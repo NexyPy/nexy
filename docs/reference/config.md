@@ -29,6 +29,7 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | processes `nx start` runs; `0` is one per CPU on Linux and macOS, one on Windows |
 | `useCSR` | `False` | client-side routing mode; `.nexy` routes are disabled |
 | `useBasePath` | `None` | public prefix for the whole application, such as `"/app"`; requests outside it answer 404, and generated links, client routes, action calls and assets carry the prefix. See [Deploy](../deployment/README.md#serve-under-a-sub-path) |
+| `useImageWidths` | `[320, 640, 960, 1280]` | pixel widths `nx build` generates for local images; the conversion needs `Pillow`, and without it images keep their original URL. See [Image](../routing/fbr/navigation/linking-and-navigating.md#image) |
 
 ## Database
 
@@ -108,6 +109,7 @@ reference is on, keep the routes of the project off that path.
 | `useSession` | `None` | kwargs for `SessionMiddleware` |
 | `useAuth` | `None` | authentication middleware config |
 | `useHTTPSRedirect` | `False` | redirect HTTP to HTTPS |
+| `useRateLimit` | `None` | the requests one client address may send per window, such as `{"requests": 60, "per": 60}`; one more is a `429` with `Retry-After`, and `"paths": ["/api/"]` limits only those prefixes. Each worker counts on its own. See [Rate limiting](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

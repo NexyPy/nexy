@@ -62,7 +62,7 @@ from nexy import Image
 <Image src="/logo.png" alt="Logo" width=128 height=32 />
 ```
 
-`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` پہلے سے طے شدہ سست لوڈنگ کے ساتھ `<img>` رینڈر کرتا ہے۔
+`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` پہلے سے طے شدہ سست لوڈنگ کے ساتھ `<img>` رینڈر کرتا ہے۔ `src/` یا `public/` میں مقامی امیج کے لیے، `nx build` ہیشڈ WebP ویریئنٹس لکھتا ہے اور `Image` تیار کردہ مینی فیسٹ سے `srcset` اور `sizes` کو شامل کرتا ہے۔ واضح طول و عرض اور صفات جیت جاتے ہیں۔ دیکھیں [تصویر](../../routing/fbr/navigation/linking-and-navigating.md#image)۔
 
 ## لنک
 
@@ -76,7 +76,7 @@ from nexy import Link
 `Link(href, children="", class_name=None, prefetch=True, **attrs)` کلائنٹ راؤٹر کے ذریعہ سنبھالا ہوا ایک `<a data-nexy-link>` پیش کرتا ہے۔ `prefetch=True` کے ساتھ، لنک کو منڈلانے یا چھونے سے `window.__nexy_prefetch` کے ذریعے ہدف گرم ہوجاتا ہے۔
 
 > [!NOTE]
-> ٹیگ فارم لیبل کو بطور `children` لیتا ہے، عنصر کے مواد کے طور پر نہیں: `<Link href="/about" children="About" />`۔ کسی لنک کے اندر مارک اپ ڈالنے کے لیے کال فارم کو `children=` یا `.nexy` جزو کے ساتھ استعمال کریں جو کہ `<Slot />` کو رینڈر کرتا ہے۔
+> ٹیگ فارم لیبل کو بطور `children` لیتا ہے، عنصر کے مواد کے طور پر نہیں: `<Link href="/about" children="About" />`۔ کسی لنک کے اندر مارک اپ ڈالنے کے لیے کال فارم کو `children=` یا `.nexy` جز کے ساتھ استعمال کریں جو کہ `<Slot />` کو رینڈر کرتا ہے۔
 
 ## آڈیو اور ویڈیو
 
@@ -156,9 +156,9 @@ html = counter(start=0)
 
 ## سانچہ اور Vite
 
-`Template().render(path, context)` ایک ٹیمپلیٹ فائل (Jinja2، یا Markdown کو `.md` راستوں کے لیے HTML میں رینڈر کرتا ہے۔ `Template().invalidate(path)` اسے کیشے سے گرا دیتا ہے۔
+`Template().render(path, context)` ایک ٹیمپلیٹ فائل (Jinja2، یا Markdown کو `.md` راستوں کے لیے HTML کو رینڈر کرتا ہے۔ `Template().invalidate(path)` اسے کیشے سے گرا دیتا ہے۔
 
-`Vite()` موجودہ موڈ کے لیے کلائنٹ ٹیگز واپس کرتا ہے: ترقی میں HMR اسکرپٹ، پروڈکشن میں بلٹ کلائنٹ بنڈل۔ Nexy اسے ہر صفحے کے لیے کال کرتا ہے۔ آپ کو شاذ و نادر ہی براہ راست اس کی ضرورت ہے۔
+`Vite()` موجودہ موڈ کے لیے کلائنٹ کے ٹیگز واپس کرتا ہے: ترقی میں HMR اسکرپٹ، پروڈکشن میں بلٹ کلائنٹ بنڈل۔ Nexy اسے ہر صفحے کے لیے کال کرتا ہے۔ آپ کو شاذ و نادر ہی براہ راست اس کی ضرورت ہے۔
 
 ## ابھی تک نافذ نہیں ہوا۔
 

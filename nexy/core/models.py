@@ -176,6 +176,8 @@ class NexyConfigModel:
     useHealth: bool = False
     # The largest request body a worker reads, in bytes (1 MiB); larger is a 413. 0: no limit.
     useMaxBodySize: int = 1024 * 1024
+    # Requests one client address may send per window: {"requests": 60, "per": 60}. None: no limit.
+    useRateLimit: dict[str, Any] | None = None
     # The ORM `nx new` scaffolded the project with; `nx migrate` picks its migration tool from it.
     useORM: Literal["SQLModel", "SQLAlchemy", "Tortoise-ORM"] | None = None
     useRTL: bool = False
@@ -194,6 +196,8 @@ class NexyConfigModel:
     useRewrites: list[dict[str, Any]] | None = None
     useHeaders: list[dict[str, Any]] | None = None
     useBasePath: str | None = None
+    # Widths, in pixels, of the responsive variants `nx build` writes for local images.
+    useImageWidths: list[int] | None = None
     # The public origin of the site, such as "https://example.com": the sitemap writes its URLs
     # with it, and /sitemap.xml and /robots.txt are served only once it is set.
     useSiteUrl: str | None = None

@@ -62,7 +62,7 @@ from nexy import Image
 <Image src="/logo.png" alt="Logo" width=128 height=32 />
 ```
 
-`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` representa un `<img>` con carga diferida de forma predeterminada.
+`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` representa un `<img>` con carga diferida de forma predeterminada. Para una imagen local en `src/` o `public/`, `nx build` escribe variantes WebP con hash y `Image` agrega `srcset` y `sizes` del manifiesto generado. Las dimensiones y atributos explícitos ganan. Consulte [Imagen](../../routing/fbr/navigation/linking-and-navigating.md#image).
 
 ## Enlace
 

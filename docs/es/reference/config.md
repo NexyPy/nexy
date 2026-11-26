@@ -28,6 +28,7 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | procesa `nx start` ejecuciones; `0` es uno por CPU en Linux y macOS, uno en Windows |
 | `useCSR` | `False` | modo de enrutamiento del lado del cliente; `.nexy` rutas están deshabilitadas |
 | `useBasePath` | `None` | prefijo público para toda la aplicación, como `"/app"`; las solicitudes fuera de él responden 404, y los enlaces generados, las rutas de clientes, las llamadas a la acción y los activos llevan el prefijo. Consulte [Implementar](../deployment/README.md#serve-under-a-sub-path) |
+| `useImageWidths` | `[320, 640, 960, 1280]` | anchos de píxeles `nx build` generan para imágenes locales; la conversión necesita `Pillow`, y sin él las imágenes mantienen su URL original. Ver [Imagen](../routing/fbr/navigation/linking-and-navigating.md#image) |
 
 ## Base de datos
 
@@ -49,7 +50,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useFF` | `None` | fábrica de marco de cliente: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
 | `useVite` | `True` | crear y servir paquetes de clientes con Vite |
-| `useMarkdownExtensions` | `[]` | extensiones adicionales para el renderizado `.md`/`.mdx` |
+| `useMarkdownExtensions` | `[]` | extensiones adicionales para renderizado `.md`/`.mdx` |
 | `useWatchExtensions` | `None` | extensiones adicionales que observa el servidor de desarrollo |
 | `useWatchExcludePatterns` | `None` | patrones globales que el servidor de desarrollo ignora |
 
@@ -96,12 +97,13 @@ O apáguelo con `useDocs = False`, que también deja de servir `/openapi.json`. 
 | campo | Predeterminado | Significado |
 |---|---|---|
 | `useMiddlewares` | `[]` | Clases de middleware ASGI |
-| `useCORS` | `None` | kwargs por `CORSMiddleware` |
+| `useCORS` | `None` | kwargs para `CORSMiddleware` |
 | `useGZip` | `None` | kwargs para `GZipMiddleware` |
-| `useTrustedHost` | `None` | kwargs para `TrustedHostMiddleware` |
+| `useTrustedHost` | `None` | kwargs por `TrustedHostMiddleware` |
 | `useSession` | `None` | kwargs para `SessionMiddleware` |
 | `useAuth` | `None` | configuración del middleware de autenticación |
 | `useHTTPSRedirect` | `False` | redirigir HTTP a HTTPS |
+| `useRateLimit` | `None` | las solicitudes que una dirección de cliente puede enviar por ventana, como `{"requests": 60, "per": 60}`; uno más es un `429` con `Retry-After`, y `"paths": ["/api/"]` limita solo esos prefijos. Cada trabajador cuenta por sí solo. Consulte [Limitación de velocidad](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

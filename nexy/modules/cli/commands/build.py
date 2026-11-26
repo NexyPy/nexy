@@ -22,6 +22,14 @@ from nexy.modules.cli.commands.guard import abort_on_invalid_config
 from nexy.modules.cli.devtools.pycache import pycache
 from nexy.modules.frontend import FrontendGenerator
 from nexy.modules.i18n import t
+from nexy.modules.images.generator import (
+    ImageBuild,
+    ImageBuildError,
+    prepare_images,
+    write_image_files,
+)
+from nexy.modules.images.manifest import write_image_typescript
+from nexy.modules.images.manifest import write_manifest as write_image_manifest
 
 
 def _announce_start() -> None:
@@ -44,7 +52,13 @@ def build(check: bool = False) -> None:
     build_result = _compile_server_components()
     _exit_on_failed_components(build_result)
     write_manifest(Path("src").rglob("*.nexy"))
+    try:
+        images = _prepare_images()
+    except ImageBuildError as problem:
+        error(t("build.failed_images", "Failed to optimize images"), cause=str(problem))
+        sys.exit(1)
     ssg_entries = _build_client_bundle() if Config().useVite else []
+    write_image_files(images)
     if check:
         _run_checks()
     _show_summary(build_result, ssg_entries)
@@ -75,6 +89,15 @@ def _write_action_client() -> None:
     from nexy.modules.routers.actions.engine import ACTION_ENGINE
 
     ACTION_ENGINE.refresh_client()
+
+
+def _prepare_images() -> ImageBuild:
+    """Publish the manifest before Vite bundles the client adapters."""
+    with step(t("build.optimizing_images", "Optimized images")):
+        build = prepare_images()
+        write_image_manifest(build.manifest)
+        write_image_typescript(build.manifest)
+    return build
 
 
 def _exit_on_failed_components(build_result: BuildResult) -> None:

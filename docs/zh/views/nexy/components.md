@@ -62,7 +62,7 @@ from nexy import Image
 <Image src="/logo.png" alt="Logo" width=128 height=32 />
 ```
 
-`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` 默认情况下使用延迟加载渲染 `<img>`。
+`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` 默认情况下使用延迟加载渲染 `<img>`。对于 `src/` 或 `public/` 中的本地图像，`nx build` 写入散列的 WebP 变体，`Image` 从生成的清单中添加 `srcset` 和 `sizes`。明确的维度和属性获胜。请参阅[图像](../../routing/fbr/navigation/linking-and-navigating.md#image)。
 
 ## 链接
 
@@ -73,10 +73,10 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` 呈现由客户端路由器处理的 `<a data-nexy-link>`。使用 `prefetch=True`，悬停或触摸链接会通过 `window.__nexy_prefetch` 温暖目标。
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` 呈现由客户端路由器处理的 `<a data-nexy-link>`。使用 `prefetch=True`，悬停或触摸链接会通过 `window.__nexy_prefetch`温暖目标。
 
 > [!NOTE]
-> 标签形式将标签视为 `children`，而不是元素内容：`<Link href="/about" children="About" />`。要将标记放入链接内，请使用带有 `children=` 或呈现 `<Slot />` 的 `.nexy` 组件的调用表单。
+> 标签形式将标签视为 `children`，而不是元素内容：`<Link href="/about" children="About" />`。要将标记放入链接内，请使用带有 `children=` 的调用表单或呈现 `<Slot />` 的 `.nexy` 组件。
 
 ## 音频和视频
 
@@ -166,6 +166,6 @@ html = counter(start=0)
 
 ## 后续步骤
 
-- [.nexy 文件](README.md)：使用这些助手的位置
+- [.nexy 文件](README.md)：使用这些助手的地方
 - [React](../react/differences.md)：导入 `.tsx` 组件
 - [前端](../../guides/frontend.md)：如何捆绑客户端组件

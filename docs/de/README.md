@@ -74,6 +74,7 @@ Neu hier? Lesen Sie [Was ist Nexy?](getting-started/what-is-nexy.md) und dann de
 | [Vererbung](routing/fbr/inheritance.md) | Lesen Sie die Auflösungsreihenfolge von Layouts, Abhängigkeiten und Fehlerseiten |
 | [Servermodus und Clientmodus](routing/fbr/modes.md) | `useCSR` und was jeder Modus ermöglicht |
 | [Verknüpfen und Navigieren](routing/fbr/navigation/linking-and-navigating.md) | Seiten verlinken, auf dem Client navigieren, Prefetch |
+| [So funktionieren Seitenübergänge](routing/fbr/navigation/page-transitions.md) | Animieren Sie Client-Navigationen mit der View Transitions API des Browsers |
 | [Haken](routing/fbr/navigation/hooks.md) | Lesen Sie den Pfad, die Abfrage, die Cookies und die Sitzung |
 
 ### Handler und Fehler {fbr}
@@ -172,7 +173,7 @@ Controller und Module.
 ### Werkzeuge und Hilfe
 | Seite | Was Sie tun werden |
 |---|---|
-| [Dev-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
+| [Entwickler-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
 | [Debuggen](guides/debugging.md) | Stoppen Sie in Ihrem Servercode mit `breakpoint()` oder VS Code |
 | [Kodiermittel](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
 | [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die Menschen stoßen |
@@ -208,7 +209,7 @@ Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in 
 |---|---|
 | [Von Express](coming-from/express.md) | Übersetzen Sie Routen, Middleware und `req`/`res` in Python-Handler |
 | [Von Fastify](coming-from/fastify.md) | Verwandeln Sie Schemata, Plugins und Hooks in Modelle, Ordner und Dateien |
-| [Aus Elysia](coming-from/elysia.md) | Ordnen Sie `t` Schemata, Wachen und Eden Pydantic und typisierten Aktionen zu |
+| [Aus Elysia](coming-from/elysia.md) | Ordnen Sie `t` Schemata, Wachen und Eden Pydantic und typisierte Aktionen zu |
 | [Von Hono](coming-from/hono.md) | Ordnen Sie Routen, Middleware und den `hc`-Client Nexy zu |
 
 ### Fullstack-Frameworks {fbr}
@@ -216,7 +217,7 @@ Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in 
 |---|---|
 | [Von Next.js](coming-from/nextjs.md) | Behalten Sie Ihre React-Seiten und verschieben Sie den Servercode nach Python |
 | [Von Remix](coming-from/remix.md) | Verwandeln Sie Loader und Aktionen in Python Handler und Aktionen |
-| [Von Nuxt](coming-from/nuxt.md) | Behalten Sie Ihre Vue Seiten und verschieben Sie `server/` nach Python |
+| [Von Nuxt](coming-from/nuxt.md) | Behalten Sie Ihre Vue-Seiten und verschieben Sie `server/` nach Python |
 | [Von SvelteKit](coming-from/sveltekit.md) | Behalten Sie Ihre Svelte Seiten und verschieben Sie Lasten, Aktionen und Hooks nach Python |
 | [Von Astro](coming-from/astro.md) | Schreiben Sie Astro Seiten als `.nexy` Seiten mit denselben Inseln |
 | [Von Laravel](coming-from/laravel.md) | Ordnen Sie Routen, Controller, Blade, Eloquent und Warteschlangen Nexy zu |
@@ -234,7 +235,7 @@ Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in 
 | Seite | Was darin aufgeführt ist |
 |---|---|
 | [CLI](reference/cli.md) | Befehle, Flags, Eingabeaufforderungen und Exit-Codes |
-| [Konfiguration](reference/config.md) | Jedes `nexyconfig.py` Feld und seine Standardeinstellung |
+| [Konfig](reference/config.md) | Jedes `nexyconfig.py`-Feld und seine Standardeinstellung |
 
 ### Python API und Fehler
 | Seite | Was darin aufgeführt ist |

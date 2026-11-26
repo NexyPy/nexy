@@ -80,6 +80,7 @@ New here? Read [What is Nexy?](getting-started/what-is-nexy.md), then the
 | [Inheritance](routing/fbr/inheritance.md) | Read the resolution order of layouts, dependencies and error pages |
 | [Server mode and client mode](routing/fbr/modes.md) | `useCSR`, and what each mode allows |
 | [Linking and navigating](routing/fbr/navigation/linking-and-navigating.md) | Link pages, navigate on the client, prefetch |
+| [How page transitions work](routing/fbr/navigation/page-transitions.md) | Animate client navigations with the browser's View Transitions API |
 | [Hooks](routing/fbr/navigation/hooks.md) | Read the path, query, cookies and session |
 
 ### Handlers and errors {fbr}

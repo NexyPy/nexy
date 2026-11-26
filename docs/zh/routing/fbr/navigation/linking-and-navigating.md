@@ -186,11 +186,13 @@ useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undef
 <Image src="/photo.jpg" alt="A mountain" width={800} height={600} />
 ```
 
+`nx build` 在 `src/` 和 `public/` 中查找本地图像，然后在 `__nexy__/client/images/` 下以 320、640、960 和 1280 像素写入 WebP 变体。散列名称使每个变体都可缓存：更改图像会更改其 URL。 `Image` 读取生成的清单并为您命名的本地映像设置 `src`、`srcset` 和 `sizes`。显式的 `width`、`height`、`srcSet` 和 `sizes` props 胜过生成的 URL，并且每个生成的 URL 都带有 `useBasePath`。在 `nexyconfig.py` 中设置 `useImageWidths` 以选择其他宽度。转换需要在项目中安装 `Pillow`；如果没有它，`Image` 将保持原始 URL 不变。
+
 - `alt` 为必填项；使用 `alt=""` 作为装饰图像。当它丢失时，Nexy 会发出警告一次。
 - 对于 `width` 和 `height`，属性为浏览器提供宽高比，并且图像保持流畅 (`height: auto; max-width: 100%`)。
 - `priority` 现在以高优先级加载图像，以便在到达时可见。
 - `fill` 使图像覆盖其定位的父级，忽略 `width` 和 `height`。
-- `sizes` 和 `srcSet` 穿过。 Nexy 不会调整图像大小或转换图像。
+- `sizes` 和 `srcSet` 穿过。在本地图像上，当您省略生成的值时，将使用它们。
 
 ## 来自 `.nexy` 页面的链接
 
@@ -211,6 +213,8 @@ from nexy import Link
 2. 导入并渲染页面及其 [布局](../layouts/README.md) **first**，然后才使用 `history.pushState` 移动 URL，因此地址栏永远不会显示失败的页面；
 3. 在 `document` 上调度 `nexy:navigated` 事件；
 4. 滚动到顶部，或滚动到 `#fragment` 目标。
+
+当浏览器视图转换可用时，页面交换在浏览器视图转换内运行：请参阅[页面转换如何工作](page-transitions.md)。
 
 较新的导航会取消仍在渲染的旧导航。如果页面无法呈现，浏览器会向服务器请求该页面。后退和前进按钮呈现该条目的页面并恢复其滚动位置。
 

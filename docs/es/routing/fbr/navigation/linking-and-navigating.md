@@ -186,11 +186,13 @@ Una función no pregunta por sí sola y no retiene una recarga; Llame al `confir
 <Image src="/photo.jpg" alt="A mountain" width={800} height={600} />
 ```
 
+`nx build` encuentra imágenes locales en `src/` y `public/`, luego escribe variantes WebP en 320, 640, 960 y 1280 píxeles debajo de `__nexy__/client/images/`. Los nombres con hash mantienen cada variante en caché: cambiar la imagen cambia su URL. `Image` lee el manifiesto generado y establece `src`, `srcset` y `sizes` para la imagen local que nombre. Los `width`, `height`, `srcSet` y `sizes` props explícitos ganan a los generados, y cada URL generada lleva `useBasePath`. Establezca `useImageWidths` en `nexyconfig.py` para elegir otros anchos. Necesidades de conversión `Pillow` instaladas en el proyecto; sin él, `Image` muestra la URL original sin cambios.
+
 - `alt` es obligatorio; utilice `alt=""` para una imagen decorativa. Nexy avisa una vez cuando falta.
 - Tanto con `width` como con `height`, los atributos le dan al navegador la relación de aspecto y la imagen se mantiene fluida (`height: auto; max-width: 100%`).
 - `priority` carga la imagen ahora con alta prioridad, para la que es visible al llegar.
 - `fill` hace que la imagen cubra su padre posicionado, ignorando `width` y `height`.
-- `sizes` y `srcSet` pasan. Nexy no cambia el tamaño ni convierte las imágenes.
+- `sizes` y `srcSet` pasan. En una imagen local, los valores generados se utilizan cuando los omite.
 
 ## Enlace desde una página `.nexy`
 
@@ -211,6 +213,8 @@ En una navegación, el enrutador:
 2. importa y representa la página y sus [diseños](../layouts/README.md) **primero**, y solo luego mueve la URL con `history.pushState`, de modo que la barra de direcciones nunca muestre una página que falló;
 3. envía un evento `nexy:navigated` el `document`;
 4. se desplaza hacia la parte superior o hacia el objetivo `#fragment`.
+
+El intercambio de página se ejecuta dentro de una transición de vista del navegador cuando hay una disponible: consulte [Cómo funcionan las transiciones de página](page-transitions.md).
 
 Una navegación más nueva cancela una anterior que aún se está procesando. Si una página no se puede representar, el navegador la solicita al servidor. Los botones de avance y retroceso muestran la página de esa entrada y restauran su posición de desplazamiento.
 

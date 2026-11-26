@@ -62,7 +62,7 @@ from nexy import Image
 <Image src="/logo.png" alt="Logo" width=128 height=32 />
 ```
 
-`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` rendert ein `<img>` standardmäßig mit Lazy Loading.
+`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` rendert ein `<img>` standardmäßig mit Lazy Loading. Für ein lokales Bild in `src/` oder `public/` schreibt `nx build` gehashte WebP-Varianten und `Image` fügt `srcset` und `sizes` aus dem generierten Manifest hinzu. Explizite Dimensionen und Attribute gewinnen. Siehe [Bild](../../routing/fbr/navigation/linking-and-navigating.md#image).
 
 ## Link
 
@@ -130,7 +130,7 @@ from "@/components/Card.nexy" import Card
 ```
 <!-- /router -->
 
-`title` hat keinen Standardwert, daher muss die Seite ihn übergeben; `tone` fällt auf `"neutral"` zurück. Der Markup zwischen den Tags kommt innerhalb von `<Slot />` (Großbuchstabe S) an. Siehe [.nexy-Dateien](README.md#components) für props, Slots und die Regeln der Tag-Form.
+`title` hat keinen Standardwert, daher muss die Seite ihn übergeben; `tone` fällt auf `"neutral"` zurück. Der Markup zwischen den Tags kommt innerhalb von `<Slot />` (großes S) an. Siehe [.nexy-Dateien](README.md#components) für props, Slots und die Regeln der Tag-Form.
 
 ## Importieren einer Client-Komponente
 

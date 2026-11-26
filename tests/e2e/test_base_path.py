@@ -56,6 +56,20 @@ def test_the_css_asset_is_served_under_the_prefix(base_path_stack, page: Page):
 
 
 @pytest.mark.e2e
+def test_a_generated_image_loads_under_the_prefix(base_path_stack, page: Page):
+    _home(base_path_stack, page)
+    src = page.get_by_test_id("home-image").get_attribute("src")
+    assert src is not None and src.startswith("/app/images/")
+
+
+@pytest.mark.e2e
+def test_a_generated_srcset_is_prefixed(base_path_stack, page: Page):
+    _home(base_path_stack, page)
+    srcset = page.get_by_test_id("home-image").get_attribute("srcset")
+    assert srcset is not None and srcset.startswith("/app/images/")
+
+
+@pytest.mark.e2e
 def test_an_action_call_uses_the_prefixed_url(base_path_stack, page: Page):
     _home(base_path_stack, page)
     answer = page.evaluate(

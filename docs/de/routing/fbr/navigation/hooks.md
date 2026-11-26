@@ -59,6 +59,7 @@ label: prop[str]
 
 ## Nächste Schritte
 
+- [So funktionieren Seitenübergänge](page-transitions.md): Was passiert, wenn der Client-Router eine Seite austauscht?
 - [Seiten](../pages/README.md): dynamische Segmente und Layouts
 - [Rezepte](../../../guides/recipes.md): ein getesteter Anmeldeablauf basierend auf `useSession()`
 - [Konfiguration](../../../reference/config.md): Sitzungen und Gebietsschemas aktivieren

@@ -28,12 +28,13 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | traite `nx start` exécutions ; `0` est un par processeur sous Linux et macOS, un sous Windows |
 | `useCSR` | `False` | mode de routage côté client ; `.nexy` les itinéraires sont désactivés |
 | `useBasePath` | `None` | préfixe public pour l'ensemble de l'application, tel que `"/app"` ; les requêtes en dehors de celui-ci répondent 404, et les liens générés, les itinéraires clients, les appels à l'action et les actifs portent le préfixe. Voir [Déployer](../deployment/README.md#serve-under-a-sub-path) |
+| `useImageWidths` | `[320, 640, 960, 1280]` | les largeurs de pixels `nx build` génèrent pour les images locales ; la conversion nécessite `Pillow`, et sans cela, les images conservent leur URL d'origine. Voir [Image](../routing/fbr/navigation/linking-and-navigating.md#image) |
 
 ## Base de données
 
 | Champ | Par défaut | Signification |
 |---|---|---|
-| `useORM` | `None` | l'ORM du projet : `"SQLModel"`, `"SQLAlchemy"` ou `"Tortoise-ORM"`. `nx new` l'écrit et `nx migrate` en sélectionne Alembic ou Aerich ; sans cela, `nx migrate` prend le premier ORM installé. Voir [Bases de données](../guides/databases.md#migrations) |
+| `useORM` | `None` | l'ORM du projet : `"SQLModel"`, `"SQLAlchemy"` ou `"Tortoise-ORM"`. `nx new` l'écrit et `nx migrate` en choisit Alembic ou Aerich ; sans cela, `nx migrate` prend le premier ORM installé. Voir [Bases de données](../guides/databases.md#migrations) |
 
 ## Itinéraires
 
@@ -102,6 +103,7 @@ Ou désactivez-le avec `useDocs = False`, qui arrête également de diffuser `/o
 | `useSession` | `None` | kwargs pour `SessionMiddleware` |
 | `useAuth` | `None` | configuration du middleware d'authentification |
 | `useHTTPSRedirect` | `False` | rediriger HTTP vers HTTPS |
+| `useRateLimit` | `None` | les requêtes qu'une adresse client peut envoyer par fenêtre, telles que `{"requests": 60, "per": 60}` ; un de plus est un `429` avec `Retry-After`, et `"paths": ["/api/"]` limite uniquement ces préfixes. Chaque travailleur compte pour lui-même. Voir [Limitation de débit](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

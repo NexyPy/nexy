@@ -62,7 +62,7 @@ from nexy import Image
 <Image src="/logo.png" alt="Logo" width=128 height=32 />
 ```
 
-`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` يعرض `<img>` مع التحميل البطيء بشكل افتراضي.
+`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` يعرض `<img>` مع التحميل البطيء بشكل افتراضي. بالنسبة لصورة محلية في `src/` أو `public/`، يكتب `nx build` متغيرات WebP المجزأة ويضيف `Image` `srcset` و `sizes` من البيان الذي تم إنشاؤه. الأبعاد والسمات الصريحة تفوز. انظر [الصورة](../../routing/fbr/navigation/linking-and-navigating.md#image).
 
 ## رابط
 
@@ -76,7 +76,7 @@ from nexy import Link
 `Link(href, children="", class_name=None, prefetch=True, **attrs)` يعرض `<a data-nexy-link>` تتم معالجته بواسطة جهاز توجيه العميل. مع `prefetch=True`، يؤدي التمرير أو لمس الرابط إلى تسخين الهدف من خلال `window.__nexy_prefetch`.
 
 > [!NOTE]
-> يأخذ نموذج العلامة التسمية كـ `children`، وليس كمحتوى العنصر: `<Link href="/about" children="About" />`. لوضع علامة داخل رابط، استخدم نموذج الاستدعاء مع `children=` أو مكون `.nexy` الذي يعرض `<Slot />`.
+> يأخذ نموذج العلامة التسمية كـ `children`، وليس كمحتوى عنصر: `<Link href="/about" children="About" />`. لوضع علامة داخل رابط، استخدم نموذج الاستدعاء مع `children=` أو مكون `.nexy` الذي يعرض `<Slot />`.
 
 ## الصوت والفيديو
 
@@ -91,7 +91,7 @@ from nexy import Audio, Video
 <Video src="/demo.mp4" width=640 height=360 muted=True />
 ```
 
-`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` و `Video(src, width=None, height=None, ...)` يقدمان لاعبين أصليين. `sources` يضيف `<source>` علامات بنوع MIME المشتق من كل امتداد.
+`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` و `Video(src, width=None, height=None, ...)` يقدمان لاعبين أصليين. `sources` يضيف `<source>` علامات بنوع MIME المشتق من كل ملحق.
 
 ## مكون تكتبه بنفسك
 
@@ -158,7 +158,7 @@ html = counter(start=0)
 
 `Template().render(path, context)` يعرض ملف قالب (Jinja2، أو Markdown يتم عرضه إلى HTML للمسارات `.md`). `Template().invalidate(path)` يسقطه من ذاكرة التخزين المؤقت.
 
-`Vite()` يقوم بإرجاع علامات العميل للوضع الحالي: البرنامج النصي HMR قيد التطوير، وحزمة العميل المضمنة في الإنتاج. يطلق عليه Nexy لكل صفحة؛ نادرا ما تحتاج إليها بشكل مباشر.
+`Vite()` يقوم بإرجاع علامات العميل للوضع الحالي: البرنامج النصي HMR قيد التطوير، وحزمة العميل المبنية في الإنتاج. يطلق عليه Nexy لكل صفحة؛ نادرا ما تحتاج إليها بشكل مباشر.
 
 ## لم يتم تنفيذها بعد
 

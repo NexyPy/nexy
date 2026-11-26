@@ -4,6 +4,7 @@
 import { withBase } from './router.ts'
 import type { RouterLocation } from './router.ts'
 import { BASE_PATH } from './base-path.auto.ts'
+import { IMAGE_VARIANTS } from './image-manifest.auto.ts'
 
 /** The href the browser sees; a route string stays prefix-free inside the application. */
 export function withBaseHref(href: string, base: string = BASE_PATH): string {
@@ -72,24 +73,35 @@ const FILL_STYLE: Record<string, string> = {
   objectFit: 'cover'
 }
 
+/** The generated variants of a local image, when `nx build` has seen it. */
+function imageVariant(src: string) {
+  const key = src.split('?')[0].split('#')[0].replace(/^\.\//, '').replace(/^\//, '')
+  return IMAGE_VARIANTS[key]
+}
+
 /** The attributes of the `<img>` an Image component renders. */
 export function imageAttributes(props: ImageProps): ImageAttributes {
+  const variant = imageVariant(props.src)
   const attributes: ImageAttributes = {
-    src: withBaseHref(props.src),
+    src: withBaseHref(variant ? variant.src : props.src),
     alt: props.alt,
     loading: props.loading ?? (props.priority ? 'eager' : 'lazy'),
     decoding: props.priority ? 'auto' : 'async'
   }
   if (props.priority) attributes.fetchpriority = 'high'
   if (props.sizes) attributes.sizes = props.sizes
+  else if (variant) attributes.sizes = variant.sizes
   if (props.srcSet) attributes.srcset = prefixedSrcSet(props.srcSet)
+  else if (variant) attributes.srcset = prefixedSrcSet(variant.srcset)
   if (props.fill) {
     attributes.style = { ...FILL_STYLE }
   } else {
-    if (props.width !== undefined) attributes.width = props.width
-    if (props.height !== undefined) attributes.height = props.height
+    const width = props.width ?? variant?.width
+    const height = props.height ?? variant?.height
+    if (width !== undefined) attributes.width = width
+    if (height !== undefined) attributes.height = height
     // The attributes give the browser the aspect ratio; this keeps it when CSS resizes the width.
-    if (props.width !== undefined && props.height !== undefined) {
+    if (width !== undefined && height !== undefined) {
       attributes.style = { height: 'auto', maxWidth: '100%' }
     }
   }

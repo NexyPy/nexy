@@ -97,6 +97,11 @@ class TestImage:
         assert image["style"].rstrip(";") == "height:auto;max-width:100%"
         assert image["alt"] == "A"
 
+    def test_a_built_image_carries_srcset_and_sizes(self, story):
+        image = story["initial"]["image"]
+        assert image["srcset"].startswith("/images/a-320.webp 320w")
+        assert image["sizes"] == "(max-width: 640px) 100vw, 640px"
+
 
 class TestNavigation:
     def test_hovering_a_link_warms_its_page(self, story):

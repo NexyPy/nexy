@@ -28,6 +28,7 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | প্রক্রিয়াগুলি `nx start` চলে; `0` প্রতি সিপিইউ লিনাক্স এবং ম্যাকোসে একটি, উইন্ডোজে একটি |
 | `useCSR` | `False` | ক্লায়েন্ট-সাইড রাউটিং মোড; `.nexy` রুট নিষ্ক্রিয় করা হয়েছে |
 | `useBasePath` | `None` | সম্পূর্ণ অ্যাপ্লিকেশনের জন্য সর্বজনীন উপসর্গ, যেমন `"/app"`; এর বাইরের অনুরোধগুলি 404 উত্তর দেয় এবং জেনারেট করা লিঙ্ক, ক্লায়েন্ট রুট, অ্যাকশন কল এবং সম্পদগুলি উপসর্গ বহন করে। দেখুন [মোতায়েন](../deployment/README.md#serve-under-a-sub-path) |
+| `useImageWidths` | `[320, 640, 960, 1280]` | স্থানীয় ছবির জন্য পিক্সেল প্রস্থ `nx build` তৈরি করে; রূপান্তরের প্রয়োজন `Pillow`, এবং এটি ছাড়া ছবিগুলি তাদের আসল URL রাখে। দেখুন [চিত্র](../routing/fbr/navigation/linking-and-navigating.md#image) |
 
 ## ডাটাবেস
 
@@ -57,7 +58,7 @@ class NexyConfig(NexyConfigModel):
 
 ## সংরক্ষিত ফাইলের নাম
 
-প্রতিটি ক্ষেত্র একটি সংরক্ষিত ভূমিকায় এক্সটেনশন যোগ করে। `useLayoutExtensions = ["md"]` `layout.md` সংরক্ষিত করে তোলে, ঠিক `layout.nexy` এর মতো।
+প্রতিটি ক্ষেত্র একটি সংরক্ষিত ভূমিকায় এক্সটেনশন যোগ করে। `useLayoutExtensions = ["md"]` `layout.md` কে সংরক্ষিত করে তোলে, ঠিক `layout.nexy` এর মতো।
 
 | মাঠ | এ এক্সটেনশন যোগ করে |
 |---|---|
@@ -79,7 +80,7 @@ class NexyConfig(NexyConfigModel):
 
 ### প্রকল্পের একটি পৃষ্ঠার জন্য বিনামূল্যে `/docs`
 
-API রেফারেন্স যেকোন রুটের আগে `/docs` উত্তর দেয়, তাই `src/routes/docs.nexy` বা `src/routes/docs/[[...slug]].nexy` সেখানে কখনই পরিবেশন করা হয় না। `nx dev` এবং `nx start` শুরুতে এমন একটি পৃষ্ঠার নাম দিন। এর সাথে রেফারেন্স সরান `useDocsUrl`:
+API রেফারেন্স কোন রুটের আগে `/docs` উত্তর দেয়, তাই `src/routes/docs.nexy` বা `src/routes/docs/[[...slug]].nexy` সেখানে কখনই পরিবেশন করা হয় না। `nx dev` এবং `nx start` শুরুতে এমন একটি পৃষ্ঠার নাম দিন। এর সাথে রেফারেন্স সরান `useDocsUrl`:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -97,11 +98,12 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useMiddlewares` | `[]` | ASGI মিডলওয়্যার ক্লাস |
 | `useCORS` | `None` | জন্য kwargs `CORSMiddleware` |
-| `useGZip` | `None` | জন্য kwargs `GZipMiddleware` |
+| `useGZip` | `None` | `GZipMiddleware` জন্য kwargs |
 | `useTrustedHost` | `None` | জন্য kwargs `TrustedHostMiddleware` |
 | `useSession` | `None` | জন্য kwargs `SessionMiddleware` |
 | `useAuth` | `None` | প্রমাণীকরণ মিডলওয়্যার কনফিগারেশন |
 | `useHTTPSRedirect` | `False` | HTTPS-এ HTTP রিডাইরেক্ট করুন |
+| `useRateLimit` | `None` | অনুরোধগুলি একটি ক্লায়েন্ট ঠিকানা প্রতি উইন্ডোতে পাঠাতে পারে, যেমন `{"requests": 60, "per": 60}`; আরও একটি হল `429` সহ `Retry-After`, এবং `"paths": ["/api/"]` শুধুমাত্র সেই উপসর্গগুলিকে সীমাবদ্ধ করে। প্রতিটি কর্মী তার নিজের উপর গণনা করে। [দর সীমিত করা](../guides/middleware-and-security.md#rate-limiting) দেখুন |
 
 ## Markdown
 

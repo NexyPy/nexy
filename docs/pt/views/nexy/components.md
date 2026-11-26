@@ -34,7 +34,7 @@ Ambas as linhas produzem a mesma marcação:
 
 O compilador reescreve `<Audio ... />` para `{{ Audio(...) }}`, então o formato da tag não é uma segunda API: os atributos são os argumentos de palavra-chave da função.
 
-## Regras do formulário de tag
+## Regras do formulário de tags
 
 | Na etiqueta | Torna-se |
 |---|---|
@@ -62,7 +62,7 @@ from nexy import Image
 <Image src="/logo.png" alt="Logo" width=128 height=32 />
 ```
 
-`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` renderiza um `<img>` com carregamento lento por padrão.
+`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` renderiza um `<img>` com carregamento lento por padrão. Para uma imagem local em `src/` ou `public/`, `nx build` grava variantes WebP com hash e `Image` adiciona `srcset` e `sizes` do manifesto gerado. Dimensões e atributos explícitos vencem. Veja [Imagem](../../routing/fbr/navigation/linking-and-navigating.md#image).
 
 ## Ligação
 
@@ -130,7 +130,7 @@ from "@/components/Card.nexy" import Card
 ```
 <!-- /router -->
 
-`title` não tem padrão, então a página deve passá-lo; `tone` volta para `"neutral"`. A marcação entre as tags chega dentro de `<Slot />` (S maiúsculo). Consulte [arquivos .nexy](README.md#components) para props, slots e as regras do formulário de tag.
+`title` não tem padrão, então a página deve passá-lo; `tone` volta para `"neutral"`. A marcação entre as tags chega dentro de `<Slot />` (S maiúsculo). Veja [arquivos .nexy](README.md#components) para props, slots e as regras do formulário de tag.
 
 ## Importando um componente cliente
 

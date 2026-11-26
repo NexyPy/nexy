@@ -28,6 +28,7 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | Prozesse `nx start` läuft; `0` ist einer pro CPU unter Linux und macOS, einer unter Windows |
 | `useCSR` | `False` | Client-seitiger Routing-Modus; `.nexy` Routen sind deaktiviert |
 | `useBasePath` | `None` | öffentliches Präfix für die gesamte Anwendung, z. B. `"/app"`; Anfragen außerhalb antworten mit 404 und generierte Links, Client-Routen, Aktionsaufrufe und Assets tragen das Präfix. Siehe [Bereitstellen](../deployment/README.md#serve-under-a-sub-path) |
+| `useImageWidths` | `[320, 640, 960, 1280]` | Pixelbreiten `nx build` werden für lokale Bilder generiert; Die Konvertierung erfordert `Pillow`, und ohne sie behalten Bilder ihre ursprüngliche URL. Siehe [Bild](../routing/fbr/navigation/linking-and-navigating.md#image) |
 
 ## Datenbank
 
@@ -102,6 +103,7 @@ Oder schalten Sie es mit `useDocs = False` aus, wodurch auch die Bereitstellung 
 | `useSession` | `None` | Kwargs für `SessionMiddleware` |
 | `useAuth` | `None` | Authentifizierungs-Middleware-Konfiguration |
 | `useHTTPSRedirect` | `False` | HTTP auf HTTPS umleiten |
+| `useRateLimit` | `None` | die Anfragen, die eine Client-Adresse pro Fenster senden kann, z. B. `{"requests": 60, "per": 60}`; eine weitere ist ein `429` mit `Retry-After`, und `"paths": ["/api/"]` beschränkt nur diese Präfixe. Jeder Arbeiter zählt für sich. Siehe [Ratenbegrenzung](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

@@ -137,7 +137,7 @@ Es fängt nicht:
 
 ## Fragen Sie nach, bevor Sie eine Seite mit nicht gespeicherten Änderungen verlassen
 
-`useBlocker(dirty, message?)` fragt den Besucher, bevor er geht, während `dirty` wahr ist: ein Link, ein `router.push`, die Zurück- und Vorwärts-Buttons, ein Neuladen und ein geschlossener Tab. Eine Client-Navigation zeigt `message` in `confirm()`: „Ja“ geht weiter, „Nein“ bleibt auf der Seite. Ein erneutes Laden oder ein geschlossener Tab zeigt die eigene Frage des Browsers an, die keine Seite formulieren kann. Ohne Meldung lautet die Frage: „Sie haben nicht gespeicherte Änderungen. Diese Seite verlassen?“.
+`useBlocker(dirty, message?)` fragt den Besucher, bevor er geht, während `dirty` wahr ist: ein Link, ein `router.push`, die Zurück- und Vorwärts-Buttons, ein Neuladen und ein geschlossener Tab. Eine Client-Navigation zeigt `message` in `confirm()`: „Ja“ geht weiter, „Nein“ bleibt auf der Seite. Ein Neuladen oder ein geschlossener Tab zeigt die eigene Frage des Browsers an, die keine Seite formulieren kann. Ohne Meldung lautet die Frage: „Sie haben nicht gespeicherte Änderungen. Diese Seite verlassen?“.
 
 ```tsx
 import { useState } from "react";
@@ -186,11 +186,13 @@ Eine Funktion fragt nicht selbst nach und hält kein Neuladen bereit; Rufen Sie 
 <Image src="/photo.jpg" alt="A mountain" width={800} height={600} />
 ```
 
+`nx build` findet lokale Bilder in `src/` und `public/` und schreibt dann WebP-Varianten mit 320, 640, 960 und 1280 Pixeln unter `__nexy__/client/images/`. Durch gehashte Namen bleibt jede Variante zwischenspeicherbar: Durch Ändern des Bildes wird dessen URL geändert. `Image` liest das generierte Manifest und legt `src`, `srcset` und `sizes` für das von Ihnen benannte lokale Image fest. Explizite `width`, `height`, `srcSet` und `sizes` props gewinnen über die generierten, und jede generierte URL trägt `useBasePath`. Stellen Sie `useImageWidths` in `nexyconfig.py` ein, um andere Breiten auszuwählen. Konvertierungsbedarf `Pillow` im Projekt installiert; Ohne sie stellt `Image` die ursprüngliche URL unverändert bereit.
+
 - `alt` ist erforderlich; Verwenden Sie `alt=""` für ein dekoratives Bild. Nexy warnt einmal, wenn es fehlt.
 - Sowohl bei `width` als auch bei `height` geben die Attribute dem Browser das Seitenverhältnis vor und das Bild bleibt flüssig (`height: auto; max-width: 100%`).
 - `priority` lädt das Bild jetzt mit hoher Priorität für das Bild, das bei der Ankunft sichtbar ist.
-- `fill` sorgt dafür, dass das Bild sein positioniertes übergeordnetes Bild verdeckt und ignoriert dabei `width` und `height`.
-- `sizes` und `srcSet` gehen durch. Nexy ändert die Größe von Bildern nicht und konvertiert sie nicht.
+- `fill` bewirkt, dass das Bild sein positioniertes übergeordnetes Element verdeckt, wobei `width` und `height` ignoriert werden.
+- `sizes` und `srcSet` gehen durch. Auf einem lokalen Bild werden die generierten Werte verwendet, wenn Sie sie weglassen.
 
 ## Link von einer `.nexy`-Seite
 
@@ -211,6 +213,8 @@ Bei einer Navigation: Der Router:
 2. importiert und rendert die Seite und ihre [Layouts](../layouts/README.md) **zuerst** und verschiebt erst dann die URL mit `history.pushState`, sodass in der Adressleiste nie eine Seite angezeigt wird, die fehlgeschlagen ist;
 3. löst ein `nexy:navigated`-Ereignis am `document` aus;
 4. scrollt nach oben oder zum Ziel `#fragment`.
+
+Der Seitenwechsel wird innerhalb eines Browseransichtsübergangs ausgeführt, sofern einer verfügbar ist: siehe [Funktionsweise von Seitenübergängen](page-transitions.md).
 
 Eine neuere Navigation bricht eine ältere ab, die noch gerendert wird. Wenn eine Seite nicht gerendert werden kann, fragt der Browser stattdessen den Server danach. Die Schaltflächen „Zurück“ und „Vorwärts“ rendern die Seite dieses Eintrags und stellen die Scrollposition wieder her.
 

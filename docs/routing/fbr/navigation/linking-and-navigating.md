@@ -209,12 +209,20 @@ known.
 <Image src="/photo.jpg" alt="A mountain" width={800} height={600} />
 ```
 
+`nx build` finds local images in `src/` and `public/`, then writes WebP variants at 320, 640, 960
+and 1280 pixels under `__nexy__/client/images/`. Hashed names keep each variant cacheable: changing
+the image changes its URL. `Image` reads the generated manifest and sets `src`, `srcset` and `sizes`
+for the local image you name. Explicit `width`, `height`, `srcSet` and `sizes` props win over the
+generated ones, and every generated URL carries `useBasePath`. Set `useImageWidths` in
+`nexyconfig.py` to choose other widths. Conversion needs `Pillow` installed in the project; without
+it, `Image` serves the original URL unchanged.
+
 - `alt` is required; use `alt=""` for a decorative image. Nexy warns once when it is missing.
 - With both `width` and `height`, the attributes give the browser the aspect ratio and the image
   stays fluid (`height: auto; max-width: 100%`).
 - `priority` loads the image now at high priority, for the one that is visible on arrival.
 - `fill` makes the image cover its positioned parent, ignoring `width` and `height`.
-- `sizes` and `srcSet` pass through. Nexy does not resize or convert images.
+- `sizes` and `srcSet` pass through. On a local image, the generated values are used when you omit them.
 
 ## Link from a `.nexy` page
 
@@ -237,6 +245,9 @@ On a navigation, the router:
    moves the URL with `history.pushState`, so the address bar never shows a page that failed;
 3. dispatches a `nexy:navigated` event on `document`;
 4. scrolls to the top, or to the `#fragment` target.
+
+The page swap runs inside a browser view transition when one is available: see
+[How page transitions work](page-transitions.md).
 
 A newer navigation cancels an older one that is still rendering. If a page cannot render, the browser
 asks the server for it instead. The back and forward buttons render the page of that entry and

@@ -49,6 +49,7 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [Inheritance](docs/routing/fbr/inheritance.md): Read the resolution order of layouts, dependencies and error pages
 - [Server mode and client mode](docs/routing/fbr/modes.md): `useCSR`, and what each mode allows
 - [Linking and navigating](docs/routing/fbr/navigation/linking-and-navigating.md): Link pages, navigate on the client, prefetch
+- [How page transitions work](docs/routing/fbr/navigation/page-transitions.md): Animate client navigations with the browser's View Transitions API
 - [Hooks](docs/routing/fbr/navigation/hooks.md): Read the path, query, cookies and session
 - [Route handlers](docs/routing/fbr/handlers/README.md): Add a Python endpoint
 - [Validation and errors](docs/routing/fbr/handlers/validation-and-errors.md): Answer `422` and `404`, and raise an `HTTPException`
