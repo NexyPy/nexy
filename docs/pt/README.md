@@ -162,6 +162,7 @@ Controladores e módulos.
 | [Middleware e segurança](guides/middleware-and-security.md) | Configure CORS, GZip, hosts e sessões confiáveis |
 | [Mapa do site e robots.txt](guides/sitemap.md) | Sirva `/sitemap.xml` e `/robots.txt` de suas rotas |
 | [Implantar](deployment/README.md) | Construa, conteinerize e sirva |
+| [Implantar no Vercel](deployment/vercel.md) | Adicione o ponto de entrada, confirme a construção e armazene em cache os ativos estáticos |
 | [Desempenho](deployment/performance.md) | Meça e ajuste os padrões |
 
 ### Construir e testar
@@ -227,7 +228,7 @@ As mesmas tarefas, escritas no framework que você conhece e depois no Nexy.
 | Página | O que você fará |
 |---|---|
 | [De NestJS](coming-from/nestjs.md) | Mova controladores, módulos, provedores e proteções para o roteador modular |
-| [Da inicialização Spring](coming-from/spring-boot.md) | Mova controladores, serviços e filtros para o roteador modular |
+| [Do Spring Boot](coming-from/spring-boot.md) | Mova controladores, serviços e filtros para o roteador modular |
 
 ## Referência
 

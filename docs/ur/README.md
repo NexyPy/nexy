@@ -162,6 +162,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | [مڈل ویئر اور سیکورٹی](guides/middleware-and-security.md) | CORS، GZip، قابل اعتماد میزبان اور سیشنز ترتیب دیں۔ |
 | [سائٹ کا نقشہ اور robots.txt](guides/sitemap.md) | اپنے راستوں سے `/sitemap.xml` اور `/robots.txt` کی خدمت کریں۔ |
 | [تعیناتی](deployment/README.md) | بنائیں، کنٹینر بنائیں اور سرو کریں۔ |
+| [Vercel پر تعیناتی](deployment/vercel.md) | انٹری پوائنٹ شامل کریں، تعمیر کا ارتکاب کریں اور جامد اثاثوں کو کیش کریں۔ |
 | [کارکردگی](deployment/performance.md) | ڈیفالٹس کی پیمائش اور ٹیون کریں۔ |
 
 ### بنائیں اور ٹیسٹ کریں۔
@@ -173,9 +174,9 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### ٹولنگ اور مدد
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [دیو ٹول بار](guides/devtools.md) | ٹول بار کا استعمال کریں `nexy dev`، اور اسے بند کر دیں۔ |
+| [دیو ٹول بار](guides/devtools.md) | `nexy dev` کا ٹول بار استعمال کریں، اور اسے آف کریں۔ |
 | [ڈیبگنگ](guides/debugging.md) | اپنے سرور کوڈ میں `breakpoint()` یا VS کوڈ کے ساتھ رکیں۔ |
-| [کوڈنگ ایجنٹ](guides/ai-agents.md) | اپنے پروجیکٹ کے قواعد Claude Code، Codex اور OpenCode بتائیں |
+| [کوڈنگ ایجنٹس](guides/ai-agents.md) | اپنے پروجیکٹ کے قوانین Claude Code، Codex اور OpenCode کو بتائیں |
 | [خرابیوں کا سراغ لگانا](guides/troubleshooting.md) | لوگوں کے پہلے مسائل کو حل کریں۔ |
 
 ## ڈیٹا بیس
@@ -200,9 +201,9 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### Python فریم ورک {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [منجانب FastAPI](coming-from/fastapi.md) | اپنا FastAPI کوڈ رکھیں: صرف `@app.get` فائل بن جاتی ہے۔ |
-| [سے Flask](coming-from/flask.md) | نظارے، بلیو پرنٹس، ٹیمپلیٹس اور فارمز کو Nexy روٹس میں تبدیل کریں۔ |
-| [منجانب Django](coming-from/django.md) | نقشہ کے نظارے، ٹیمپلیٹس، ماڈل، فارم اور ترتیبات Nexy پر |
+| [سے FastAPI](coming-from/fastapi.md) | اپنا FastAPI کوڈ رکھیں: صرف `@app.get` فائل بن جاتی ہے۔ |
+| [منجانب Flask](coming-from/flask.md) | نظارے، بلیو پرنٹس، ٹیمپلیٹس اور فارمز کو Nexy روٹس میں تبدیل کریں۔ |
+| [سے Django](coming-from/django.md) | نقشہ کے نظارے، ٹیمپلیٹس، ماڈل، فارم اور ترتیبات Nexy پر |
 
 ### JavaScript پسدید {fbr}
 | صفحہ | آپ کیا کریں گے |
@@ -210,23 +211,23 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | [ایکسپریس سے ](coming-from/express.md) | روٹس، مڈل ویئر اور `req`/`res` کو Python ہینڈلرز میں ترجمہ کریں |
 | [فاسٹائف ](coming-from/fastify.md) سے | اسکیموں، پلگ انز اور ہکس کو ماڈلز، فولڈرز اور فائلوں میں تبدیل کریں۔ |
 | [ایلیسیا سے](coming-from/elysia.md) | نقشہ `t` اسکیماس، گارڈز اور ایڈن سے Pydantic اور ٹائپ کردہ اعمال |
-| [ہونو سے ](coming-from/hono.md) | نقشے کے راستوں، مڈل ویئر اور `hc` کلائنٹ کو Nexy تک |
+| [ہونو سے ](coming-from/hono.md) | نقشے کے راستے، مڈل ویئر اور `hc` کلائنٹ کو Nexy تک |
 
 ### فل اسٹیک فریم ورک {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [سے Next.js](coming-from/nextjs.md) | اپنے React صفحات کو رکھیں اور سرور کوڈ کو Python پر منتقل کریں۔ |
-| [سے Remix](coming-from/remix.md) | لوڈرز اور اعمال کو Python ہینڈلرز اور ایکشنز میں تبدیل کریں۔ |
+| [سے Next.js](coming-from/nextjs.md) | اپنے React صفحات رکھیں اور سرور کوڈ کو Python پر منتقل کریں۔ |
+| [سے Remix](coming-from/remix.md) | لوڈرز اور ایکشن کو Python ہینڈلرز اور ایکشنز میں تبدیل کریں۔ |
 | [Nuxt ](coming-from/nuxt.md) سے | اپنے Vue صفحات کو رکھیں اور `server/` کو Python پر منتقل کریں۔ |
-| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
-| [سے Astro](coming-from/astro.md) | اسی جزیرے کے ساتھ Astro صفحات کو `.nexy` صفحات کے طور پر لکھیں |
+| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات کو رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
+| [منجانب Astro](coming-from/astro.md) | اسی جزیرے کے ساتھ Astro صفحات کو `.nexy` صفحات کے طور پر لکھیں |
 | [لاراویل سے ](coming-from/laravel.md) | نقشے کے راستوں، کنٹرولرز، بلیڈ، فصاحت اور Nexy کے لیے قطاریں۔ |
 | [روبی آن ریلز سے ](coming-from/rails.md) | نقشے کے راستے، کنٹرولرز، ERB، ایکٹو ریکارڈ اور Nexy کے لیے نوکریاں |
 
 ### کنٹرولر فریم ورک {modular}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [منجانب NestJS](coming-from/nestjs.md) | کنٹرولرز، ماڈیولز، پرووائیڈرز اور گارڈز کو ماڈیولر راؤٹر میں منتقل کریں۔ |
+| [سے NestJS](coming-from/nestjs.md) | کنٹرولرز، ماڈیولز، پرووائیڈرز اور گارڈز کو ماڈیولر راؤٹر میں منتقل کریں۔ |
 | [اسپرنگ بوٹ سے ](coming-from/spring-boot.md) | کنٹرولرز، سروسز اور فلٹرز کو ماڈیولر روٹر میں منتقل کریں۔ |
 
 ## حوالہ
@@ -246,13 +247,13 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### فائل کنونشنز {fbr,custom}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [فائل کنونشنز ](reference/file-conventions.md) | محفوظ فائلیں اور روٹنگ کے اصول |
+| [فائل کنونشنز](reference/file-conventions.md) | محفوظ فائلیں اور روٹنگ کے اصول |
 
 ### کنونشنز اور تصورات
 | صفحہ | آپ کیا کریں گے |
 |---|---|
 | [لغت ](reference/glossary.md) | الفاظ جو یہ دستاویزات استعمال کرتے ہیں۔ |
-| [سلامتی](reference/security.md) | ورژن فرش، قواعد Nexy کی پیروی کرتا ہے، آڈٹ |
+| [سیکورٹی](reference/security.md) | ورژن فرش، قواعد Nexy کی پیروی کرتا ہے، آڈٹ |
 
 ## لے آؤٹ
 ```text

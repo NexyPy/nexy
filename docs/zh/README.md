@@ -162,6 +162,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | [中间件和安全性](guides/middleware-and-security.md) | 设置 CORS、GZip、可信主机和会话 |
 | [站点地图和 robots.txt](guides/sitemap.md) | 从您的路线提供 `/sitemap.xml` 和 `/robots.txt` |
 | [部署](deployment/README.md) | 构建、容器化和服务 |
+| [在 Vercel 上部署](deployment/vercel.md) | 添加入口点，提交构建并缓存静态资源 |
 | [性能](deployment/performance.md) | 测量和调整默认值 |
 
 ### 构建和测试
