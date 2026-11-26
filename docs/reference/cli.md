@@ -13,7 +13,7 @@ example `uv run nexy dev`: that is where your own packages are.
 | `nx build` | `nx b` | production build |
 | `nx new` | `nx n` | scaffold a project |
 | `nx init` | `nx i` | add Nexy to an existing project |
-| `nx add` | - | add a UI component from the registry or a URL to `src/components/ui` |
+| `nx add` | - | add a UI component from the registry or a URL, or a deployment platform such as `vercel` |
 | `nx migrate` | `nx m` | create or apply database migrations with Alembic or Aerich |
 | `nx check` | `nx c` | type-check: mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (prettier), `.nexy` files |

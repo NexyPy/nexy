@@ -11,7 +11,7 @@ Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` cr
 | `nx build` | `nx b` | construction de production |
 | `nx new` | `nx n` | échafauder un projet |
 | `nx init` | `nx i` | ajouter Nexy à un projet existant |
-| `nx add` | - | ajoutez un composant d'interface utilisateur du registre ou une URL à `src/components/ui` |
+| `nx add` | - | ajoutez un composant d'interface utilisateur à partir du registre ou d'une URL, ou d'une plate-forme de déploiement telle que `vercel` |
 | `nx migrate` | `nx m` | créer ou appliquer des migrations de bases de données avec Alembic ou Aerich |
 | `nx check` | `nx c` | type-check : mypy sur Python, `tsc` sur TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (plus joli), `.nexy` fichiers |
@@ -42,7 +42,7 @@ Si aucune route d'application n'est trouvée, il imprime `No routes found.`.
 | `format` | `--check` | off - rapport au lieu de réécrire |
 | `test` | `--client` | off - exécute également Vitest au lieu de pytest seul |
 | `test` | `--no-server` | on - ignorer pytest lorsque vous souhaitez uniquement des tests clients |
-| `new` | `--template`, `-t` | aucun - cloner un modèle enregistré sans invite |
+| `new` | `--template`, `-t` | aucun - clone un modèle enregistré sans invite |
 | `new` | `--no-agents` | agents activés - ignorer `AGENTS.md` et les compétences de l'agent |
 | `add` | `--ui`, `--url` | off - force un nom de registre ou une URL lorsqu'il est ambigu |
 | `add` | `--all`, `-a` | off - ajoute tous les composants du registre |
