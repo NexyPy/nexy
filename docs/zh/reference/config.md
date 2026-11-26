@@ -90,31 +90,32 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-或者使用 `useDocs = False` 将其关闭，这也会停止服务 `/openapi.json`。当参考打开时，使项目的路线远离该路径。
+Or turn it off with `useDocs = False`, which also stops serving `/openapi.json`. While the reference is on, keep the routes of the project off that path.
 
 ## 中间件
 
 | 领域 | 默认 | 含义 |
 |---|---|---|
-| `useMiddlewares` | `[]` | ASGI中间件类 |
-| `useCORS` | `None` | 夸格斯 `CORSMiddleware` |
+| `useMiddlewares` | `[]` | ASGI middleware classes |
+| `useCORS` | `None` | kwargs for `CORSMiddleware` |
 | `useGZip` | `None` | kwargs 为 `GZipMiddleware` |
 | `useTrustedHost` | `None` | 夸格斯 `TrustedHostMiddleware` |
-| `useSession` | `None` | 夸格斯 `SessionMiddleware` |
+| `useSession` | `None` | kwargs for `SessionMiddleware` |
 | `useAuth` | `None` | 身份验证中间件配置 |
-| `useHTTPSRedirect` | `False` | 将 HTTP 重定向到 HTTPS |
+| `useHTTPSRedirect` | `False` | redirect HTTP to HTTPS |
+| `useRateLimit` | `None` | the requests one client address may send per window, such as `{"requests": 60, "per": 60}`; one more is a `429` with `Retry-After`, and `"paths": ["/api/"]` limits only those prefixes.每个工人都依靠自己。请参阅[速率限制](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 
 | 领域 | 默认 | 含义 |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | 目录中包含的标题级别 |
-| `useTocTitle` | `"Table of Contents"` | 目录标题 |
+| `useTocTitle` | `"Table of Contents"` | TOC title |
 | `useTocAuto` | `True` | 生成 Markdown 页的目录 |
 
 ## 文件树外的路由
 
-构建一个 FastAPI `APIRouter` 并用 `useRouter` 安装它。它在基于文件的路由旁边提供：
+Build a FastAPI `APIRouter` and mount it with `useRouter`.它在基于文件的路由旁边提供：
 
 ```python filename="nexyconfig.py"
 from fastapi import APIRouter
@@ -136,7 +137,7 @@ class NexyConfig(NexyConfigModel):
 
 ## 已声明，尚未阅读
 
-这些字段存在于 `NexyConfigModel` 中，但没有代码使用它们。设置它们没有效果：
+These fields exist in `NexyConfigModel` but no code consumes them.设置它们没有效果：
 
 `useViteDevUrl`，`useRTL`。
 

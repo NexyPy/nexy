@@ -90,7 +90,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-أو قم بإيقاف تشغيله باستخدام `useDocs = False`، والذي يتوقف أيضًا عن الخدمة `/openapi.json`. أثناء تشغيل المرجع، احتفظ بمسارات المشروع بعيدًا عن هذا المسار.
+أو أطفئه بـ `useDocs = False`، والذي يتوقف أيضًا عن الخدمة `/openapi.json`. أثناء تشغيل المرجع، احتفظ بمسارات المشروع بعيدًا عن هذا المسار.
 
 ## الوسيطة
 
@@ -103,6 +103,7 @@ class NexyConfig(NexyConfigModel):
 | `useSession` | `None` | كوارج ل `SessionMiddleware` |
 | `useAuth` | `None` | تكوين البرامج الوسيطة للمصادقة |
 | `useHTTPSRedirect` | `False` | إعادة توجيه HTTP إلى HTTPS |
+| `useRateLimit` | `None` | الطلبات التي قد يرسلها عنوان عميل واحد لكل نافذة، مثل `{"requests": 60, "per": 60}`؛ واحد آخر هو `429` مع `Retry-After`، و `"paths": ["/api/"]` يحد فقط تلك البادئات. كل عامل يعتمد على نفسه. راجع [تحديد المعدل](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 
@@ -114,7 +115,7 @@ class NexyConfig(NexyConfigModel):
 
 ## الطرق خارج شجرة الملفات
 
-قم ببناء FastAPI `APIRouter` وتركيبه بـ `useRouter`. يتم تقديمه بجوار المسارات المستندة إلى الملف:
+ابنِ FastAPI `APIRouter` وثبته بـ `useRouter`. يتم تقديمه بجوار المسارات المستندة إلى الملف:
 
 ```python filename="nexyconfig.py"
 from fastapi import APIRouter

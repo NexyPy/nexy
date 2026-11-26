@@ -20,10 +20,10 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `usePort` | `3000` | `dev` اور `start` کے لیے بندرگاہ |
 | `useHost` | `"0.0.0.0"` | پتہ باندھنا |
-| `useSslKeyfile`، `useSslCertfile` | `None` | HTTPS کو براہ راست پیش کریں۔ |
+| `useSslKeyfile`، `useSslCertfile` | `None` | براہ راست HTTPS کی خدمت کریں۔ |
 | `useDevTools` | `True` | ٹول بار `nexy dev` ہر صفحہ میں اضافہ کرتا ہے (صفحہ کی معلومات، راستے، غلطیاں، تشکیل)؛ `False` اسے ہٹاتا ہے۔ پروڈکشن میں کبھی موجود نہ ہوں۔ |
-| `useHealth` | `False` | لوڈ بیلنسرز اور کبرنیٹس پروبس کے لیے `GET /health/live` اور `GET /health/ready` کی خدمت کریں۔ دیکھیں [تعینات کریں](../deployment/README.md#built-in-endpoints) |
-| `useMaxBodySize` | `1048576` | سب سے بڑی درخواست باڈی جو ایک کارکن بائٹس میں پڑھتا ہے (1 MiB)؛ ایک بڑا ایک `413` ہے، اور `0` حد کو بند کر دیتا ہے۔ اسے اس راستے کے لیے اٹھائیں جو فائل اپ لوڈ کرتا ہے۔ |
+| `useHealth` | `False` | لوڈ بیلنسرز اور کبرنیٹس پروبس کے لیے `GET /health/live` اور `GET /health/ready` پیش کریں۔ دیکھیں [تعینات کریں](../deployment/README.md#built-in-endpoints) |
+| `useMaxBodySize` | `1048576` | سب سے بڑی درخواست کا باڈی جسے کارکن پڑھتا ہے، بائٹس میں (1 MiB)؛ ایک بڑا ایک `413` ہے، اور `0` حد کو بند کر دیتا ہے۔ اسے اس راستے کے لیے اٹھائیں جو فائل اپ لوڈ کرتا ہے۔ |
 | `useSiteUrl` | `None` | سائٹ کی عوامی اصل، جیسے `"https://example.com"`؛ ایک بار سیٹ ہونے کے بعد، Nexy `/sitemap.xml` اور `/robots.txt` کی خدمت کرتا ہے۔ دیکھیں [Sitemap and robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | عمل `nx start` چلتا ہے؛ `0` لینکس اور میک او ایس پر ایک فی سی پی یو ہے، ونڈوز پر ایک |
 | `useCSR` | `False` | کلائنٹ سائڈ روٹنگ موڈ؛ `.nexy` راستے غیر فعال ہیں۔ |
@@ -99,10 +99,11 @@ class NexyConfig(NexyConfigModel):
 | `useMiddlewares` | `[]` | ASGI مڈل ویئر کلاسز |
 | `useCORS` | `None` | `CORSMiddleware` کے لیے kwargs |
 | `useGZip` | `None` | `GZipMiddleware` کے لیے kwargs |
-| `useTrustedHost` | `None` | `TrustedHostMiddleware` کے لیے کوارگز |
+| `useTrustedHost` | `None` | `TrustedHostMiddleware` کے لیے kwargs |
 | `useSession` | `None` | `SessionMiddleware` کے لیے kwargs |
 | `useAuth` | `None` | توثیق مڈل ویئر کی تشکیل |
 | `useHTTPSRedirect` | `False` | HTTP کو HTTPS پر ری ڈائریکٹ کریں۔ |
+| `useRateLimit` | `None` | درخواستیں ایک کلائنٹ ایڈریس فی ونڈو بھیج سکتا ہے، جیسے `{"requests": 60, "per": 60}`؛ ایک اور ہے `429` کے ساتھ `Retry-After`، اور `"paths": ["/api/"]` صرف ان سابقوں کو محدود کرتا ہے۔ ہر کارکن اپنے طور پر شمار کرتا ہے۔ دیکھیں [ریٹ محدود کرنا](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 
@@ -144,4 +145,4 @@ class NexyConfig(NexyConfigModel):
 
 - [i18n](../guides/i18n.md): بین الاقوامی کاری
 - [فرنٹ اینڈ ](../guides/frontend.md): `useFF` اور کلائنٹ کی تعمیر
-- [تعیناتی](../deployment/README.md): پیداوار کے اختیارات
+- [تعینات ](../deployment/README.md): پیداوار کے اختیارات

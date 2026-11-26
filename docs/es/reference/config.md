@@ -103,6 +103,7 @@ O apáguelo con `useDocs = False`, que también deja de servir `/openapi.json`. 
 | `useSession` | `None` | kwargs para `SessionMiddleware` |
 | `useAuth` | `None` | configuración del middleware de autenticación |
 | `useHTTPSRedirect` | `False` | redirigir HTTP a HTTPS |
+| `useRateLimit` | `None` | las solicitudes que una dirección de cliente puede enviar por ventana, como `{"requests": 60, "per": 60}`; uno más es un `429` con `Retry-After`, y `"paths": ["/api/"]` limita solo esos prefijos. Cada trabajador cuenta por sí solo. Consulte [Limitación de velocidad](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

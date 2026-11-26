@@ -27,7 +27,7 @@ class NexyConfig(NexyConfigModel):
 | `useSiteUrl` | `None` | asal mula situs tersebut, seperti `"https://example.com"`; setelah diatur, Nexy melakukan servis `/sitemap.xml` dan `/robots.txt`. Lihat [Peta Situs dan robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | proses `nx start` berjalan; `0` adalah satu per CPU di Linux dan macOS, satu di Windows |
 | `useCSR` | `False` | mode perutean sisi klien; `.nexy` rute dinonaktifkan |
-| `useBasePath` | `None` | awalan publik untuk keseluruhan aplikasi, seperti `"/app"`; permintaan di luarnya menjawab 404, dan tautan yang dihasilkan, rute klien, panggilan tindakan, dan aset membawa awalan. Lihat [Menerapkan](../deployment/README.md#serve-under-a-sub-path) |
+| `useBasePath` | `None` | awalan publik untuk seluruh aplikasi, seperti `"/app"`; permintaan di luarnya menjawab 404, dan tautan yang dihasilkan, rute klien, panggilan tindakan, dan aset membawa awalan. Lihat [Menerapkan](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | lebar piksel `nx build` yang dihasilkan untuk gambar lokal; konversi memerlukan `Pillow`, dan tanpa itu gambar tetap menggunakan URL aslinya. Lihat [Gambar](../routing/fbr/navigation/linking-and-navigating.md#image) |
 
 ## Basis data
@@ -103,6 +103,7 @@ Atau matikan dengan `useDocs = False`, yang juga berhenti ditayangkan `/openapi.
 | `useSession` | `None` | kwarg untuk `SessionMiddleware` |
 | `useAuth` | `None` | konfigurasi middleware otentikasi |
 | `useHTTPSRedirect` | `False` | mengalihkan HTTP ke HTTPS |
+| `useRateLimit` | `None` | permintaan yang mungkin dikirim oleh satu alamat klien per jendela, seperti `{"requests": 60, "per": 60}`; satu lagi adalah `429` dengan `Retry-After`, dan `"paths": ["/api/"]` hanya membatasi awalan tersebut. Setiap pekerja menghitung sendiri-sendiri. Lihat [Pembatasan tarif](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 
