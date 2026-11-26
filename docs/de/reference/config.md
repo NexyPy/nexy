@@ -40,7 +40,7 @@ class NexyConfig(NexyConfigModel):
 
 | Feld | Standard | Bedeutung |
 |---|---|---|
-| `useRouter` | `None` | eine `APIRouter`-Instanz oder -Klasse, die neben den dateibasierten Routen gemountet ist; `None` bedeutet nur dateibasiert |
+| `useRouter` | `None` | eine `APIRouter`-Instanz oder -Klasse, die neben den dateibasierten Routen bereitgestellt wird; `None` bedeutet nur dateibasiert |
 | `excludeDirs` | `["templates", "extension", "docs"]` | Beim Scannen von Routen werden Verzeichnisse übersprungen |
 | `useAliases` | `None` | Aliase importieren, z.B. `{"@": "src"}` (`@/components/Counter.tsx` bedeutet `src/components/Counter.tsx`); `nx new` schreibt die von Ihnen gewählte, und Vite und `tsconfig.json` folgen ihr |
 
@@ -103,6 +103,7 @@ Oder schalten Sie es mit `useDocs = False` aus, wodurch auch die Bereitstellung 
 | `useSession` | `None` | Kwargs für `SessionMiddleware` |
 | `useAuth` | `None` | Authentifizierungs-Middleware-Konfiguration |
 | `useHTTPSRedirect` | `False` | HTTP auf HTTPS umleiten |
+| `useRateLimit` | `None` | die Anfragen, die eine Client-Adresse pro Fenster senden kann, z. B. `{"requests": 60, "per": 60}`; eine weitere ist ein `429` mit `Retry-After`, und `"paths": ["/api/"]` beschränkt nur diese Präfixe. Jeder Arbeiter zählt für sich. Siehe [Ratenbegrenzung](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

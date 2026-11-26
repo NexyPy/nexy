@@ -103,6 +103,7 @@ Ou désactivez-le avec `useDocs = False`, qui arrête également de diffuser `/o
 | `useSession` | `None` | kwargs pour `SessionMiddleware` |
 | `useAuth` | `None` | configuration du middleware d'authentification |
 | `useHTTPSRedirect` | `False` | rediriger HTTP vers HTTPS |
+| `useRateLimit` | `None` | les requêtes qu'une adresse client peut envoyer par fenêtre, telles que `{"requests": 60, "per": 60}` ; un de plus est un `429` avec `Retry-After`, et `"paths": ["/api/"]` limite uniquement ces préfixes. Chaque travailleur compte pour lui-même. Voir [Limitation de débit](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 
