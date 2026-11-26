@@ -97,6 +97,7 @@
   "tutorial/dynamic-routes.md": "c14625792c3674f778bb8f1013bbfd391d6b40602407f94a81174bc766fa2c25",
   "tutorial/pages-and-layouts.md": "87bd93917e2b885c6d1a3ed4b591e5704ea8ef78d99732d11cca481484b87342",
   "tutorial/search-the-notes.md": "79d8c1bb6d6b512aa93f2824013ca3c9a473639aba865201731e2929c1e5d6b9",
-  "routing/fbr/navigation/page-transitions.md": "85a3a26af2aca11819aa9aa2d198bcfde3f6a54e79c7aa21fdd79c8565beab3f"
+  "routing/fbr/navigation/page-transitions.md": "85a3a26af2aca11819aa9aa2d198bcfde3f6a54e79c7aa21fdd79c8565beab3f",
+  "deployment/vercel.md": "ad23ef835a01be7b0fc96465d2f33d890806bf794f2e72a415c65494315ea3ca"
  }
 }
