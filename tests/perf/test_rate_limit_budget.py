@@ -26,9 +26,9 @@ CONFIG = (
     "class NexyConfig(NexyConfigModel):\n    useVite: bool = False\n"
 )
 
-# The share of a Nexy request the limit adds. Measured on 2026-11-26, six runs: 2.05% to 2.83%,
-# times about 1.5 for the noise of a shared CI runner.
-BUDGET = 0.043
+# The share of a Nexy request the limit adds. Measured on 2026-11-26: 2.05% to 2.83% alone, 2.40%
+# to 3.85% under `--cov=nexy` as CI runs it, times about 1.5 for the noise of a shared CI runner.
+BUDGET = 0.06
 TRIES = 3
 
 
