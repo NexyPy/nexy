@@ -14,6 +14,7 @@ from nexy.helpers.common.messages import error, warning
 from nexy.helpers.common.tasks import waiting
 from nexy.helpers.fs.path import PathUtil
 from nexy.helpers.imports.component import framework_from_extension, wrap_component_script
+from nexy.modules.cli.deployment import GITIGNORE_LINES, PLATFORM_FILES
 from nexy.modules.cli.init.dependencies import install_packages
 from nexy.modules.cli.init.registry import COMPONENT_REGISTRY
 from nexy.modules.i18n import t
@@ -120,6 +121,12 @@ def add(
     all: bool = typer.Option(False, "--all", "-a", help=_ADD_HELP_ALL),
     sha256: str = typer.Option(None, "--sha256", help=_ADD_HELP_SHA),
 ) -> None:
+    if components and components[0].lower() in PLATFORM_FILES:
+        if ui or url or all or sha256:
+            error(t("add.platform_flags", "A deployment platform takes no component flags."))
+        else:
+            _add_platform(components)
+        return
     if all:
         components = list(COMPONENT_REGISTRY.keys())
     if not components:
@@ -128,6 +135,35 @@ def add(
     needed = _add_components(components, url, sha256)
     if needed:
         install_packages(list(needed))
+
+
+def _add_platform(names: list[str]) -> None:
+    """Write the files of one deployment platform; never mix it with components."""
+    if len(names) != 1:
+        error(t("add.platform_one", "A deployment platform is added on its own."))
+        return
+    files = PLATFORM_FILES[names[0].lower()]
+    for path, content in files.items():
+        _write_platform_file(path, content)
+    _add_gitignore_lines(GITIGNORE_LINES)
+
+
+def _write_platform_file(path: Path, content: str) -> None:
+    """Write a platform file, keeping an existing one and reporting each new file."""
+    if path.exists():
+        warning(t("add.exists", "Skipping: {path} already exists.").format(path=path))
+        return
+    PathUtil.write_file(path, content)
+    console.print(f" [green]+[/green] {escape(str(path))}")
+
+
+def _add_gitignore_lines(lines: tuple[str, ...]) -> None:
+    """Append the missing ignore lines, once each, keeping the rest of the file."""
+    ignore = Path(".gitignore")
+    existing = ignore.read_text(encoding="utf-8").splitlines() if ignore.exists() else []
+    missing = [line for line in lines if line not in existing]
+    if missing:
+        PathUtil.write_file(ignore, "\n".join([*existing, *missing]) + "\n")
 
 
 def _print_available_components() -> None:
