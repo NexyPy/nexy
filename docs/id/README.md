@@ -162,6 +162,7 @@ Pengontrol dan modul.
 | [Middleware dan keamanan](guides/middleware-and-security.md) | Siapkan CORS, GZip, host dan sesi tepercaya |
 | [Peta Situs dan robots.txt](guides/sitemap.md) | Sajikan `/sitemap.xml` dan `/robots.txt` dari rute Anda |
 | [Menyebarkan](deployment/README.md) | Bangun, masukkan ke dalam wadah, dan sajikan |
+| [Terapkan di Vercel](deployment/vercel.md) | Tambahkan titik masuk, komit build dan cache aset statis |
 | [Pertunjukan](deployment/performance.md) | Ukur dan sesuaikan defaultnya |
 
 ### Bangun dan uji
@@ -209,7 +210,7 @@ Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 |---|---|
 | [Dari Ekspres](coming-from/express.md) | Terjemahkan rute, middleware dan `req`/`res` ke dalam Python penangan |
 | [Dari Fastify](coming-from/fastify.md) | Ubah skema, plugin, dan kait menjadi model, folder, dan file |
-| [Dari Elysia](coming-from/elysia.md) | Petakan `t` skema, penjaga, dan Eden ke Pydantic dan ketikkan tindakan |
+| [Dari Elysia](coming-from/elysia.md) | Memetakan `t` skema, penjaga, dan Eden ke Pydantic dan mengetikkan tindakan |
 | [Dari Hono](coming-from/hono.md) | Petakan rute, middleware, dan klien `hc` ke Nexy |
 
 ### Kerangka kerja fullstack {fbr}
@@ -223,7 +224,7 @@ Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 | [Dari Laravel](coming-from/laravel.md) | Petakan rute, pengontrol, Blade, Eloquent, dan antrian ke Nexy |
 | [Dari Ruby on Rails](coming-from/rails.md) | Memetakan rute, pengontrol, ERB, Rekaman Aktif, dan pekerjaan ke Nexy |
 
-### Kerangka kerja pengontrol {modular}
+### Kerangka pengontrol {modular}
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
 | [Dari NestJS](coming-from/nestjs.md) | Pindahkan pengontrol, modul, penyedia, dan penjaga ke router modular |

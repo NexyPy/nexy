@@ -11,7 +11,7 @@
 | `nx build` | `nx b` | 生产构建 |
 | `nx new` | `nx n` | 搭建一个项目 |
 | `nx init` | `nx i` | 将 Nexy 添加到现有项目 |
-| `nx add` | - | 从注册表或 URL 添加 UI 组件到 `src/components/ui` |
+| `nx add` | - | 从注册表或 URL 或部署平台（例如 `vercel`）添加 UI 组件 |
 | `nx migrate` | `nx m` | 使用 Alembic 或 Aerich 创建或应用数据库迁移 |
 | `nx check` | `nx c` | 类型检查：mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | 格式 Python（ruff）、JS/TS（更漂亮）、`.nexy` 文件 |
@@ -53,7 +53,7 @@ nx routes
 
 ## 输出
 
-长步骤（安装包、编译、捆绑）会显示一个旋转器，其中包含经过的时间和命令打印的最后一行，然后留下一行，如 uv 所做的那样：`Synced .venv with uv in 1.4s`。一组步骤（`nx new` 的安装）还显示进度条和已完成的步骤数 `2/5`。失败的步骤是 `error:` 行及其原因 `cause: exit 1 after 2.1s`，后跟命令输出的最后几行，而不是隐藏它。需要注意的内容是 `warning: ...`，以及接下来要做什么 `hint: ...`。开发日志对于请求读取 `GET » /about 200 in 12ms`，对于 Vite 读取 `vite » ...`。
+长步骤（安装包、编译、捆绑）会显示一个旋转器，其中包含经过的时间和命令打印的最后一行，然后留下一行，如 uv 所做的那样：`Synced .venv with uv in 1.4s`。一组步骤（`nx new` 的安装）还显示进度条和已完成步骤的数量 `2/5`。失败的步骤是 `error:` 行及其原因 `cause: exit 1 after 2.1s`，后跟命令输出的最后几行，而不是隐藏它。需要注意的是 `warning: ...`，以及接下来要做什么 `hint: ...`。开发日志对于请求读取 `GET » /about 200 in 12ms`，对于 Vite 读取 `vite » ...`。
 
 ## `nx dev` 运行时出错
 
@@ -75,7 +75,7 @@ nx routes
 
 当应用程序加载时解析但失败的文件（缺少导入、模块级别的错误）会以相同的方式报告，并且 `nx dev` 等待您的下一次保存；在应用程序再次加载之前不会提供任何服务。当服务器重新加载时，有效的保存读取 `nexy » update <file>`。 `src/routes` 之外的 Markdown 文件（例如 `README.md`）不是页面，不会触发任何内容。 `nx start` 更严格：如果无法加载路由文件或 `nx build` 尚未构建项目，它会以代码 1 退出，并且不启动任何内容。
 
-## `nx new`的问题
+## `nx new` 的问题
 
 `nx new` 按此顺序询问：基于文件的路由器、项目类型（Web 或 API）、客户端路由、客户端框架、如何设置应用程序样式、导入别名、ORM、数据库和数据库 URL。每个选项都有一个简短的描述，并且当前选项会突出显示。不适用的问题将被跳过（API 项目没有框架或样式；选择 **无数据库**，因为 ORM 会跳过数据库和 URL）。使用箭头键（或 `j`/`k`或数字）移动，使用 `enter`确认，使用 `←` 或 `esc`返回上一个问题，使用 `ctrl+c`退出。
 

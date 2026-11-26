@@ -93,6 +93,7 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [Middleware and security](docs/guides/middleware-and-security.md): Set up CORS, GZip, trusted hosts and sessions
 - [Sitemap and robots.txt](docs/guides/sitemap.md): Serve `/sitemap.xml` and `/robots.txt` from your routes
 - [Deploy](docs/deployment/README.md): Build, containerise and serve
+- [Deploy on Vercel](docs/deployment/vercel.md): Add the entry point, commit the build and cache static assets
 - [Performance](docs/deployment/performance.md): Measure and tune the defaults
 - [Frontend](docs/guides/frontend.md): Set up Vite, styling and the client build
 - [Testing](docs/guides/testing.md): Test with pytest, `TestClient` and vitest

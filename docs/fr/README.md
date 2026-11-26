@@ -162,6 +162,7 @@ Contrôleurs et modules.
 | [Middleware et sécurité](guides/middleware-and-security.md) | Configurer CORS, GZip, des hôtes et des sessions de confiance |
 | [Plan du site et robots.txt](guides/sitemap.md) | Desservez `/sitemap.xml` et `/robots.txt` depuis vos itinéraires |
 | [Déployer](deployment/README.md) | Construire, conteneuriser et servir |
+| [Déployer sur Vercel](deployment/vercel.md) | Ajoutez le point d'entrée, validez la construction et mettez en cache les actifs statiques |
 | [Performances](deployment/performance.md) | Mesurer et ajuster les valeurs par défaut |
 
 ### Construire et tester
@@ -220,10 +221,10 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 | [Depuis Nuxt](coming-from/nuxt.md) | Conservez vos Vue pages et déplacez `server/` vers Python |
 | [De SvelteKit](coming-from/sveltekit.md) | Conservez vos Svelte pages et déplacez les charges, actions et hooks vers Python |
 | [De Astro](coming-from/astro.md) | Écrivez Astro pages sous forme de `.nexy` pages, avec les mêmes îlots |
-| [De Laravel](coming-from/laravel.md) | Cartographier les itinéraires, les contrôleurs, Blade, Eloquent et les files d'attente vers Nexy |
+| [Depuis Laravel](coming-from/laravel.md) | Cartographier les itinéraires, les contrôleurs, Blade, Eloquent et les files d'attente vers Nexy |
 | [De Ruby sur Rails](coming-from/rails.md) | Cartographier les itinéraires, les contrôleurs, l'ERB, l'Active Record et les tâches vers Nexy |
 
-### Cadres de contrôleurs {modular}
+### Frameworks de contrôleurs {modular}
 | Pages | Ce que tu feras |
 |---|---|
 | [De NestJS](coming-from/nestjs.md) | Déplacez les contrôleurs, les modules, les fournisseurs et les gardes vers le routeur modulaire |

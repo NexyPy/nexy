@@ -162,6 +162,7 @@ Controller und Module.
 | [Middleware und Sicherheit](guides/middleware-and-security.md) | Richten Sie CORS, GZip, vertrauenswürdige Hosts und Sitzungen ein |
 | [Sitemap und robots.txt](guides/sitemap.md) | Bedienen Sie `/sitemap.xml` und `/robots.txt` von Ihren Routen aus |
 | [Bereitstellen](deployment/README.md) | Zusammenstellen, in Behälter füllen und servieren |
+| [Auf Vercel bereitstellen](deployment/vercel.md) | Fügen Sie den Einstiegspunkt hinzu, schreiben Sie den Build fest und speichern Sie die statischen Assets im Cache |
 | [Leistung](deployment/performance.md) | Messen und optimieren Sie die Standardwerte |
 
 ### Bauen und testen
@@ -173,7 +174,7 @@ Controller und Module.
 ### Werkzeuge und Hilfe
 | Seite | Was Sie tun werden |
 |---|---|
-| [Entwickler-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
+| [Dev-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
 | [Debuggen](guides/debugging.md) | Stoppen Sie in Ihrem Servercode mit `breakpoint()` oder VS Code |
 | [Kodiermittel](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
 | [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die Menschen stoßen |
@@ -185,7 +186,7 @@ Controller und Module.
 |---|---|
 | [SQLite](databases/sqlite.md) | Verwenden Sie eine Datei, keinen Server: Engine, Pragmas, Migrationen und Tests |
 | [PostgreSQL](databases/postgresql.md) | Verbinden Sie sich mit psycopg, verwenden Sie JSONB, Arrays, Suche und Upserts |
-| [Neon](databases/neon.md) | Verwenden Sie serverlosen PostgreSQL: gepoolten Host, automatische Suspendierung und Verzweigungen |
+| [Neon](databases/neon.md) | Verwenden Sie serverloses PostgreSQL: gepoolten Host, automatische Suspendierung und Verzweigungen |
 | [MySQL und MariaDB](databases/mysql-mariadb.md) | Stellen Sie eine Verbindung mit pymysql her, verwenden Sie utf8mb4, Upserts und die Volltextsuche |
 
 ## Kommt von
@@ -209,7 +210,7 @@ Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in 
 |---|---|
 | [Von Express](coming-from/express.md) | Übersetzen Sie Routen, Middleware und `req`/`res` in Python-Handler |
 | [Von Fastify](coming-from/fastify.md) | Verwandeln Sie Schemata, Plugins und Hooks in Modelle, Ordner und Dateien |
-| [Aus Elysia](coming-from/elysia.md) | Ordnen Sie `t` Schemata, Wachen und Eden Pydantic und typisierte Aktionen zu |
+| [Aus Elysia](coming-from/elysia.md) | Ordnen Sie `t` Schemata, Wachen und Eden Pydantic und typisierten Aktionen zu |
 | [Von Hono](coming-from/hono.md) | Ordnen Sie Routen, Middleware und den `hc`-Client Nexy zu |
 
 ### Fullstack-Frameworks {fbr}
@@ -217,8 +218,8 @@ Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in 
 |---|---|
 | [Von Next.js](coming-from/nextjs.md) | Behalten Sie Ihre React-Seiten und verschieben Sie den Servercode nach Python |
 | [Von Remix](coming-from/remix.md) | Verwandeln Sie Loader und Aktionen in Python Handler und Aktionen |
-| [Von Nuxt](coming-from/nuxt.md) | Behalten Sie Ihre Vue-Seiten und verschieben Sie `server/` nach Python |
-| [Von SvelteKit](coming-from/sveltekit.md) | Behalten Sie Ihre Svelte Seiten und verschieben Sie Lasten, Aktionen und Hooks nach Python |
+| [Von Nuxt](coming-from/nuxt.md) | Behalten Sie Ihre Vue Seiten und verschieben Sie `server/` nach Python |
+| [Von SvelteKit](coming-from/sveltekit.md) | Behalten Sie Ihre Svelte-Seiten und verschieben Sie Lasten, Aktionen und Hooks nach Python |
 | [Von Astro](coming-from/astro.md) | Schreiben Sie Astro Seiten als `.nexy` Seiten mit denselben Inseln |
 | [Von Laravel](coming-from/laravel.md) | Ordnen Sie Routen, Controller, Blade, Eloquent und Warteschlangen Nexy zu |
 | [Von Ruby on Rails](coming-from/rails.md) | Ordnen Sie Routen, Controller, ERB, Active Record und Jobs Nexy zu |
@@ -235,7 +236,7 @@ Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in 
 | Seite | Was darin aufgeführt ist |
 |---|---|
 | [CLI](reference/cli.md) | Befehle, Flags, Eingabeaufforderungen und Exit-Codes |
-| [Konfig](reference/config.md) | Jedes `nexyconfig.py`-Feld und seine Standardeinstellung |
+| [Konfiguration](reference/config.md) | Jedes `nexyconfig.py` Feld und seine Standardeinstellung |
 
 ### Python API und Fehler
 | Seite | Was darin aufgeführt ist |

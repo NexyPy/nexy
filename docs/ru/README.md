@@ -162,6 +162,7 @@ Nexy объединяет ваши страницы и ваш API в один Py
 | [Промежуточное ПО и безопасность](guides/middleware-and-security.md) | Настройте CORS, GZip, доверенные хосты и сеансы. |
 | [Карта сайта и robots.txt](guides/sitemap.md) | Обслуживайте `/sitemap.xml` и `/robots.txt` со своих маршрутов. |
 | [Развернуть](deployment/README.md) | Создавайте, контейнеризируйте и обслуживайте |
+| [Развертывание на Vercel](deployment/vercel.md) | Добавьте точку входа, зафиксируйте сборку и кешируйте статические ресурсы. |
 | [Производительность](deployment/performance.md) | Измерьте и настройте параметры по умолчанию |
 
 ### Сборка и тестирование
@@ -195,7 +196,7 @@ Nexy объединяет ваши страницы и ваш API в один Py
 ### Обзор
 | Страница | Что ты будешь делать |
 |---|---|
-| [Из другого фреймворка](getting-started/coming-from-other-frameworks.md) | Переведите FastAPI, Next.js и выразите привычки на Nexy |
+| [Исходя из другого фреймворка](getting-started/coming-from-other-frameworks.md) | Переведите FastAPI, Next.js и выразите привычки на Nexy |
 
 ### Python фреймворки {fbr}
 | Страница | Что ты будешь делать |
@@ -209,7 +210,7 @@ Nexy объединяет ваши страницы и ваш API в один Py
 |---|---|
 | [Из экспресса](coming-from/express.md) | Преобразование маршрутов, промежуточного программного обеспечения и `req`/`res` в обработчики Python |
 | [Из Fastify](coming-from/fastify.md) | Превратите схемы, плагины и перехватчики в модели, папки и файлы. |
-| [Из Элизии](coming-from/elysia.md) | Сопоставьте `t` схемы, стражи и Эдем с Pydantic и типизированными действиями. |
+| [Из Элизии](coming-from/elysia.md) | Сопоставьте схемы `t`, охранников и Эдем с Pydantic и типизированными действиями. |
 | [Из Хоно](coming-from/hono.md) | Сопоставьте маршруты, промежуточное программное обеспечение и клиент `hc` с Nexy. |
 
 ### Fullstack-фреймворки {fbr}
@@ -218,7 +219,7 @@ Nexy объединяет ваши страницы и ваш API в один Py
 | [От Next.js](coming-from/nextjs.md) | Сохраните свои страницы React и переместите код сервера в Python |
 | [От Remix](coming-from/remix.md) | Превратите загрузчики и действия в обработчики и действия Python |
 | [Из Нукста](coming-from/nuxt.md) | Сохраните свои страницы Vue и переместите `server/` на Python |
-| [Из SvelteKit](coming-from/sveltekit.md) | Сохраните свои страницы Svelte и переместите нагрузки, действия и хуки в Python |
+| [Из SvelteKit](coming-from/sveltekit.md) | Сохраните свои страницы Svelte и переместите нагрузки, действия и хуки на Python |
 | [От Astro](coming-from/astro.md) | Запишите Astro страниц как `.nexy` страниц с теми же островами. |
 | [Из Ларавеля](coming-from/laravel.md) | Сопоставление маршрутов, контроллеров, Blade, Eloquent и очередей в Nexy |
 | [Из Ruby on Rails](coming-from/rails.md) | Сопоставление маршрутов, контроллеров, ERB, Active Record и заданий с Nexy |
