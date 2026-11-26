@@ -34,6 +34,42 @@ class NexyConfig(NexyConfigModel):
 
 `useMiddlewares` takes ASGI middleware classes.
 
+## Rate limiting
+
+`useRateLimit` answers `429 Too Many Requests` to a client address that sends more than `requests`
+requests in one window of `per` seconds.
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useRateLimit = {"requests": 60, "per": 60, "paths": ["/api/", "/_nx_"]}
+```
+
+Nexy guarantees that a request over the limit gets a `429` with a `Retry-After` header, the seconds
+left in the window, and never reaches your routes, actions or middleware.
+
+Nexy guarantees that without `useRateLimit` no rate limit middleware is added.
+
+Nexy guarantees that the `useHealth` probes are never limited.
+
+`paths` is optional: without it every path is limited. Server actions are served under `/_nx_`, so
+that prefix limits all of them.
+
+The window is fixed and shared by all clients: the counts start again at each multiple of `per`
+seconds. A client can therefore send up to twice `requests` across the edge of a window.
+
+The counts live in the memory of each worker. With `useWorkers` above one, a client can send
+`requests` to each worker, and the counts start again when the server restarts.
+
+The client address is the one uvicorn gives the request. Behind a reverse proxy on the same machine,
+uvicorn reads it from `X-Forwarded-For`; for a proxy on another machine, list its address in the
+`FORWARDED_ALLOW_IPS` environment variable, or every client shares the address of the proxy.
+
+Your application is responsible for a limit shared by several workers or servers: a reverse proxy
+or a store such as Redis.
+
 ## HTTPS
 
 Serve HTTPS directly with `useSslKeyfile` and `useSslCertfile`, or terminate TLS at a reverse proxy

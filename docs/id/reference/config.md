@@ -104,13 +104,14 @@ Atau matikan dengan `useDocs = False`, yang juga berhenti ditayangkan `/openapi.
 | `useSession` | `None` | kwarg untuk `SessionMiddleware` |
 | `useAuth` | `None` | konfigurasi middleware otentikasi |
 | `useHTTPSRedirect` | `False` | mengalihkan HTTP ke HTTPS |
+| `useRateLimit` | `None` | permintaan yang mungkin dikirim oleh satu alamat klien per jendela, seperti `{"requests": 60, "per": 60}`; satu lagi adalah `429` dengan `Retry-After`, dan `"paths": ["/api/"]` hanya membatasi awalan tersebut. Setiap pekerja menghitung sendiri-sendiri. Lihat [Pembatasan tarif](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 
 | Bidang | Bawaan | Artinya |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | tingkat judul yang disertakan dalam daftar isi |
-| `useTocTitle` | `"Table of Contents"` | Judul TOC |
+| `useTocTitle` | `"Table of Contents"` | Judul Daftar Isi |
 | `useTocAuto` | `True` | menghasilkan daftar isi untuk Markdown halaman |
 
 ## Rute di luar pohon file

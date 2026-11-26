@@ -27,7 +27,7 @@ class NexyConfig(NexyConfigModel):
 | `useSiteUrl` | `None` | el origen público del sitio, como `"https://example.com"`; una vez colocada, Nexy sirve a `/sitemap.xml` y `/robots.txt`. Consulte [Mapa del sitio y robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | procesa `nx start` ejecuciones; `0` es uno por CPU en Linux y macOS, uno en Windows |
 | `useCSR` | `False` | modo de enrutamiento del lado del cliente; `.nexy` rutas están deshabilitadas |
-| `useBasePath` | `None` | prefijo público para toda la aplicación, como `"/app"`; las solicitudes fuera de él responden 404, y los enlaces generados, las rutas de clientes, las llamadas a la acción y los activos llevan el prefijo. Consulte [Implementar](../deployment/README.md#serve-under-a-sub-path) |
+| `useBasePath` | `None` | prefijo público para toda la aplicación, como `"/app"`; las solicitudes fuera de él responden a 404, y los enlaces generados, las rutas de clientes, las llamadas a la acción y los activos llevan el prefijo. Consulte [Implementar](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | anchos de píxeles `nx build` generan para imágenes locales; la conversión necesita `Pillow`, y sin él las imágenes mantienen su URL original. Ver [Imagen](../routing/fbr/navigation/linking-and-navigating.md#image) |
 | `useISRCache` | `None` | Almacén ISR: `None` o `"memory"` para un proceso, `"file"` para un host, `"redis"` para varios trabajadores, un mapeo con `type` y opciones, o un objeto con `get`, `set` y `invalidate`. Ver [ISR](../rendering/isr.md#choose-a-store) |
 
@@ -104,6 +104,7 @@ O apáguelo con `useDocs = False`, que también deja de servir `/openapi.json`. 
 | `useSession` | `None` | kwargs para `SessionMiddleware` |
 | `useAuth` | `None` | configuración del middleware de autenticación |
 | `useHTTPSRedirect` | `False` | redirigir HTTP a HTTPS |
+| `useRateLimit` | `None` | las solicitudes que una dirección de cliente puede enviar por ventana, como `{"requests": 60, "per": 60}`; uno más es un `429` con `Retry-After`, y `"paths": ["/api/"]` limita solo esos prefijos. Cada trabajador cuenta por sí solo. Consulte [Limitación de velocidad](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

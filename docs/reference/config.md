@@ -110,6 +110,7 @@ reference is on, keep the routes of the project off that path.
 | `useSession` | `None` | kwargs for `SessionMiddleware` |
 | `useAuth` | `None` | authentication middleware config |
 | `useHTTPSRedirect` | `False` | redirect HTTP to HTTPS |
+| `useRateLimit` | `None` | the requests one client address may send per window, such as `{"requests": 60, "per": 60}`; one more is a `429` with `Retry-After`, and `"paths": ["/api/"]` limits only those prefixes. Each worker counts on its own. See [Rate limiting](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

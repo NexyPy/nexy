@@ -117,7 +117,7 @@ from "@/components/NewUser.tsx" import NewUser
 
 ## قم بتحديث الصفحة بعد الإجراء
 
-يوضح الإجراء الصفحات التي أصبح التغيير فيها قديمًا، كما يفعل Next.js مع `revalidatePath`:
+يوضح الإجراء الصفحات التي أصبح تغييرها قديمًا، كما يفعل Next.js مع `revalidatePath`:
 
 ```python
 revalidate()            # the page that is open

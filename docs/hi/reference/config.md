@@ -25,7 +25,7 @@ class NexyConfig(NexyConfigModel):
 | `useHealth` | `False` | लोड बैलेंसर्स और कुबेरनेट्स जांच के लिए `GET /health/live` और `GET /health/ready` परोसें; देखें [तैनाती](../deployment/README.md#built-in-endpoints) |
 | `useMaxBodySize` | `1048576` | एक कार्यकर्ता द्वारा पढ़ा जाने वाला सबसे बड़ा अनुरोध निकाय, बाइट्स में (1 MiB); बड़ा वाला एक `413` है, और `0` सीमा को बंद कर देता है। फ़ाइल अपलोड करने वाले रूट के लिए इसे बढ़ाएं |
 | `useSiteUrl` | `None` | साइट का सार्वजनिक मूल, जैसे कि `"https://example.com"`; एक बार सेट हो जाने पर, नेक्सी `/sitemap.xml` और `/robots.txt` परोसता है। [साइटमैप और robots.txt](../guides/sitemap.md) देखें |
-| `useWorkers` | `0` | प्रक्रियाएँ `nx start` चलती हैं; `0` लिनक्स और मैकओएस पर प्रति सीपीयू एक है, विंडोज़ पर एक है |
+| `useWorkers` | `0` | प्रक्रियाएँ `nx start` चलती हैं; `0` लिनक्स और मैकओएस पर प्रति सीपीयू एक है, विंडोज़ पर एक |
 | `useCSR` | `False` | क्लाइंट-साइड रूटिंग मोड; `.nexy` मार्ग अक्षम हैं |
 | `useBasePath` | `None` | संपूर्ण एप्लिकेशन के लिए सार्वजनिक उपसर्ग, जैसे `"/app"`; इसके बाहर के अनुरोध 404 का उत्तर देते हैं, और उत्पन्न लिंक, क्लाइंट रूट, एक्शन कॉल और संपत्तियां उपसर्ग ले जाती हैं। देखें [तैनाती](../deployment/README.md#serve-under-a-sub-path) |
 | `useImageWidths` | `[320, 640, 960, 1280]` | पिक्सेल चौड़ाई `nx build` स्थानीय छवियों के लिए उत्पन्न होती है; रूपांतरण के लिए `Pillow` की आवश्यकता होती है, और इसके बिना छवियां अपना मूल यूआरएल बनाए रखती हैं। देखें [छवि](../routing/fbr/navigation/linking-and-navigating.md#image) |
@@ -104,6 +104,7 @@ class NexyConfig(NexyConfigModel):
 | `useSession` | `None` | `SessionMiddleware` के लिए क्वार्ग्स |
 | `useAuth` | `None` | प्रमाणीकरण मिडलवेयर कॉन्फ़िगरेशन |
 | `useHTTPSRedirect` | `False` | HTTP को HTTPS पर रीडायरेक्ट करें |
+| `useRateLimit` | `None` | अनुरोध जो एक ग्राहक का पता प्रति विंडो भेज सकता है, जैसे कि `{"requests": 60, "per": 60}`; एक और `429` है जिसमें `Retry-After` है, और `"paths": ["/api/"]` केवल उन उपसर्गों को सीमित करता है। प्रत्येक कार्यकर्ता अपने आप पर भरोसा करता है। देखें [दर सीमित करना](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

@@ -104,6 +104,7 @@ Ou desligue-o com `useDocs = False`, que também para de veicular `/openapi.json
 | `useSession` | `None` | kwargs para `SessionMiddleware` |
 | `useAuth` | `None` | configuração de middleware de autenticação |
 | `useHTTPSRedirect` | `False` | redirecionar HTTP para HTTPS |
+| `useRateLimit` | `None` | as solicitações que um endereço de cliente pode enviar por janela, como `{"requests": 60, "per": 60}`; mais um é um `429` com `Retry-After`, e `"paths": ["/api/"]` limita apenas esses prefixos. Cada trabalhador conta por conta própria. Consulte [Limitação de taxa](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

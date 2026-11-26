@@ -11,7 +11,7 @@ El binario es `nx` (también instalado como `nexy`). `uvx nexy new` crea un proy
 | `nx build` | `nx b` | construcción de producción |
 | `nx new` | `nx n` | armar un proyecto |
 | `nx init` | `nx i` | agregar Nexy a un proyecto existente |
-| `nx add` | - | agregue un componente de interfaz de usuario desde el registro o una URL a `src/components/ui` |
+| `nx add` | - | agregue un componente de interfaz de usuario desde el registro o una URL, o una plataforma de implementación como `vercel` |
 | `nx migrate` | `nx m` | crear o aplicar migraciones de bases de datos con Alembic o Aerich |
 | `nx check` | `nx c` | verificación de tipo: mypy en Python, `tsc` en TypeScript |
 | `nx format` | `nx f` | formato Python (ruff), JS/TS (más bonito), archivos `.nexy` |

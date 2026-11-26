@@ -1,6 +1,6 @@
 # কনফিগার
 
-কনফিগারেশন হল প্রোজেক্ট রুটে `nexyconfig.py`-এ একটি ক্লাস। Nexy এটি যে ডিরেক্টরিতে চলে সেখান থেকে এটি লোড করে; ফাইল ছাড়া একটি প্রকল্প ডিফল্ট ব্যবহার করে।
+কনফিগারেশন হল প্রোজেক্ট রুটে `nexyconfig.py`-এর একটি ক্লাস। Nexy এটি যে ডিরেক্টরিতে চলে সেখান থেকে এটি লোড করে; ফাইল ছাড়া একটি প্রকল্প ডিফল্ট ব্যবহার করে।
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -81,7 +81,7 @@ class NexyConfig(NexyConfigModel):
 
 ### প্রকল্পের একটি পৃষ্ঠার জন্য বিনামূল্যে `/docs`
 
-এপিআই রেফারেন্স কোন রুটের আগে `/docs` উত্তর দেয়, তাই `src/routes/docs.nexy` বা `src/routes/docs/[[...slug]].nexy` সেখানে কখনই পরিবেশন করা হয় না। `nx dev` এবং `nx start` শুরুতে এমন একটি পৃষ্ঠার নাম দিন। এর সাথে রেফারেন্স সরান `useDocsUrl`:
+API রেফারেন্স যেকোন রুটের আগে `/docs` উত্তর দেয়, তাই `src/routes/docs.nexy` বা `src/routes/docs/[[...slug]].nexy` সেখানে কখনই পরিবেশন করা হয় না। `nx dev` এবং `nx start` শুরুতে এমন একটি পৃষ্ঠার নাম দিন। এর সাথে রেফারেন্স সরান `useDocsUrl`:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -104,6 +104,7 @@ class NexyConfig(NexyConfigModel):
 | `useSession` | `None` | জন্য kwargs `SessionMiddleware` |
 | `useAuth` | `None` | প্রমাণীকরণ মিডলওয়্যার কনফিগারেশন |
 | `useHTTPSRedirect` | `False` | HTTPS-এ HTTP রিডাইরেক্ট করুন |
+| `useRateLimit` | `None` | অনুরোধগুলি একটি ক্লায়েন্ট ঠিকানা প্রতি উইন্ডোতে পাঠাতে পারে, যেমন `{"requests": 60, "per": 60}`; আরও একটি হল `429` সহ `Retry-After`, এবং `"paths": ["/api/"]` শুধুমাত্র সেই উপসর্গগুলিকে সীমাবদ্ধ করে। প্রতিটি কর্মী তার নিজের উপর গণনা করে। দেখুন [দর সীমিত করা](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

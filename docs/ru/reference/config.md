@@ -104,6 +104,7 @@ class NexyConfig(NexyConfigModel):
 | `useSession` | `None` | кварги для `SessionMiddleware` |
 | `useAuth` | `None` | конфигурация промежуточного программного обеспечения аутентификации |
 | `useHTTPSRedirect` | `False` | перенаправить HTTP на HTTPS |
+| `useRateLimit` | `None` | запросы, которые один клиентский адрес может отправлять для каждого окна, например `{"requests": 60, "per": 60}`; еще один — `429` с `Retry-After`, а `"paths": ["/api/"]` ограничивает только эти префиксы. Каждый работник рассчитывает на свое. См. [Ограничение скорости](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

@@ -35,13 +35,13 @@ class NexyConfig(NexyConfigModel):
 
 | Champ | Par défaut | Signification |
 |---|---|---|
-| `useORM` | `None` | l'ORM du projet : `"SQLModel"`, `"SQLAlchemy"` ou `"Tortoise-ORM"`. `nx new` l'écrit, et `nx migrate` en choisit Alembic ou Aerich ; sans cela, `nx migrate` prend le premier ORM installé. Voir [Bases de données](../guides/databases.md#migrations) |
+| `useORM` | `None` | l'ORM du projet : `"SQLModel"`, `"SQLAlchemy"` ou `"Tortoise-ORM"`. `nx new` l'écrit et `nx migrate` en choisit Alembic ou Aerich ; sans cela, `nx migrate` prend le premier ORM installé. Voir [Bases de données](../guides/databases.md#migrations) |
 
 ## Itinéraires
 
 | Champ | Par défaut | Signification |
 |---|---|---|
-| `useRouter` | `None` | une instance ou une classe `APIRouter` montée à côté des routes basées sur des fichiers ; `None` signifie basé sur un fichier uniquement |
+| `useRouter` | `None` | une `APIRouter` instance ou classe montée à côté des routes basées sur des fichiers ; `None` signifie basé sur un fichier uniquement |
 | `excludeDirs` | `["templates", "extension", "docs"]` | répertoires ignorés lors de l'analyse des itinéraires |
 | `useAliases` | `None` | importer des alias, par ex. `{"@": "src"}` (`@/components/Counter.tsx` signifie `src/components/Counter.tsx`) ; `nx new` écrit celui que vous avez choisi, et Vite et `tsconfig.json` le suivent |
 
@@ -104,6 +104,7 @@ Ou désactivez-le avec `useDocs = False`, qui arrête également de diffuser `/o
 | `useSession` | `None` | kwargs pour `SessionMiddleware` |
 | `useAuth` | `None` | configuration du middleware d'authentification |
 | `useHTTPSRedirect` | `False` | rediriger HTTP vers HTTPS |
+| `useRateLimit` | `None` | les requêtes qu'une adresse client peut envoyer par fenêtre, telles que `{"requests": 60, "per": 60}` ; un de plus est un `429` avec `Retry-After`, et `"paths": ["/api/"]` limite uniquement ces préfixes. Chaque travailleur compte pour lui-même. Voir [Limitation de débit](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

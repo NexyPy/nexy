@@ -162,13 +162,14 @@
 | [الوسيطة والأمن](guides/middleware-and-security.md) | قم بإعداد CORS وGZip والمضيفين والجلسات الموثوقة |
 | [خريطة الموقع وملف robots.txt](guides/sitemap.md) | خدمة `/sitemap.xml` و `/robots.txt` من مساراتك |
 | [نشر](deployment/README.md) | بناء، حاويات وخدمة |
+| [النشر على فيرسل](deployment/vercel.md) | أضف نقطة الإدخال، والتزم بإنشاء الأصول الثابتة وتخزينها مؤقتًا |
 | [الأداء](deployment/performance.md) | قياس وضبط الإعدادات الافتراضية |
 
 ### بناء واختبار
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [Vite والتصميم](guides/frontend.md) | إعداد Vite والتصميم وبناء العميل |
-| [الاختبار](guides/testing.md) | اختبر ب pytest، `TestClient` و فيتيست |
+| [الاختبار](guides/testing.md) | اختبار مع pytest، `TestClient` وفيتيست |
 
 ### الأدوات والمساعدة
 | الصفحة | ماذا ستفعل |
@@ -197,7 +198,7 @@
 |---|---|
 | [قادمة من إطار آخر](getting-started/coming-from-other-frameworks.md) | ترجمة FastAPI، Next.js والتعبير عن العادات إلى Nexy |
 
-### Python الأطر {fbr}
+### Python أطر {fbr}
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [من FastAPI](coming-from/fastapi.md) | احتفظ بكود FastAPI الخاص بك: فقط `@app.get` يصبح ملفًا |
@@ -209,7 +210,7 @@
 |---|---|
 | [من اكسبرس](coming-from/express.md) | ترجمة المسارات والبرامج الوسيطة و `req`/`res` إلى معالجات Python |
 | [من فاستيفاي](coming-from/fastify.md) | تحويل المخططات والمكونات الإضافية والخطافات إلى نماذج ومجلدات وملفات |
-| [من إليسيا](coming-from/elysia.md) | قم بتعيين مخططات `t` والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
+| [من إليسيا](coming-from/elysia.md) | خريطة `t` المخططات والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
 | [من هونو](coming-from/hono.md) | قم بتعيين المسارات والبرامج الوسيطة والعميل `hc` إلى Nexy |
 
 ### أطر عمل فولستاك {fbr}

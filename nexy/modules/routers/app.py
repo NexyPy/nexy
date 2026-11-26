@@ -23,6 +23,7 @@ from nexy.helpers.server.devtools import DevToolsMiddleware
 from nexy.helpers.server.devtools.state import setup_devtools
 from nexy.helpers.server.head_requests import HeadRequestsMiddleware
 from nexy.helpers.server.health import HealthMiddleware
+from nexy.helpers.server.rate_limit import RateLimitMiddleware
 from nexy.helpers.server.security_headers import SecurityHeadersMiddleware
 from nexy.modules.routers.actions.engine import ACTION_ENGINE
 from nexy.modules.routers.actions.store import ACTIONS_STORE
@@ -91,6 +92,12 @@ def _add_access_log(server: FastAPI) -> None:
     dev server never serves, so dev leaves that one out of the log (#82)."""
     quiet = (DEVTOOLS_PROBE,) if is_dev() else ()
     server.add_middleware(AccessLogMiddleware, quiet=quiet, names=ACTIONS_STORE.name_of)
+
+
+def _add_rate_limit(server: FastAPI, setting: dict[str, Any] | None) -> None:
+    """Over the body limit: a refused client costs nothing. Under the log: it shows the 429."""
+    if setting:
+        server.add_middleware(RateLimitMiddleware, **setting)
 
 
 def _with_base_path(app: ASGIApp) -> ASGIApp:
@@ -176,6 +183,7 @@ class AppServer:
         # Over the project's middlewares: no one reads a body over the limit. Under the log: it
         # shows the 413.
         server.add_middleware(BodyLimitMiddleware, limit=self.config.useMaxBodySize or None)
+        _add_rate_limit(server, self.config.useRateLimit)
         # Added last, so outermost: it times everything below it.
         _add_access_log(server)
         if not is_dev():

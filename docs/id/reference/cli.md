@@ -11,7 +11,7 @@ Binernya adalah `nx` (juga dipasang sebagai `nexy`). `uvx nexy new` membuat proy
 | `nx build` | `nx b` | membangun produksi |
 | `nx new` | `nx n` | perancah sebuah proyek |
 | `nx init` | `nx i` | tambahkan Nexy ke proyek yang sudah ada |
-| `nx add` | - | tambahkan komponen UI dari registri atau URL ke `src/components/ui` |
+| `nx add` | - | tambahkan komponen UI dari registri atau URL, atau platform penerapan seperti `vercel` |
 | `nx migrate` | `nx m` | membuat atau menerapkan migrasi database dengan Alembic atau Aerich |
 | `nx check` | `nx c` | ketik-periksa: mypy di Python, `tsc` di TypeScript |
 | `nx format` | `nx f` | format file Python (ruff), JS/TS (lebih cantik), `.nexy` |
@@ -102,7 +102,7 @@ Baris perintah berbicara bahasa Inggris, Cina, Hindi, Spanyol, Portugis, Prancis
 2. variabel lokal shell Anda (`LC_ALL`, `LC_MESSAGES`, `LANG`, lalu `LANGUAGE`);
 3. bahasa sistem operasi Anda.
 
-Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimiliki bahasa tersebut. Hanya apa yang `nx` cetak yang diterjemahkan: kesalahan kompiler, penelusuran balik, dan keluaran alat yang dijalankannya tetap sebagaimana adanya. Terjemahannya belum ditinjau oleh penutur asli: koreksi dipersilahkan sebagai permintaan penarikan ke `nexy/modules/i18n/<language>.json`.
+Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimiliki bahasa tersebut. Hanya apa yang `nx` cetak yang diterjemahkan: kesalahan kompiler, penelusuran balik, dan keluaran alat yang dijalankannya tetap sebagaimana adanya. Terjemahannya belum ditinjau oleh penutur asli: koreksi dipersilakan sebagai permintaan penarikan ke `nexy/modules/i18n/<language>.json`.
 
 ## Membangun perilaku
 

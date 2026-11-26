@@ -168,6 +168,7 @@ Controllers and modules.
 | [Middleware and security](guides/middleware-and-security.md) | Set up CORS, GZip, trusted hosts and sessions |
 | [Sitemap and robots.txt](guides/sitemap.md) | Serve `/sitemap.xml` and `/robots.txt` from your routes |
 | [Deploy](deployment/README.md) | Build, containerise and serve |
+| [Deploy on Vercel](deployment/vercel.md) | Add the entry point, commit the build and cache static assets |
 | [Performance](deployment/performance.md) | Measure and tune the defaults |
 
 ### Build and test

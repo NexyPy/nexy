@@ -147,7 +147,7 @@ revalidate("/users")    # that page, if it is the one open
 
 操作读取字段，而不是文件：文件输入以字符串形式到达它。要接收上传，请在 `src/routes/api/` 中使用 `File` 或 `UploadFile` 参数编写路由。
 
-## 安全性
+## 安全
 
 ### 路径模糊不等于授权
 操作路径是 `/_nx_`，后跟函数模块的哈希值、其名称和项目的秘密。它由 `NEXY_ACTION_SECRET` 设置，或保存在 `__nexy__/action.key` 中，由 `nx build` 创建，因此客户端包和 `nx start` 同意：将该文件与构建一起保留。该路径隐藏端点以防止偶然发现，并且 **生成的路径不是授权机制**。

@@ -59,7 +59,7 @@ class NexyConfig(NexyConfigModel):
 
 ## 保留文件名
 
-每个字段都会为保留角色添加扩展。 `useLayoutExtensions = ["md"]` 使 `layout.md` 保留，与 `layout.nexy` 完全相同。
+每个字段都会为保留角色添加扩展。 `useLayoutExtensions = ["md"]` 保留 `layout.md`，与 `layout.nexy` 完全相同。
 
 | 领域 | 添加扩展 |
 |---|---|
@@ -104,6 +104,7 @@ class NexyConfig(NexyConfigModel):
 | `useSession` | `None` | 夸格斯 `SessionMiddleware` |
 | `useAuth` | `None` | 身份验证中间件配置 |
 | `useHTTPSRedirect` | `False` | 将 HTTP 重定向到 HTTPS |
+| `useRateLimit` | `None` | 每个窗口一个客户端地址可能发送的请求，例如 `{"requests": 60, "per": 60}`；还有一个是带有 `Retry-After` 的 `429`，而 `"paths": ["/api/"]` 仅限制这些前缀。每个工人都依靠自己。请参阅[速率限制](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

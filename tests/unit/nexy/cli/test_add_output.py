@@ -3,12 +3,20 @@
 from __future__ import annotations
 
 import importlib
+import json
 from pathlib import Path
 
 import pytest
+from typer.testing import CliRunner
+
+from nexy.modules.cli import CLI
 
 # The package re-exports the function under the module's name: import the module by path.
 add = importlib.import_module("nexy.modules.cli.commands.add")
+
+
+def run_add(*arguments):
+    return CliRunner().invoke(CLI, ["add", *arguments])
 
 
 @pytest.fixture(autouse=True)
@@ -69,3 +77,67 @@ def test_add_a_component_that_cannot_be_written_is_a_uv_error(tmp_path, monkeypa
         capsys.readouterr().out
         == f"error: Failed to write {BUTTON}\n  cause: read-only file system\n"
     )
+
+
+class TestAddVercel:
+    def test_entry_point_imports_the_application(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        run_add("vercel")
+        assert "import_module" in Path("src/server.py").read_text()
+
+    def test_entry_point_copies_the_project_into_a_writable_root(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        run_add("vercel")
+        body = Path("src/server.py").read_text()
+        assert all(name in body for name in ('"src"', '"__nexy__"', '"public"', '"nexyconfig.py"'))
+
+    def test_host_config_caches_hashed_assets_forever(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        run_add("vercel")
+        config = json.loads(Path("vercel.json").read_text())
+        assert config["headers"][0]["headers"][0]["value"] == (
+            "public, max-age=31536000, immutable"
+        )
+
+    def test_host_config_caches_images_for_one_day(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        run_add("vercel")
+        config = json.loads(Path("vercel.json").read_text())
+        assert config["headers"][1]["headers"][0]["value"] == (
+            "public, max-age=86400, stale-while-revalidate=604800"
+        )
+
+    def test_generated_files_are_ignored_once(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        Path(".gitignore").write_text("*.log\n")
+        run_add("vercel")
+        run_add("vercel")
+        assert Path(".gitignore").read_text().count("__nexy__/build-cache.json") == 1
+
+    def test_an_existing_entry_point_is_kept(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        Path("src/server.py").parent.mkdir(parents=True)
+        Path("src/server.py").write_text("kept")
+        run_add("vercel")
+        assert Path("src/server.py").read_text() == "kept"
+
+    def test_an_unknown_platform_is_an_error(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        result = run_add("netlify")
+        assert "error:" in result.stdout
+
+    def test_mixing_a_platform_with_a_component_is_an_error(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        result = run_add("vercel", "button")
+        assert "error:" in result.stdout
+
+    def test_a_platform_with_flags_is_an_error(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        result = run_add("vercel", "--all")
+        assert "error:" in result.stdout
+
+    def test_a_platform_is_not_installed_as_a_component(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(add, "install_packages", lambda _names: pytest.fail("install called"))
+        run_add("vercel")
+        assert not Path("src/components/ui/vercel.nexy").exists()

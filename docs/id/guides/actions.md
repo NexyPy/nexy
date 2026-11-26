@@ -141,7 +141,7 @@ Suatu tindakan juga mengambil bentuk HTML standar, sehingga halaman berfungsi se
 
 Dalam templat `.nexy`, `__actions_path["name"]` adalah jalurnya, `__actions["name"]` adalah fungsinya, dan fungsi tersebut juga berada dalam cakupan dengan namanya sendiri.
 
-Jika berhasil, pengunjung akan dikirim kembali ke halaman tempat formulir berada, dengan status `303`. Untuk menjawab secara berbeda, kembalikan objek `Response` (misalnya, `RedirectResponse("/done", status_code=303)`).
+Jika berhasil, pengunjung akan dikirim kembali ke halaman tempat formulir berada, dengan status `303`. Untuk menjawab berbeda, kembalikan objek `Response` (misalnya, `RedirectResponse("/done", status_code=303)`).
 
 Formulir yang dikirim sebagai `application/x-www-form-urlencoded`, yang dilakukan browser secara default, tidak memerlukan paket tambahan. Tambahkan `enctype="multipart/form-data"` dan panggilan memerlukan `python-multipart`: tanpanya tindakan akan menjawab `500` dengan pesan yang menyebutkan perintah, `uv add python-multipart`.
 

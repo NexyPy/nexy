@@ -162,6 +162,7 @@ Controladores y módulos.
 | [Middleware y seguridad](guides/middleware-and-security.md) | Configure CORS, GZip, hosts y sesiones confiables |
 | [Mapa del sitio y robots.txt](guides/sitemap.md) | Sirve `/sitemap.xml` y `/robots.txt` desde tus rutas |
 | [Implementar](deployment/README.md) | Construir, colocar en contenedores y servir |
+| [Implementar en Vercel](deployment/vercel.md) | Agregue el punto de entrada, confirme la compilación y almacene en caché los activos estáticos |
 | [Rendimiento](deployment/performance.md) | Mida y ajuste los valores predeterminados |
 
 ### Construir y probar
@@ -173,7 +174,7 @@ Controladores y módulos.
 ### Herramientas y ayuda
 | Página | que haras |
 |---|---|
-| [Barra de herramientas de desarrollo](guides/devtools.md) | Utilice la barra de herramientas de `nexy dev` y apáguela. |
+| [Barra de herramientas de desarrollo](guides/devtools.md) | Utilice la barra de herramientas de `nexy dev` y apáguela |
 | [Depuración](guides/debugging.md) | Deténgase en el código de su servidor con `breakpoint()` o VS Code |
 | [Agentes codificadores](guides/ai-agents.md) | Dale a Claude Code, Codex y OpenCode las reglas de tu proyecto |
 | [Solución de problemas](guides/troubleshooting.md) | Solucionar los primeros problemas a los que se enfrenta la gente |

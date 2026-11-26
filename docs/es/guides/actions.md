@@ -152,7 +152,7 @@ Una acción lee campos, no archivos: la entrada de un archivo llega como una cad
 ### La oscuridad del camino no es autorización.
 La ruta de acción es `/_nx_` seguida de un hash del módulo de la función, su nombre y un secreto del proyecto. Lo establece `NEXY_ACTION_SECRET`, o lo guarda en `__nexy__/action.key`, lo cual `nx build` crea para que el paquete del cliente y `nx start` acuerden: conservar ese archivo con la compilación. La ruta oculta el punto final del descubrimiento casual y **la ruta generada no es un mecanismo de autorización**.
 
-Cualquiera que conozca el camino puede iniciar la acción. Tú **debes** verificar la identidad y los permisos del usuario dentro de la acción:
+Cualquiera que conozca el camino puede iniciar la acción. Usted **debe** verificar la identidad y los permisos del usuario dentro de la acción:
 ```python
 @Action
 async def delete_user(user_id: str, request: Request):

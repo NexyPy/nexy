@@ -104,6 +104,7 @@ Oder schalten Sie es mit `useDocs = False` aus, wodurch auch die Bereitstellung 
 | `useSession` | `None` | Kwargs für `SessionMiddleware` |
 | `useAuth` | `None` | Authentifizierungs-Middleware-Konfiguration |
 | `useHTTPSRedirect` | `False` | HTTP auf HTTPS umleiten |
+| `useRateLimit` | `None` | die Anfragen, die eine Client-Adresse pro Fenster senden kann, z. B. `{"requests": 60, "per": 60}`; Eine weitere ist ein `429` mit `Retry-After`, und `"paths": ["/api/"]` beschränkt nur diese Präfixe. Jeder Arbeiter zählt für sich. Siehe [Ratenbegrenzung](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 
@@ -137,7 +138,7 @@ Die oben genannten Standardwerte werden aus `nexy/core/config.py` gelesen.
 
 ## Deklariert, noch nicht gelesen
 
-Diese Felder sind in `NexyConfigModel` vorhanden, aber kein Code nutzt sie. Das Festlegen hat keine Auswirkung:
+Diese Felder sind in `NexyConfigModel` vorhanden, werden aber von keinem Code genutzt. Das Festlegen hat keine Auswirkung:
 
 `useViteDevUrl`, `useRTL`.
 

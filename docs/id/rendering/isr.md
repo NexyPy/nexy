@@ -85,7 +85,7 @@ post = posts.get(slug, {"title": "Untitled"})
 <h1>{{ post.title }}</h1>
 ```
 
-Permintaan pertama ke `/blog/hello` dirender dan disimpan. 300 detik berikutnya disajikan dari toko yang dipilih. `/blog/other` adalah entri terpisah, dirender dan disimpan sendiri. Dalam proyek nyata `posts` berasal dari database atau layanan, dipanggil satu kali per regenerasi.
+Permintaan pertama ke `/blog/hello` dirender dan disimpan. 300 detik berikutnya dilayani dari toko yang dipilih. `/blog/other` adalah entri terpisah, dirender dan disimpan sendiri. Dalam proyek nyata `posts` berasal dari database atau layanan, dipanggil satu kali per regenerasi.
 
 ## Apa yang bisa dan tidak bisa dibagikan oleh CDN
 
