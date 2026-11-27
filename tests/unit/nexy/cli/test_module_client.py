@@ -32,14 +32,14 @@ RELEASE = {
 
 
 def test_versions_returns_the_available_versions_newest_first():
-    def handler(request: httpx.Request) -> httpx.Response:
+    def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json={"versions": ["1.0.0", "1.2.0"]})
 
     assert client(handler).versions("@acme/auth") == ("1.2.0", "1.0.0")
 
 
 def test_release_reads_the_service_metadata():
-    def handler(request: httpx.Request) -> httpx.Response:
+    def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json=RELEASE, headers={"X-Signature": "ed25519:abc"})
 
     release = client(handler).release("@acme/auth", "1.2.0")
@@ -49,7 +49,7 @@ def test_release_reads_the_service_metadata():
 def test_download_returns_an_archive_with_the_right_checksum():
     archive = b"archive bytes"
 
-    def handler(request: httpx.Request) -> httpx.Response:
+    def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(
             200,
             content=archive,
@@ -60,7 +60,7 @@ def test_download_returns_an_archive_with_the_right_checksum():
 
 
 def test_download_refuses_an_archive_with_the_wrong_checksum():
-    def handler(request: httpx.Request) -> httpx.Response:
+    def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, content=b"tampered", headers={"X-Checksum": "abc"})
 
     with pytest.raises(ChecksumMismatchError):
