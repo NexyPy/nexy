@@ -246,6 +246,15 @@
     "no_orm": "Tidak ada ORM yang didukung. Pasang salah satunya: sqlmodel, tortoise-orm, sqlalchemy",
     "tool_missing": "Kesalahan: {tool} tidak ditemukan di PATH. Pasang lalu coba lagi."
   },
+  "publish": {
+    "dry_run": "Uji coba: {name}@{version} ({size} byte, sha256 {checksum})",
+    "help_dry_run": "Validasi dan bangun rilis tanpa mengunggah",
+    "help_path": "Jalur ke direktori modul",
+    "help_registry": "URL registri untuk mempublikasikan",
+    "no_token": "Tidak ada token registri. Atur NEXY_REGISTRY_TOKEN atau masuk.",
+    "published": "Dipublikasikan {name}@{version} ke {registry} (sha256:{checksum})",
+    "undeclared": "Impor relatif yang tidak dideklarasikan: {name}"
+  },
   "routes": {
     "title": "Rute",
     "methods": "Metode",

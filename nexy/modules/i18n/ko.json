@@ -246,6 +246,15 @@
     "no_orm": "지원되는 ORM이 없습니다. 하나를 설치하세요: sqlmodel, tortoise-orm, sqlalchemy",
     "tool_missing": "오류: PATH에서 {tool}을(를) 찾을 수 없습니다. 설치한 뒤 다시 시도하세요."
   },
+  "publish": {
+    "dry_run": "드라이 런: {name}@{version} ({size} 바이트, sha256 {checksum})",
+    "help_dry_run": "업로드하지 않고 릴리스 검증 및 빌드",
+    "help_path": "모듈 디렉터리 경로",
+    "help_registry": "게시할 레지스트리 URL",
+    "no_token": "레지스트리 토큰이 없습니다. NEXY_REGISTRY_TOKEN을 설정하거나 로그인하세요.",
+    "published": "{name}@{version}을(를) {registry}에 게시했습니다 (sha256:{checksum})",
+    "undeclared": "선언되지 않은 상대 가져오기: {name}"
+  },
   "routes": {
     "title": "경로",
     "methods": "메서드",

@@ -246,6 +246,15 @@
     "no_orm": "कोई समर्थित ORM नहीं मिला। इनमें से एक इंस्टॉल करें: sqlmodel, tortoise-orm, sqlalchemy",
     "tool_missing": "त्रुटि: PATH में {tool} नहीं मिला। इसे इंस्टॉल करके फिर कोशिश करें।"
   },
+  "publish": {
+    "dry_run": "ड्राई रन: {name}@{version} ({size} बाइट, sha256 {checksum})",
+    "help_dry_run": "अपलोड किए बिना रिलीज़ को मान्य और निर्मित करें",
+    "help_path": "मॉड्यूल निर्देशिका का पथ",
+    "help_registry": "प्रकाशित करने के लिए रजिस्ट्री URL",
+    "no_token": "कोई रजिस्ट्री टोकन नहीं है। NEXY_REGISTRY_TOKEN सेट करें या लॉग इन करें।",
+    "published": "{name}@{version} को {registry} पर प्रकाशित किया (sha256:{checksum})",
+    "undeclared": "अघोषित सापेक्ष आयात: {name}"
+  },
   "routes": {
     "title": "मार्ग",
     "methods": "विधियाँ",
