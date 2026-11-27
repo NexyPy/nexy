@@ -178,6 +178,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | [调试](guides/debugging.md) | 使用 `breakpoint()` 或 VS Code 停止服务器代码 |
 | [编码剂](guides/ai-agents.md) | 给出 Claude Code、Codex 和 OpenCode 您项目的规则 |
 | [安装模块](guides/install-modules.md) | 从注册表安装、升级和固定模块 |
+| [发布模块](guides/publish-modules.md) | 验证、构建并上传一个模块版本 |
 | [故障排除](guides/troubleshooting.md) | 解决人们遇到的第一个问题 |
 
 ## 数据库
@@ -197,7 +198,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 ### 概述
 | 页面 | 你会做什么 |
 |---|---|
-| [来自另一个框架](getting-started/coming-from-other-frameworks.md) | 将 FastAPI、Next.js 和 Express 习惯翻译成 Nexy |
+| [来自另一个框架](getting-started/coming-from-other-frameworks.md) | 将 FastAPI、Next.js 和 Express 习惯翻译为 Nexy |
 
 ### Python 框架 {fbr}
 | 页面 | 你会做什么 |
