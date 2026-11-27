@@ -150,13 +150,8 @@ def _react_preamble(frameworks: set[str]) -> str:
     if "react" not in frameworks:
         return ""
     return (
-        "// Nexy: Synchronous Preamble Injection\n"
-        "if (import.meta.env.DEV) {\n"
-        "  (window as any).$RefreshReg$ = () => {};\n"
-        "  (window as any).$RefreshSig$ = () => (type: any) => type;\n"
-        "  (window as any).__vite_plugin_react_preamble_installed__ = true;\n"
-        "  import('/@react-refresh').then(m => m.default.injectIntoGlobalHook(window));\n"
-        "}\n"
+        "// Nexy: Synchronous preamble, before the runtime evaluates a route.\n"
+        'import "virtual:nexy-react-preamble";\n'
     )
 
 

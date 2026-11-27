@@ -47,6 +47,14 @@ def test_the_dev_base_follows_the_setting():
     assert _run("base") == {"base": "/app/", "error": None}
 
 
+def test_the_dev_plugin_supplies_a_synchronous_react_preamble():
+    assert "injectIntoGlobalHook(window)" in _run("preamble")["preamble"]["code"]
+
+
+def test_the_build_plugin_omits_the_dev_only_react_preamble():
+    assert _run("preamble-prod")["preamble"]["code"] == ""
+
+
 def test_the_build_base_follows_the_setting():
     assert _run("base-prod") == {"base": "/app/__nexy__/client/", "error": None}
 

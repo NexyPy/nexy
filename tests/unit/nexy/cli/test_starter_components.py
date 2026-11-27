@@ -92,3 +92,21 @@ def test_the_generated_entry_has_no_ui_runtime(tmp_path):
     write_main_file(src, set())
     main = (src / "main.ts").read_text(encoding="utf-8")
     assert "startUi" not in main and "ui.ts" not in main
+
+
+def test_the_react_hook_is_installed_before_the_client_runtime(tmp_path):
+    src = tmp_path / "__nexy__" / "src"
+    src.mkdir(parents=True)
+    write_main_file(src, {"react"})
+    main = (src / "main.ts").read_text(encoding="utf-8")
+    assert main.index('import "virtual:nexy-react-preamble"') < main.index(
+        'import "@nexy/runtime.ts"'
+    )
+
+
+def test_the_react_hook_is_no_longer_installed_async(tmp_path):
+    src = tmp_path / "__nexy__" / "src"
+    src.mkdir(parents=True)
+    write_main_file(src, {"react"})
+    main = (src / "main.ts").read_text(encoding="utf-8")
+    assert "/@react-refresh" not in main

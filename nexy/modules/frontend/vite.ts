@@ -141,10 +141,29 @@ function documentForBrowser(source: string, id: string, ssr: boolean): string | 
   return stripDocumentTags(source, framework)
 }
 
+// A static import in main.ts makes this run before the client runtime evaluates a route. The
+// async preamble used before #690 let a reloaded tab render first, so Fast Refresh had no hook.
+const REACT_PREAMBLE_ID = 'virtual:nexy-react-preamble'
+const REACT_PREAMBLE_CODE = `import { injectIntoGlobalHook } from '/@react-refresh'
+injectIntoGlobalHook(window)
+window.$RefreshReg$ = () => {}
+window.$RefreshSig$ = () => (type) => type
+`
+
 function nexyPlugin(): Plugin {
   return {
     name: 'nexy',
     enforce: 'pre',
+
+    resolveId(id) {
+      if (id === REACT_PREAMBLE_ID) return '\0' + id
+      return null
+    },
+
+    load(id) {
+      if (id !== '\0' + REACT_PREAMBLE_ID) return null
+      return isProduction ? '' : REACT_PREAMBLE_CODE
+    },
 
     transform(source, id, options) {
       const stripped = documentForBrowser(source, id, options?.ssr === true)
