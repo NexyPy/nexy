@@ -16,7 +16,14 @@
     "not_found": "레지스트리에서 컴포넌트 '{name}'을(를) 찾을 수 없습니다.",
     "usage": "사용법:",
     "usage_text": "nexy add [컴포넌트_이름 또는 URL]...",
-    "write_failed": "{path}을(를) 쓰지 못했습니다"
+    "write_failed": "{path}을(를) 쓰지 못했습니다",
+    "help_migrate": "설치 후 선언된 마이그레이션 실행",
+    "module": {
+      "already": "{name}@{version}이(가) 이미 설치되었습니다.",
+      "installed": "{name}@{version} 설치됨",
+      "no_releases": "{name}에 대한 릴리스를 찾을 수 없습니다",
+      "signed": "{signer}에 의해 검증됨"
+    }
   },
   "build": {
     "building_client": "클라이언트 번들 빌드 완료",

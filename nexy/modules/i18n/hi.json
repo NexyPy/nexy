@@ -16,7 +16,14 @@
     "not_found": "कॉम्पोनेंट '{name}' रजिस्ट्री में नहीं मिला।",
     "usage": "उपयोग:",
     "usage_text": "nexy add [कॉम्पोनेंट_का_नाम या URL]...",
-    "write_failed": "{path} लिखने में विफल"
+    "write_failed": "{path} लिखने में विफल",
+    "help_migrate": "इंस्टॉल के बाद घोषित माइग्रेशन चलाएँ",
+    "module": {
+      "already": "{name}@{version} पहले से इंस्टॉल है।",
+      "installed": "{name}@{version} इंस्टॉल हो गया",
+      "no_releases": "{name} के लिए कोई रिलीज़ नहीं मिली",
+      "signed": "{signer} द्वारा सत्यापित"
+    }
   },
   "build": {
     "building_client": "क्लाइंट बंडल बन गया",

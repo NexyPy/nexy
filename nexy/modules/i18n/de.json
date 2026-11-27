@@ -16,7 +16,14 @@
     "not_found": "Komponente '{name}' wurde in der Registry nicht gefunden.",
     "usage": "Verwendung:",
     "usage_text": "nexy add [KOMPONENTENNAME oder URL]...",
-    "write_failed": "{path} konnte nicht geschrieben werden"
+    "write_failed": "{path} konnte nicht geschrieben werden",
+    "help_migrate": "Deklarierte Migrationen nach der Installation ausführen",
+    "module": {
+      "already": "{name}@{version} ist bereits installiert.",
+      "installed": "{name}@{version} installiert",
+      "no_releases": "Keine Versionen für {name} gefunden",
+      "signed": "Verifiziert von {signer}"
+    }
   },
   "build": {
     "building_client": "Client-Bundle erstellt",
