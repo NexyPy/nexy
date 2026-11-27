@@ -7,6 +7,7 @@ from nexy.modules.cli.commands.info import info
 from nexy.modules.cli.commands.init import init
 from nexy.modules.cli.commands.migrate import migrate
 from nexy.modules.cli.commands.new import new
+from nexy.modules.cli.commands.publish import publish
 from nexy.modules.cli.commands.start import start
 from nexy.modules.cli.commands.test import test
 
@@ -22,4 +23,5 @@ __all__ = [
     "info",
     "format_",
     "test",
+    "publish",
 ]
