@@ -46,6 +46,12 @@ class TestTranslateChunk:
     def test_a_piece_the_service_keeps_whole_is_asked_once(self):
         assert translate_chunk("a [[1]] b", "bn", service) == "bn:a [[1]] b"
 
+    def test_invisible_spaces_come_back_as_typed_spaces(self):
+        answer = translate_chunk(
+            "a [[1]] b", "fr", lambda _text, _target: "caf\u00a0[[1]]\u200b\ufeff"
+        )
+        assert answer == "caf [[1]]"
+
 
 class TestTranslateMarkdown:
     def test_a_wrapped_paragraph_reaches_the_service_whole(self):
