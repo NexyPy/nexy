@@ -11,7 +11,7 @@ class Verifier:
     def __init__(self, signer: str | None):
         self.signer = signer
 
-    def verify(self, archive: bytes, signature: str | None) -> str | None:
+    def verify(self, _archive: bytes, _signature: str | None) -> str | None:
         return self.signer
 
 
