@@ -66,6 +66,11 @@ def test_undeclared_imports_resolves_a_parent_import(tmp_path):
     assert undeclared_imports(root, ("pkg/sub/auth.py",)) == ("pkg/shared.py",)
 
 
+def test_undeclared_imports_ignores_a_star_import(tmp_path):
+    root = project(tmp_path, "src/auth.py", "from . import *\n")
+    assert undeclared_imports(root, ("src/auth.py",)) == ()
+
+
 def test_undeclared_imports_ignores_an_import_above_the_module_root(tmp_path):
     root = project(tmp_path, "src/auth.py", "from ...shared import token\n")
     assert undeclared_imports(root, ("src/auth.py",)) == ()
