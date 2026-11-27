@@ -140,6 +140,14 @@ def test_installer_installs_the_package_of_a_package_module(tmp_path, monkeypatc
     assert runner.calls[0][1] == ["uv", "add", "nexy-auth"]
 
 
+def test_installer_installs_node_dependencies_without_python_ones(tmp_path, monkeypatch):
+    manifest = MANIFEST.replace('python = ["argon2-cffi"]', "python = []")
+    raw = make_archive(manifest, {"src/auth.py": b"x"})
+    installer, runner, nodes = build(tmp_path, monkeypatch, FakeClient(raw))
+    installer.install(ModuleReference("@acme/auth", "1.2.0"))
+    assert runner.calls == [] and nodes == [["zod"]]
+
+
 def test_installer_applies_config_hooks(tmp_path, monkeypatch):
     raw = make_archive(MANIFEST, {"src/auth.py": b"x"})
     installer, _, _ = build(tmp_path, monkeypatch, FakeClient(raw))
