@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from pathlib import Path
 
-TOKEN_ENV = "NEXY_REGISTRY_TOKEN"
+TOKEN_ENV = "NEXY_REGISTRY_TOKEN"  # nosec B105 - the name of the environment variable
 LOGIN_FILE = Path(".config/nexy/registry-token")
 
 

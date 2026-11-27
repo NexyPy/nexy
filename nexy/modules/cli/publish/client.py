@@ -39,7 +39,7 @@ class PublishClient:
     def __init__(
         self,
         base_url: str = DEFAULT_BASE_URL,
-        token: str = "",
+        token: str = "",  # nosec B107 - an empty token omits the Authorization header
         client: httpx.Client | None = None,
         retries: int = 2,
         sleep: Callable[[float], None] = time.sleep,
