@@ -47,7 +47,7 @@ Quanto tempo leva um projeto com uma `.nexy` página, mediana de 5 execuções, 
 | Primeira página | 554ms | o mesmo, mais a primeira solicitação para `/` e seu HTML |
 | Recompilar uma página | 1,8ms | compilar a página novamente após uma edição, em um processo que já está em execução |
 
-Medido em um AMD Ryzen 5 4500U, Linux, 6 CPUs, Python 3.13.15. Recompilar é o que `nx dev` faz para o Python lado de uma mudança; uma recarga do navegador também paga pelo gráfico do módulo de Vite e pela renderização do próprio navegador, portanto, não é um tempo de recarga.
+Medido em um AMD Ryzen 5 4500U, Linux, 6 CPUs, Python 3.13.15. Recompilar é o que `nx dev` faz para o Python lado de uma mudança; o recarregamento abaixo adiciona o observador, a mensagem HMR e o navegador.
 
 Meça sua própria máquina com o script que escreveu a tabela:
 
@@ -56,6 +56,25 @@ python scripts/measure_speed.py --runs 5
 ```
 
 O fluxo de trabalho `Speed` executa-o em cada push para `main` e grava a mesma tabela no resumo da execução, em um executor Ubuntu hospedado no GitHub.
+
+### Recarregar depois de salvar
+
+Quanto tempo `nx dev` leva para mostrar uma edição, desde a gravação do arquivo até o novo texto no navegador, mediana de 5 edições:
+
+| Medir | Mediana | O que cobre |
+|---|---|---|
+| Recarregar uma página `.nexy` | 98ms | o observador, a compilação, a mensagem HMR, então a página busca seu novo corpo |
+| Recarregar uma página `.tsx` | 43ms | Observador de Vite e React Fast Refresh, em um projeto cliente (`useCSR = True`) |
+
+Medido em um Intel Core i5-10300H, Windows 11, 8 CPUs, Python 3.13.2, Node 22.23.5. Cada edição é cronometrada em uma guia que carregou a página uma vez. O recarregamento `.nexy` inclui os 50 ms que o observador aguarda até que o salvamento seja resolvido.
+
+Meça sua própria máquina com o conjunto de navegadores, que precisa de Chromium, Node e pnpm:
+
+```bash
+python -m pytest tests/e2e/test_reload_budget.py -m e2e -s
+```
+
+O teste falha quando a mediana é superior a 1 segundo.
 
 ## Solicitações por segundo
 

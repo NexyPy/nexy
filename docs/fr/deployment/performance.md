@@ -39,7 +39,7 @@ ISR est un mode de pages de fichiers : une vue renvoyée par un contrôleur est
 
 ## Démarrage, première page et recompilation
 
-Combien de temps prend un projet avec une page `.nexy`, en moyenne 5 exécutions, chacune dans un nouveau processus Python :
+Combien de temps prend un projet avec une `.nexy` page, en moyenne 5 exécutions, chacune dans un nouveau processus Python :
 
 | Mesurer | Médiane | Ce qu'il couvre |
 |---|---|---|
@@ -47,7 +47,7 @@ Combien de temps prend un projet avec une page `.nexy`, en moyenne 5 exécutions
 | Première page | 554 ms | le même, plus la première requête à `/` et son code HTML |
 | Recompiler une page | 1,8 ms | compiler à nouveau la page après une modification, dans un processus déjà en cours d'exécution |
 
-Mesuré sur un AMD Ryzen 5 4500U, Linux, 6 processeurs, Python 3.13.15. La recompilation est ce que `nx dev` fait pour le côté Python d'un changement ; un rechargement du navigateur paie également pour le graphique du module de Vite et le propre rendu du navigateur, ce n'est donc pas un temps de rechargement.
+Mesuré sur un AMD Ryzen 5 4500U, Linux, 6 processeurs, Python 3.13.15. La recompilation est ce que `nx dev` fait pour le côté Python d'un changement ; le rechargement ci-dessous ajoute l'observateur, le message HMR et le navigateur.
 
 Mesurez votre propre machine avec le script qui a écrit le tableau :
 
@@ -56,6 +56,25 @@ python scripts/measure_speed.py --runs 5
 ```
 
 Le workflow `Speed` l'exécute à chaque poussée vers `main` et écrit le même tableau dans le résumé de l'exécution, sur un exécuteur Ubuntu hébergé par GitHub.
+
+### Recharger après une sauvegarde
+
+Combien de temps prend `nx dev` pour afficher une modification, depuis l'écriture du fichier jusqu'au nouveau texte dans le navigateur, médiane de 5 modifications :
+
+| Mesurer | Médiane | Ce qu'il couvre |
+|---|---|---|
+| Recharger une page `.nexy` | 98 ms | le watcher, la compilation, le message HMR, puis la page récupère son nouveau corps |
+| Recharger une page `.tsx` | 43 ms | L'observateur de Vite et React Fast Refresh, dans un projet client (`useCSR = True`) |
+
+Mesuré sur un processeur Intel Core i5-10300H, Windows 11, 8, Python 3.13.2, nœud 22.23.5. Chaque modification est chronométrée dans un onglet qui a chargé la page une fois. Le rechargement `.nexy` inclut les 50 ms pendant lesquelles l'observateur attend qu'une sauvegarde se règle.
+
+Mesurez votre propre machine avec la suite de navigateurs, qui nécessite Chromium, Node et pnpm :
+
+```bash
+python -m pytest tests/e2e/test_reload_budget.py -m e2e -s
+```
+
+Le test échoue lorsqu’une médiane dépasse 1 seconde.
 
 ## Requêtes par seconde
 
