@@ -16,7 +16,14 @@
     "not_found": "コンポーネント '{name}' はレジストリに見つかりません。",
     "usage": "使い方:",
     "usage_text": "nexy add [コンポーネント名 または URL]...",
-    "write_failed": "{path} を書き込めませんでした"
+    "write_failed": "{path} を書き込めませんでした",
+    "help_migrate": "インストール後に宣言されたマイグレーションを実行する",
+    "module": {
+      "already": "{name}@{version} は既にインストールされています。",
+      "installed": "{name}@{version} をインストールしました",
+      "no_releases": "{name} のリリースが見つかりませんでした",
+      "signed": "{signer} により検証済み"
+    }
   },
   "build": {
     "building_client": "クライアントバンドルをビルドしました",

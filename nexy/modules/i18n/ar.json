@@ -16,7 +16,14 @@
     "not_found": "المكوّن '{name}' غير موجود في السجل.",
     "usage": "الاستخدام:",
     "usage_text": "nexy add [اسم_المكوّن أو URL]...",
-    "write_failed": "تعذّرت كتابة {path}"
+    "write_failed": "تعذّرت كتابة {path}",
+    "help_migrate": "تشغيل عمليات الترحيل المعلنة بعد التثبيت",
+    "module": {
+      "already": "{name}@{version} مثبت مسبقًا.",
+      "installed": "تم تثبيت {name}@{version}",
+      "no_releases": "لم يتم العثور على إصدارات من أجل {name}",
+      "signed": "تم التحقق بواسطة {signer}"
+    }
   },
   "build": {
     "building_client": "تم بناء حزمة العميل",

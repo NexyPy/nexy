@@ -13,7 +13,7 @@ example `uv run nexy dev`: that is where your own packages are.
 | `nx build` | `nx b` | production build |
 | `nx new` | `nx n` | scaffold a project |
 | `nx init` | `nx i` | add Nexy to an existing project |
-| `nx add` | - | add a UI component from the registry or a URL, or a deployment platform such as `vercel` |
+| `nx add` | - | add a UI component, a registry module such as `@acme/auth`, a URL, or a platform such as `vercel` |
 | `nx migrate` | `nx m` | create or apply database migrations with Alembic or Aerich |
 | `nx check` | `nx c` | type-check: mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (prettier), `.nexy` files |
@@ -33,6 +33,10 @@ nx routes
 
 If no application routes are found, it prints `No routes found.`.
 
+## `nx add` with a module
+
+A namespaced argument such as `@acme/auth` or `@acme/auth@1.2.0` installs a release from the module registry instead of a UI component. It checks the checksum and compatibility, writes only the files the module declares, installs its dependencies and applies its config hooks. The install is recorded in `.nexy/modules.json`. Migrations run only with `--migrate`. See [Install modules](../guides/install-modules.md) for upgrades, pins and trust settings.
+
 ## Flags
 
 | Command | Flag | Default |
@@ -49,6 +53,7 @@ If no application routes are found, it prints `No routes found.`.
 | `add` | `--ui`, `--url` | off - force a registry name or a URL when it is ambiguous |
 | `add` | `--all`, `-a` | off - add every component of the registry |
 | `add` | `--sha256` | none - expected digest of a remote component; a mismatch aborts |
+| `add` | `--migrate` | off - run the migrations a registry module declares |
 | `migrate` | `--init` | off - write the Alembic or Aerich setup |
 | `migrate` | `--upgrade`, `-u` | off - apply the migrations instead of writing a new one |
 | `migrate` | `--message`, `-m` | empty - name of the new revision |
@@ -96,7 +101,7 @@ client framework, how to style the app, import alias, ORM, database and database
 description and the current one is highlighted. Questions that do not apply are skipped (an API
 project has no framework or style; choosing **No database** as the ORM skips the database and URL).
 Move with the arrow keys (or `j`/`k`, or a number), confirm with `enter`, go back to the previous
-question with `←` or `esc`, quit with `ctrl+c`.
+question with the left arrow key or `esc`, quit with `ctrl+c`.
 
 | Question | Choices |
 |---|---|

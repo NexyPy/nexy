@@ -31,6 +31,13 @@ class NexyConfig(NexyConfigModel):
 | `useImageWidths` | `[320, 640, 960, 1280]` | lebar piksel `nx build` yang dihasilkan untuk gambar lokal; konversi memerlukan `Pillow`, dan tanpa itu gambar tetap menggunakan URL aslinya. Lihat [Gambar](../routing/fbr/navigation/linking-and-navigating.md#image) |
 | `useISRCache` | `None` | Penyimpanan ISR: `None` atau `"memory"` untuk satu proses, `"file"` untuk satu host, `"redis"` untuk beberapa pekerja, pemetaan dengan `type` dan opsi, atau objek dengan `get`, `set` dan `invalidate`. Lihat [ISR](../rendering/isr.md#choose-a-store) |
 
+## Modul
+
+| Bidang | Bawaan | Artinya |
+|---|---|---|
+| `useModuleRegistry` | `"https://registry.nexypy.dev"` | URL dasar `nx add` terbaca saat memasang `@scope/name`; https saja, dengan loopback http untuk registri lokal |
+| `useRequireSignedModules` | `False` | menolak pelepasan tanpa tanda tangan yang terverifikasi; lihat [Memasang modul](../guides/install-modules.md#set-the-registry-and-its-trust-rules) |
+
 ## Basis data
 
 | Bidang | Bawaan | Artinya |
@@ -111,7 +118,7 @@ Atau matikan dengan `useDocs = False`, yang juga berhenti ditayangkan `/openapi.
 | Bidang | Bawaan | Artinya |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | tingkat judul yang disertakan dalam daftar isi |
-| `useTocTitle` | `"Table of Contents"` | Judul Daftar Isi |
+| `useTocTitle` | `"Table of Contents"` | Judul TOC |
 | `useTocAuto` | `True` | menghasilkan daftar isi untuk Markdown halaman |
 
 ## Rute di luar pohon file

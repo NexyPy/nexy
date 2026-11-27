@@ -16,7 +16,14 @@
     "not_found": "Composant « {name} » introuvable dans le registre.",
     "usage": "Utilisation :",
     "usage_text": "nexy add [NOM_DU_COMPOSANT ou URL]...",
-    "write_failed": "Impossible d'écrire {path}"
+    "write_failed": "Impossible d'écrire {path}",
+    "help_migrate": "Exécuter les migrations déclarées après l'installation",
+    "module": {
+      "already": "{name}@{version} est déjà installé.",
+      "installed": "{name}@{version} installé",
+      "no_releases": "Aucune version trouvée pour {name}",
+      "signed": "Vérifié par {signer}"
+    }
   },
   "build": {
     "building_client": "Bundle client construit",

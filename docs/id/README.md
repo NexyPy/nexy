@@ -177,6 +177,7 @@ Pengontrol dan modul.
 | [Bilah alat pengembang](guides/devtools.md) | Gunakan toolbar `nexy dev`, dan matikan |
 | [Men-debug](guides/debugging.md) | Hentikan kode server Anda dengan `breakpoint()` atau VS Code |
 | [Agen pengkodean](guides/ai-agents.md) | Berikan Claude Code, Codex dan OpenCode aturan proyek Anda |
+| [Pasang modul](guides/install-modules.md) | Instal, perbarui, dan sematkan modul dari registri |
 | [Pemecahan Masalah](guides/troubleshooting.md) | Perbaiki masalah pertama yang dialami orang |
 
 ## Basis Data
@@ -210,7 +211,7 @@ Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 |---|---|
 | [Dari Ekspres](coming-from/express.md) | Terjemahkan rute, middleware dan `req`/`res` ke dalam Python penangan |
 | [Dari Fastify](coming-from/fastify.md) | Ubah skema, plugin, dan kait menjadi model, folder, dan file |
-| [Dari Elysia](coming-from/elysia.md) | Memetakan `t` skema, penjaga, dan Eden ke Pydantic dan mengetikkan tindakan |
+| [Dari Elysia](coming-from/elysia.md) | Petakan `t` skema, penjaga, dan Eden ke Pydantic dan tindakan yang diketik |
 | [Dari Hono](coming-from/hono.md) | Petakan rute, middleware, dan klien `hc` ke Nexy |
 
 ### Kerangka kerja fullstack {fbr}
@@ -220,11 +221,11 @@ Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 | [Dari Remix](coming-from/remix.md) | Ubah pemuat dan tindakan menjadi Python penangan dan tindakan |
 | [Dari Nuxt](coming-from/nuxt.md) | Simpan halaman Vue Anda dan pindahkan `server/` ke Python |
 | [Dari SvelteKit](coming-from/sveltekit.md) | Simpan halaman Svelte Anda dan pindahkan muatan, tindakan, dan pengait ke Python |
-| [Dari Astro](coming-from/astro.md) | Tulis Astro halaman sebagai `.nexy` halaman, dengan pulau yang sama |
+| [Dari Astro](coming-from/astro.md) | Tulis halaman Astro sebagai halaman `.nexy`, dengan pulau yang sama |
 | [Dari Laravel](coming-from/laravel.md) | Petakan rute, pengontrol, Blade, Eloquent, dan antrian ke Nexy |
 | [Dari Ruby on Rails](coming-from/rails.md) | Memetakan rute, pengontrol, ERB, Rekaman Aktif, dan pekerjaan ke Nexy |
 
-### Kerangka pengontrol {modular}
+### Kerangka kerja pengontrol {modular}
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
 | [Dari NestJS](coming-from/nestjs.md) | Pindahkan pengontrol, modul, penyedia, dan penjaga ke router modular |

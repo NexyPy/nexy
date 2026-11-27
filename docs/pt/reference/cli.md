@@ -11,7 +11,7 @@ O binário é `nx` (também instalado como `nexy`). `uvx nexy new` cria um proje
 | `nx build` | `nx b` | construção de produção |
 | `nx new` | `nx n` | estruturar um projeto |
 | `nx init` | `nx i` | adicione Nexy a um projeto existente |
-| `nx add` | - | adicione um componente de UI do registro ou uma URL, ou uma plataforma de implantação como `vercel` |
+| `nx add` | - | adicione um componente de UI, um módulo de registro como `@acme/auth`, uma URL ou uma plataforma como `vercel` |
 | `nx migrate` | `nx m` | crie ou aplique migrações de banco de dados com Alembic ou Aerich |
 | `nx check` | `nx c` | verificação de tipo: mypy em Python, `tsc` em TypeScript |
 | `nx format` | `nx f` | formato Python (ruff), JS/TS (mais bonito), `.nexy` arquivos |
@@ -31,6 +31,10 @@ nx routes
 
 Se nenhuma rota de aplicação for encontrada, ele imprime `No routes found.`.
 
+## `nx add` com um módulo
+
+Um argumento com namespace como `@acme/auth` ou `@acme/auth@1.2.0` instala uma versão do registro do módulo em vez de um componente de UI. Ele verifica a soma de verificação e a compatibilidade, grava apenas os arquivos declarados pelo módulo, instala suas dependências e aplica seus ganchos de configuração. A instalação está registrada em `.nexy/modules.json`. As migrações são executadas apenas com `--migrate`. Consulte [Instalar módulos](../guides/install-modules.md) para atualizações, pins e configurações de confiança.
+
 ## Bandeiras
 
 | Comando | Bandeira | Padrão |
@@ -47,6 +51,7 @@ Se nenhuma rota de aplicação for encontrada, ele imprime `No routes found.`.
 | `add` | `--ui`, `--url` | off - força um nome de registro ou URL quando é ambíguo |
 | `add` | `--all`, `-a` | off - adicione todos os componentes do registro |
 | `add` | `--sha256` | nenhum – resumo esperado de um componente remoto; uma incompatibilidade aborta |
+| `add` | `--migrate` | off - executa as migrações que um módulo de registro declara |
 | `migrate` | `--init` | off - escreva a configuração Alembic ou Aerich |
 | `migrate` | `--upgrade`, `-u` | off - aplique as migrações em vez de escrever uma nova |
 | `migrate` | `--message`, `-m` | vazio - nome da nova revisão |
@@ -77,7 +82,7 @@ Um arquivo que analisa, mas falha quando o aplicativo é carregado (uma importa�
 
 ## Perguntas de `nx new`
 
-`nx new` pergunta, nesta ordem: roteador baseado em arquivo, tipo de projeto (web ou API), roteamento do lado do cliente, estrutura do cliente, como estilizar o aplicativo, alias de importação, ORM, banco de dados e URL do banco de dados. Cada opção possui uma breve descrição e a atual é destacada. As perguntas que não se aplicam são ignoradas (um projeto de API não tem estrutura ou estilo; escolha **Sem banco de dados** pois o ORM ignora o banco de dados e a URL). Mova-se com as setas (ou `j`/`k`, ou um número), confirme com `enter`, volte para a pergunta anterior com `←` ou `esc`, saia com `ctrl+c`.
+`nx new` pergunta, nesta ordem: roteador baseado em arquivo, tipo de projeto (web ou API), roteamento do lado do cliente, estrutura do cliente, como estilizar o aplicativo, alias de importação, ORM, banco de dados e URL do banco de dados. Cada opção possui uma breve descrição e a atual é destacada. As perguntas que não se aplicam são ignoradas (um projeto de API não tem estrutura ou estilo; escolha **Sem banco de dados** pois o ORM ignora o banco de dados e a URL). Mova-se com as teclas de seta (ou `j`/`k`, ou um número), confirme com `enter`, volte à pergunta anterior com a tecla de seta para a esquerda ou `esc`, saia com `ctrl+c`.
 
 | Pergunta | Escolhas |
 |---|---|
@@ -99,7 +104,7 @@ Antes de serem executados, os três comandos criam um `__init__.py` vazio em `sr
 A linha de comando fala inglês, chinês, hindi, espanhol, português, francês, alemão, japonês, russo, coreano, indonésio e árabe. Ele usa o primeiro deles que suporta:
 
 1. a variável de ambiente `NEXY_LANG` (`NEXY_LANG=ja nx dev`);
-2. as variáveis ​​de localidade do seu shell (`LC_ALL`, `LC_MESSAGES`, `LANG`, então `LANGUAGE`);
+2. as variáveis de localidade do seu shell (`LC_ALL`, `LC_MESSAGES`, `LANG`, então `LANGUAGE`);
 3. o idioma do seu sistema operacional.
 
 Qualquer outra coisa é inglês, assim como qualquer mensagem que um idioma ainda não tenha. Somente o que `nx` imprime é traduzido: erros do compilador, tracebacks e a saída das ferramentas que ele executa permanecem como estão. As traduções ainda não foram revisadas por falantes nativos: correções são bem-vindas como pull requests para `nexy/modules/i18n/<language>.json`.

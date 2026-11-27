@@ -177,6 +177,7 @@
 | [شريط أدوات التطوير](guides/devtools.md) | استخدم شريط الأدوات `nexy dev`، وقم بإيقاف تشغيله |
 | [التصحيح](guides/debugging.md) | توقف في رمز الخادم الخاص بك باستخدام `breakpoint()` أو VS Code |
 | [وكلاء الترميز](guides/ai-agents.md) | أعط Claude Code، Codex و OpenCode قواعد مشروعك |
+| [تثبيت الوحدات](guides/install-modules.md) | تثبيت الوحدات وترقيتها وتثبيتها من السجل |
 | [استكشاف الأخطاء وإصلاحها](guides/troubleshooting.md) | إصلاح المشاكل الأولى التي يواجهها الناس |
 
 ## قواعد البيانات
@@ -213,7 +214,7 @@
 | [من إليسيا](coming-from/elysia.md) | خريطة `t` المخططات والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
 | [من هونو](coming-from/hono.md) | قم بتعيين المسارات والبرامج الوسيطة والعميل `hc` إلى Nexy |
 
-### أطر عمل فولستاك {fbr}
+### أطر عمل Fullstack {fbr}
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [من Next.js](coming-from/nextjs.md) | احتفظ بصفحاتك React وانقل رمز الخادم إلى Python |

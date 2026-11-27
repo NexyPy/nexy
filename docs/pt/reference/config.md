@@ -31,6 +31,13 @@ class NexyConfig(NexyConfigModel):
 | `useImageWidths` | `[320, 640, 960, 1280]` | larguras de pixels `nx build` geradas para imagens locais; a conversão precisa de `Pillow`, e sem ela as imagens mantêm sua URL original. Veja [Imagem](../routing/fbr/navigation/linking-and-navigating.md#image) |
 | `useISRCache` | `None` | Armazenamento ISR: `None` ou `"memory"` para um processo, `"file"` para um host, `"redis"` para vários trabalhadores, um mapeamento com `type` e opções, ou um objeto com `get`, `set` e `invalidate`. Veja [ISR](../rendering/isr.md#choose-a-store) |
 
+## Módulos
+
+| Campo | Padrão | Significado |
+|---|---|---|
+| `useModuleRegistry` | `"https://registry.nexypy.dev"` | URL base `nx add` lida durante a instalação `@scope/name`; somente https, com loopback http para um registro local |
+| `useRequireSignedModules` | `False` | recusar uma liberação sem assinatura verificada; consulte [Instalar módulos](../guides/install-modules.md#set-the-registry-and-its-trust-rules) |
+
 ## Banco de dados
 
 | Campo | Padrão | Significado |
@@ -43,7 +50,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useRouter` | `None` | uma instância ou classe `APIRouter` montada próxima às rotas baseadas em arquivo; `None` significa apenas baseado em arquivo |
 | `excludeDirs` | `["templates", "extension", "docs"]` | diretórios ignorados ao verificar rotas |
-| `useAliases` | `None` | aliases de importação, por ex. `{"@": "src"}` (`@/components/Counter.tsx` significa `src/components/Counter.tsx`); `nx new` escreve o que você escolheu e Vite e `tsconfig.json` seguem-no |
+| `useAliases` | `None` | aliases de importação, por ex. `{"@": "src"}` (`@/components/Counter.tsx` significa `src/components/Counter.tsx`); `nx new` escreve o que você escolheu, e Vite e `tsconfig.json` seguem-no |
 
 ## Interface
 
@@ -74,7 +81,7 @@ Cada campo adiciona extensões a uma função reservada. `useLayoutExtensions = 
 
 | Campo | Padrão | Significado |
 |---|---|---|
-| `useDocs` | `"dev"` | onde a página de referência escalar e `/openapi.json` são veiculadas: `"dev"` apenas em `nx dev`, `True` em produção também (o esquema lista todas as rotas e ações do servidor), `False` em nenhum lugar |
+| `useDocs` | `"dev"` | onde a página de referência escalar e `/openapi.json` são veiculadas: `"dev"` somente em `nx dev`, `True` em produção também (o esquema lista todas as rotas e ações do servidor), `False` em lugar nenhum |
 | `useDocsUrl` | `"/docs"` | caminho da página de referência da API |
 | `useRedocsUrl` | `"/redocs"` | declarada mas nenhuma rota está montada |
 | `useTitle` | `"Nexy App"` | OpenAPI título e título da página (`"Nexy"` em `NexyConfigModel`) |
@@ -104,7 +111,7 @@ Ou desligue-o com `useDocs = False`, que também para de veicular `/openapi.json
 | `useSession` | `None` | kwargs para `SessionMiddleware` |
 | `useAuth` | `None` | configuração de middleware de autenticação |
 | `useHTTPSRedirect` | `False` | redirecionar HTTP para HTTPS |
-| `useRateLimit` | `None` | as solicitações que um endereço de cliente pode enviar por janela, como `{"requests": 60, "per": 60}`; mais um é um `429` com `Retry-After`, e `"paths": ["/api/"]` limita apenas esses prefixos. Cada trabalhador conta por conta própria. Consulte [Limitação de taxa](../guides/middleware-and-security.md#rate-limiting) |
+| `useRateLimit` | `None` | as solicitações que um endereço de cliente pode enviar por janela, como `{"requests": 60, "per": 60}`; mais um é um `429` com `Retry-After` e `"paths": ["/api/"]` limita apenas esses prefixos. Cada trabalhador conta por conta própria. Consulte [Limitação de taxa](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

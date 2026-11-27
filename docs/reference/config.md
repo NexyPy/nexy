@@ -32,6 +32,13 @@ class NexyConfig(NexyConfigModel):
 | `useImageWidths` | `[320, 640, 960, 1280]` | pixel widths `nx build` generates for local images; the conversion needs `Pillow`, and without it images keep their original URL. See [Image](../routing/fbr/navigation/linking-and-navigating.md#image) |
 | `useISRCache` | `None` | ISR store: `None` or `"memory"` for one process, `"file"` for one host, `"redis"` for several workers, a mapping with `type` and options, or an object with `get`, `set` and `invalidate`. See [ISR](../rendering/isr.md#choose-a-store) |
 
+## Modules
+
+| Field | Default | Meaning |
+|---|---|---|
+| `useModuleRegistry` | `"https://registry.nexypy.dev"` | base URL `nx add` reads when installing `@scope/name`; https only, with loopback http for a local registry |
+| `useRequireSignedModules` | `False` | refuse a release without a verified signature; see [Install modules](../guides/install-modules.md#set-the-registry-and-its-trust-rules) |
+
 ## Database
 
 | Field | Default | Meaning |

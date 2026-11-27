@@ -31,6 +31,13 @@ class NexyConfig(NexyConfigModel):
 | `useImageWidths` | `[320, 640, 960, 1280]` | عروض البكسل `nx build` تولد للصور المحلية؛ يحتاج التحويل إلى `Pillow`، وبدونه تحتفظ الصور بعنوان URL الأصلي الخاص بها. انظر [الصورة](../routing/fbr/navigation/linking-and-navigating.md#image) |
 | `useISRCache` | `None` | مخزن ISR: `None` أو `"memory"` لعملية واحدة، `"file"` لمضيف واحد، `"redis"` لعدة عاملين، تعيين مع `type` والخيارات، أو كائن مع `get`، `set` و `invalidate`. انظر [ISR](../rendering/isr.md#choose-a-store) |
 
+## وحدات
+
+| الميدان | الافتراضي | معنى |
+|---|---|---|
+| `useModuleRegistry` | `"https://registry.nexypy.dev"` | تتم قراءة عنوان URL الأساسي `nx add` عند التثبيت `@scope/name`؛ https فقط، مع استرجاع http للتسجيل المحلي |
+| `useRequireSignedModules` | `False` | رفض إصدار بدون توقيع تم التحقق منه؛ راجع [تثبيت الوحدات](../guides/install-modules.md#set-the-registry-and-its-trust-rules) |
+
 ## قاعدة البيانات
 
 | الميدان | الافتراضي | معنى |
@@ -43,7 +50,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useRouter` | `None` | `APIRouter` مثيل أو فئة مثبتة بجوار المسارات المستندة إلى الملف؛ `None` يعني المستند إلى الملف فقط |
 | `excludeDirs` | `["templates", "extension", "docs"]` | تم تخطي الدلائل عند مسح المسارات |
-| `useAliases` | `None` | استيراد الأسماء المستعارة، على سبيل المثال `{"@": "src"}` (`@/components/Counter.tsx` يعني `src/components/Counter.tsx`)؛ `nx new` يكتب الذي اخترته، ويتبعه Vite و `tsconfig.json` |
+| `useAliases` | `None` | استيراد الأسماء المستعارة، على سبيل المثال `{"@": "src"}` (`@/components/Counter.tsx` يعني `src/components/Counter.tsx`)؛ `nx new` يكتب الذي اخترته، و Vite و `tsconfig.json` يتبعه |
 
 ## الواجهة الأمامية
 
@@ -51,7 +58,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useFF` | `None` | مصنع إطار العميل: `react()`، `vue()`، `svelte()`، `solid()`، `preact()` |
 | `useVite` | `True` | بناء وتقديم حزم العملاء مع Vite |
-| `useMarkdownExtensions` | `[]` | ملحقات إضافية للعرض `.md`/`.mdx` |
+| `useMarkdownExtensions` | `[]` | ملحقات إضافية لعرض `.md`/`.mdx` |
 | `useWatchExtensions` | `None` | ملحقات إضافية يشاهدها خادم التطوير |
 | `useWatchExcludePatterns` | `None` | أنماط الكرة الأرضية التي يتجاهلها خادم التطوير |
 
@@ -79,9 +86,9 @@ class NexyConfig(NexyConfigModel):
 | `useRedocsUrl` | `"/redocs"` | تم الإعلان عنه ولكن لم يتم تثبيت أي طريق |
 | `useTitle` | `"Nexy App"` | OpenAPI العنوان وعنوان الصفحة (`"Nexy"` في `NexyConfigModel`) |
 
-### مجاناً `/docs` لصفحة من المشروع
+### `/docs` مجانا لصفحة المشروع
 
-يجيب مرجع واجهة برمجة التطبيقات (API) على `/docs` قبل أي مسار، لذلك لا يتم عرض `src/routes/docs.nexy` أو `src/routes/docs/[[...slug]].nexy` هناك أبدًا. `nx dev` و `nx start` تسمية مثل هذه الصفحة عند بدء التشغيل. انقل المرجع بـ `useDocsUrl`:
+يجيب مرجع واجهة برمجة التطبيقات (API) على `/docs` قبل أي مسار، لذلك لا يتم تقديم `src/routes/docs.nexy` أو `src/routes/docs/[[...slug]].nexy` هناك أبدًا. `nx dev` و `nx start` قم بتسمية هذه الصفحة عند بدء التشغيل. انقل المرجع بـ `useDocsUrl`:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -112,11 +119,11 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useTocDepth` | `"2-6"` | مستويات العناوين المدرجة في جدول المحتويات |
 | `useTocTitle` | `"Table of Contents"` | عنوان جدول المحتويات |
-| `useTocAuto` | `True` | إنشاء جدول محتويات لـ Markdown صفحة |
+| `useTocAuto` | `True` | إنشاء جدول محتويات لصفحات Markdown |
 
 ## الطرق خارج شجرة الملفات
 
-ابنِ FastAPI `APIRouter` وثبته بـ `useRouter`. يتم تقديمه بجوار المسارات المستندة إلى الملف:
+قم ببناء FastAPI `APIRouter` وتركيبه بـ `useRouter`. يتم تقديمه بجوار المسارات المستندة إلى الملف:
 
 ```python filename="nexyconfig.py"
 from fastapi import APIRouter
@@ -138,7 +145,7 @@ class NexyConfig(NexyConfigModel):
 
 ## أعلن، لم يقرأ بعد
 
-هذه الحقول موجودة في `NexyConfigModel` ولكن لا يوجد كود يستهلكها. إعدادها ليس له أي تأثير:
+هذه الحقول موجودة في `NexyConfigModel` لكن لا يوجد كود يستهلكها. إعدادها ليس له أي تأثير:
 
 `useViteDevUrl`، `useRTL`.
 

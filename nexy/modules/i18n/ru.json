@@ -16,7 +16,14 @@
     "not_found": "Компонент «{name}» не найден в реестре.",
     "usage": "Использование:",
     "usage_text": "nexy add [ИМЯ_КОМПОНЕНТА или URL]...",
-    "write_failed": "Не удалось записать {path}"
+    "write_failed": "Не удалось записать {path}",
+    "help_migrate": "Запустить объявленные миграции после установки",
+    "module": {
+      "already": "{name}@{version} уже установлен.",
+      "installed": "{name}@{version} установлен",
+      "no_releases": "Для {name} не найдено выпусков",
+      "signed": "Проверено: {signer}"
+    }
   },
   "build": {
     "building_client": "Клиентский бандл собран",

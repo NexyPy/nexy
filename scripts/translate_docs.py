@@ -68,6 +68,16 @@ def _pause(engine: Engine) -> None:
         time.sleep(1.2)
 
 
+_INVISIBLE = {"\u00a0": " ", "\u200b": "", "\ufeff": ""}
+
+
+def _plain(answer: str) -> str:
+    """Give back the spaces a service answers with invisible characters."""
+    for original, replacement in _INVISIBLE.items():
+        answer = answer.replace(original, replacement)
+    return answer
+
+
 def _indices(chunk: str) -> list[int]:
     return translator.placeholders(chunk)
 
@@ -102,7 +112,7 @@ def _request(
     if not translator.has_words(words):
         return chunk
     start = body.index(words)
-    answer = _rebracket(translator.heal(engine(words, target)), _indices(words))
+    answer = _plain(_rebracket(translator.heal(engine(words, target)), _indices(words)))
     whole = body[:start] + answer + body[start + len(words) :]
     return translator.respace(translator.with_leads(whole, openings) or whole, chunk)
 
