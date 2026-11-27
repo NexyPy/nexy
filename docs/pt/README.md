@@ -178,6 +178,7 @@ Controladores e módulos.
 | [Depuração](guides/debugging.md) | Pare no código do seu servidor com `breakpoint()` ou VS Code |
 | [Agentes de codificação](guides/ai-agents.md) | Dê Claude Code, Codex e OpenCode as regras do seu projeto |
 | [Instalar módulos](guides/install-modules.md) | Instale, atualize e fixe módulos do registro |
+| [Publicar módulos](guides/publish-modules.md) | Valide, crie e carregue uma versão de módulo |
 | [Solução de problemas](guides/troubleshooting.md) | Corrija os primeiros problemas que as pessoas enfrentam |
 
 ## Bancos de dados
@@ -211,13 +212,13 @@ As mesmas tarefas, escritas no framework que você conhece e depois no Nexy.
 |---|---|
 | [Do Expresso](coming-from/express.md) | Traduzir rotas, middleware e `req`/`res` em manipuladores Python |
 | [Do Fastify](coming-from/fastify.md) | Transforme esquemas, plugins e ganchos em modelos, pastas e arquivos |
-| [De Elísia](coming-from/elysia.md) | Mapeie `t` esquemas, guardas e Éden para Pydantic e ações digitadas |
+| [De Elísia](coming-from/elysia.md) | Mapeie `t` esquemas, guardas e Eden para Pydantic e ações digitadas |
 | [De Hono](coming-from/hono.md) | Mapeie rotas, middleware e o cliente `hc` para Nexy |
 
 ### Estruturas Fullstack {fbr}
 | Página | O que você fará |
 |---|---|
-| [De Next.js](coming-from/nextjs.md) | Mantenha suas React páginas e mova o código do servidor para Python |
+| [De Next.js](coming-from/nextjs.md) | Mantenha suas páginas React e mova o código do servidor para Python |
 | [De Remix](coming-from/remix.md) | Transforme carregadores e ações em Python manipuladores e ações |
 | [De Nuxt](coming-from/nuxt.md) | Mantenha suas Vue páginas e mova `server/` para Python |
 | [Do SvelteKit](coming-from/sveltekit.md) | Mantenha suas Svelte páginas e mova cargas, ações e ganchos para Python |

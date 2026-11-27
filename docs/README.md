@@ -184,6 +184,7 @@ Controllers and modules.
 | [Debugging](guides/debugging.md) | Stop in your server code with `breakpoint()` or VS Code |
 | [Coding agents](guides/ai-agents.md) | Give Claude Code, Codex and OpenCode the rules of your project |
 | [Install modules](guides/install-modules.md) | Install, upgrade and pin modules from the registry |
+| [Publish modules](guides/publish-modules.md) | Validate, build and upload one module release |
 | [Troubleshooting](guides/troubleshooting.md) | Fix the first problems people hit |
 
 ## Databases

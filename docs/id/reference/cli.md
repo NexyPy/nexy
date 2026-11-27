@@ -12,6 +12,7 @@ Binernya adalah `nx` (juga dipasang sebagai `nexy`). `uvx nexy new` membuat proy
 | `nx new` | `nx n` | perancah sebuah proyek |
 | `nx init` | `nx i` | tambahkan Nexy ke proyek yang sudah ada |
 | `nx add` | - | tambahkan komponen UI, modul registri seperti `@acme/auth`, URL, atau platform seperti `vercel` |
+| `nx publish` | - | memvalidasi modul dan menerbitkan satu rilis ke registri |
 | `nx migrate` | `nx m` | membuat atau menerapkan migrasi database dengan Alembic atau Aerich |
 | `nx check` | `nx c` | ketik-periksa: mypy di Python, `tsc` di TypeScript |
 | `nx format` | `nx f` | format file Python (ruff), JS/TS (lebih cantik), `.nexy` |
@@ -35,6 +36,10 @@ Jika tidak ada rute aplikasi yang ditemukan, ia akan mencetak `No routes found.`
 
 Argumen dengan namespace seperti `@acme/auth` atau `@acme/auth@1.2.0` menginstal rilis dari registri modul, bukan komponen UI. Ia memeriksa checksum dan kompatibilitas, hanya menulis file yang dideklarasikan oleh modul, menginstal dependensinya dan menerapkan kait konfigurasinya. Penginstalan dicatat di `.nexy/modules.json`. Migrasi hanya berjalan dengan `--migrate`. Lihat [Instal modul](../guides/install-modules.md) untuk peningkatan, pin, dan pengaturan kepercayaan.
 
+## `nx publish`
+
+Jalankan `nx publish` dari direktori modul dengan `nx.toml` yang valid, token registri, dan setiap file yang dideklarasikan. Perintah mengarsipkan `nx.toml` dan file yang dideklarasikan, mempostingnya ke registri, dan mencetak nama, versi, dan checksum SHA-256 rilis. Pasangan nama dan versi tidak dapat dipublikasikan dua kali. Token dibaca dari `NEXY_REGISTRY_TOKEN` atau `~/.config/nexy/registry-token` dan tidak pernah dicetak. Lihat [Publikasikan modul](../guides/publish-modules.md) untuk opsi manifes, uji coba, dan registri.
+
 ## Bendera
 
 | Perintah | Bendera | Bawaan |
@@ -52,6 +57,8 @@ Argumen dengan namespace seperti `@acme/auth` atau `@acme/auth@1.2.0` menginstal
 | `add` | `--all`, `-a` | off - tambahkan setiap komponen registri |
 | `add` | `--sha256` | none - intisari yang diharapkan dari komponen jarak jauh; ketidakcocokan dibatalkan |
 | `add` | `--migrate` | mati - jalankan migrasi yang dideklarasikan oleh modul registri |
+| `publish` | `--dry-run` | mati: validasi dan arsipkan tanpa mengunggah |
+| `publish` | `--registry` | `https://registry.nexypy.dev`: registri tempat publikasi |
 | `migrate` | `--init` | mati - tulis pengaturan Alembic atau Aerich |
 | `migrate` | `--upgrade`, `-u` | mati - terapkan migrasi alih-alih menulis yang baru |
 | `migrate` | `--message`, `-m` | kosong - nama revisi baru |
@@ -95,7 +102,7 @@ Driver database untuk ORM yang dipilih diinstal dengannya (`psycopg`, `pymysql`,
 
 Sebelum menginstal paket, `nx new` memeriksa koneksi. Tanpa satu pun, ia akan melewatkan instalasi dan meminta Anda untuk menjalankan `uv sync` dan instalasi manajer paket Anda nanti. Dengan satu, ia mencetak latensi dan kecepatan pengunduhan, dan memperingatkan ketika koneksi lambat (lebih dari 400 ms, atau di bawah 100 KB/s). Setiap baris instalasi memberi nama alat dan folder yang diisinya, misalnya `pnpm install node_modules` atau `uv sync .venv`.
 
-## Apa yang `dev`, `build` dan `start` ciptakan
+## Apa yang `dev`, `build` dan `start` buat
 
 Sebelum dijalankan, ketiga perintah tersebut membuat `__init__.py` kosong di `src/` dan di setiap folder di bawahnya yang menyimpan file `.py` atau `.nexy`, sehingga rute seperti `src/routes/users.py` mengimpor dengan cara yang sama ke semuanya. File yang ada tidak pernah disentuh, dan `nx dev` melakukan hal yang sama lagi saat Anda menambahkan folder. Python bytecode masuk ke `__nexy__/__pycache__`, jadi tidak ada folder `__pycache__` yang muncul di sebelah sumber Anda.
 
@@ -107,7 +114,7 @@ Baris perintah berbicara bahasa Inggris, Cina, Hindi, Spanyol, Portugis, Prancis
 2. variabel lokal shell Anda (`LC_ALL`, `LC_MESSAGES`, `LANG`, lalu `LANGUAGE`);
 3. bahasa sistem operasi Anda.
 
-Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimiliki bahasa tersebut. Hanya apa yang `nx` cetak yang diterjemahkan: kesalahan kompiler, penelusuran balik, dan keluaran alat yang dijalankannya tetap sebagaimana adanya. Terjemahannya belum ditinjau oleh penutur asli: koreksi dipersilahkan sebagai permintaan penarikan ke `nexy/modules/i18n/<language>.json`.
+Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimiliki bahasa tersebut. Hanya apa yang `nx` cetak yang diterjemahkan: kesalahan kompiler, penelusuran balik, dan keluaran alat yang dijalankannya tetap sebagaimana adanya. Terjemahannya belum ditinjau oleh penutur asli: koreksi dipersilakan sebagai permintaan penarikan ke `nexy/modules/i18n/<language>.json`.
 
 ## Membangun perilaku
 
@@ -128,5 +135,5 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 ## Langkah selanjutnya
 
 - [Memulai](../getting-started/quick-start.md): proyek pertama
-- [Pengujian](../guides/testing.md): apa yang `nx test` dijalankan
+- [Pengujian](../guides/testing.md): apa yang `nx test` jalankan
 - [Penerapan](../deployment/README.md): `build` dan `start` dalam produksi

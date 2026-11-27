@@ -178,6 +178,7 @@ Pengontrol dan modul.
 | [Men-debug](guides/debugging.md) | Hentikan kode server Anda dengan `breakpoint()` atau VS Code |
 | [Agen pengkodean](guides/ai-agents.md) | Berikan Claude Code, Codex dan OpenCode aturan proyek Anda |
 | [Pasang modul](guides/install-modules.md) | Instal, perbarui, dan sematkan modul dari registri |
+| [Publikasikan modul](guides/publish-modules.md) | Validasi, buat, dan unggah satu rilis modul |
 | [Pemecahan Masalah](guides/troubleshooting.md) | Perbaiki masalah pertama yang dialami orang |
 
 ## Basis Data
@@ -211,7 +212,7 @@ Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 |---|---|
 | [Dari Ekspres](coming-from/express.md) | Terjemahkan rute, middleware dan `req`/`res` ke dalam Python penangan |
 | [Dari Fastify](coming-from/fastify.md) | Ubah skema, plugin, dan kait menjadi model, folder, dan file |
-| [Dari Elysia](coming-from/elysia.md) | Petakan `t` skema, penjaga, dan Eden ke Pydantic dan tindakan yang diketik |
+| [Dari Elysia](coming-from/elysia.md) | Memetakan `t` skema, penjaga, dan Eden ke Pydantic dan mengetikkan tindakan |
 | [Dari Hono](coming-from/hono.md) | Petakan rute, middleware, dan klien `hc` ke Nexy |
 
 ### Kerangka kerja fullstack {fbr}

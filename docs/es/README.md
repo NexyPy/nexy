@@ -178,6 +178,7 @@ Controladores y módulos.
 | [Depuración](guides/debugging.md) | Deténgase en el código de su servidor con `breakpoint()` o VS Code |
 | [Agentes codificadores](guides/ai-agents.md) | Dale a Claude Code, Codex y OpenCode las reglas de tu proyecto |
 | [Instalar módulos](guides/install-modules.md) | Instalar, actualizar y anclar módulos desde el registro |
+| [Publicar módulos](guides/publish-modules.md) | Validar, crear y cargar la versión de un módulo |
 | [Solución de problemas](guides/troubleshooting.md) | Solucionar los primeros problemas a los que se enfrenta la gente |
 
 ## Bases de datos

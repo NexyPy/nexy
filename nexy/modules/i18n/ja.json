@@ -246,6 +246,15 @@
     "no_orm": "対応するORMが見つかりません。次のいずれかをインストールしてください: sqlmodel, tortoise-orm, sqlalchemy",
     "tool_missing": "エラー: {tool} が PATH に見つかりません。インストールしてからもう一度お試しください。"
   },
+  "publish": {
+    "dry_run": "ドライラン: {name}@{version} ({size} バイト, sha256 {checksum})",
+    "help_dry_run": "アップロードせずにリリースを検証してビルドする",
+    "help_path": "モジュールディレクトリへのパス",
+    "help_registry": "公開先のレジストリ URL",
+    "no_token": "レジストリトークンがありません。NEXY_REGISTRY_TOKEN を設定するかログインしてください。",
+    "published": "{name}@{version} を {registry} に公開しました (sha256:{checksum})",
+    "undeclared": "宣言されていない相対インポート: {name}"
+  },
   "routes": {
     "title": "ルート",
     "methods": "メソッド",

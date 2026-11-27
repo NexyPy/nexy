@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[3]
 FORBIDDEN = frozenset(
     chr(code)
     for code in (
-        *(0x2014, 0x2013, 0x2192, 0x2190, 0x21D2, 0x2026),
+        *(0x2014, 0x2013, 0x2192, 0x2190, 0x2191, 0x2193, 0x21D2, 0x2026),
         *(0x201C, 0x201D, 0x2018, 0x2019, 0x2022, 0x00B7, 0x2248, 0x00D7),
         *(0x2713, 0x2714, 0x2717, 0x26A0, 0x2605, 0x2500, 0x2502, 0x251C, 0x2514),
         *(0x00A0, 0x200B, 0x200C, 0x200D, 0xFEFF),
@@ -53,6 +53,10 @@ def _interface_files() -> list[str]:
 
 def _found(text: str) -> list[str]:
     return sorted({f"U+{ord(char):04X}" for char in text if char in FORBIDDEN})
+
+
+def test_up_and_down_arrows_are_forbidden():
+    assert {chr(0x2191), chr(0x2193)} <= FORBIDDEN
 
 
 @pytest.mark.parametrize("name", _interface_files())

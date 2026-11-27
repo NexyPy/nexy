@@ -246,6 +246,15 @@
     "no_orm": "未找到受支持的 ORM。请安装其中一个：sqlmodel、tortoise-orm、sqlalchemy",
     "tool_missing": "错误：在 PATH 中找不到 {tool}。请安装后重试。"
   },
+  "publish": {
+    "dry_run": "试运行: {name}@{version} ({size} 字节, sha256 {checksum})",
+    "help_dry_run": "验证并构建版本，但不上传",
+    "help_path": "模块目录的路径",
+    "help_registry": "要发布到的注册中心 URL",
+    "no_token": "没有注册中心令牌。请设置 NEXY_REGISTRY_TOKEN 或登录。",
+    "published": "已将 {name}@{version} 发布到 {registry} (sha256:{checksum})",
+    "undeclared": "未声明的相对导入: {name}"
+  },
   "routes": {
     "title": "路由",
     "methods": "方法",

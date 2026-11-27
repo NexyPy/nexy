@@ -48,8 +48,8 @@ How long a project with one `.nexy` page takes, median of 5 runs, each in a new 
 | Recompile a page | 1.8 ms | compiling the page again after an edit, in a process that already runs |
 
 Measured on an AMD Ryzen 5 4500U, Linux, 6 CPUs, Python 3.13.15. Recompiling is what `nx dev` does
-for the Python side of a change; a browser reload also pays for Vite's module graph and the
-browser's own render, so it is not a reload time.
+for the Python side of a change; the reload below adds the watcher, the HMR message and the
+browser.
 
 Measure your own machine with the script that wrote the table:
 
@@ -59,6 +59,28 @@ python scripts/measure_speed.py --runs 5
 
 The `Speed` workflow runs it on each push to `main` and writes the same table in the summary of the
 run, on a GitHub-hosted Ubuntu runner.
+
+### Reload after a save
+
+How long `nx dev` takes to show an edit, from writing the file to the new text in the browser,
+median of 5 edits:
+
+| Measure | Median | What it covers |
+|---|---|---|
+| Reload a `.nexy` page | 98 ms | the watcher, the compile, the HMR message, then the page fetches its new body |
+| Reload a `.tsx` page | 43 ms | Vite's watcher and React Fast Refresh, in a client project (`useCSR = True`) |
+
+Measured on an Intel Core i5-10300H, Windows 11, 8 CPUs, Python 3.13.2, Node 22.23.5. Each edit is
+timed in a tab that has loaded the page once. The `.nexy` reload includes the 50 ms the watcher
+waits for a save to settle.
+
+Measure your own machine with the browser suite, which needs Chromium, Node and pnpm:
+
+```bash
+python -m pytest tests/e2e/test_reload_budget.py -m e2e -s
+```
+
+The test fails when a median is over 1 second.
 
 ## Requests per second
 
