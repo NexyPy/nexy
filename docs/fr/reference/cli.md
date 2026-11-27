@@ -12,10 +12,11 @@ Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` cr
 | `nx new` | `nx n` | échafauder un projet |
 | `nx init` | `nx i` | ajouter Nexy à un projet existant |
 | `nx add` | - | ajoutez un composant d'interface utilisateur, un module de registre tel que `@acme/auth`, une URL ou une plate-forme telle que `vercel` |
+| `nx publish` | - | valider un module et publier une version dans le registre |
 | `nx migrate` | `nx m` | créer ou appliquer des migrations de bases de données avec Alembic ou Aerich |
-| `nx check` | `nx c` | vérification de type : mypy sur Python, `tsc` sur TypeScript |
+| `nx check` | `nx c` | type-check : mypy sur Python, `tsc` sur TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (plus joli), `.nexy` fichiers |
-| `nx test` | - | exécutez pytest ; `--client` ajoute vitest |
+| `nx test` | - | exécuter pytest; `--client` ajoute vitest |
 | `nx routes` | - | répertorier les routes d'application, les méthodes HTTP, les chemins et les fichiers sources |
 | `nx skills` | - | ajouter ou rafraîchir les compétences, `AGENTS.md` et `CLAUDE.md` pour les agents de codage |
 
@@ -35,6 +36,10 @@ Si aucune route d'application n'est trouvée, il imprime `No routes found.`.
 
 Un argument avec espace de noms tel que `@acme/auth` ou `@acme/auth@1.2.0` installe une version à partir du registre du module au lieu d'un composant d'interface utilisateur. Il vérifie la somme de contrôle et la compatibilité, écrit uniquement les fichiers déclarés par le module, installe ses dépendances et applique ses hooks de configuration. L'installation est enregistrée dans `.nexy/modules.json`. Les migrations s'exécutent uniquement avec `--migrate`. Voir [Installer les modules](../guides/install-modules.md) pour les mises à niveau, les broches et les paramètres de confiance.
 
+## `nx publish`
+
+Exécutez `nx publish` à partir d'un répertoire de module avec un `nx.toml` valide, un jeton de registre et chaque fichier déclaré. La commande archive `nx.toml` et les fichiers déclarés, les publie dans le registre et imprime le nom, la version et la somme de contrôle SHA-256 de la version. Une paire nom/version ne peut pas être publiée deux fois. Le jeton est lu à partir de `NEXY_REGISTRY_TOKEN` ou `~/.config/nexy/registry-token` et n'est jamais imprimé. Voir [Publier les modules](../guides/publish-modules.md) pour le manifeste, les essais à sec et les options de registre.
+
 ## Drapeaux
 
 | Commande | Drapeau | Par défaut |
@@ -52,6 +57,8 @@ Un argument avec espace de noms tel que `@acme/auth` ou `@acme/auth@1.2.0` insta
 | `add` | `--all`, `-a` | off - ajoute tous les composants du registre |
 | `add` | `--sha256` | none - résumé attendu d'un composant distant ; un décalage est interrompu |
 | `add` | `--migrate` | off - exécute les migrations déclarées par un module de registre |
+| `publish` | `--dry-run` | off : valider et archiver sans uploader |
+| `publish` | `--registry` | `https://registry.nexypy.dev` : registre sur lequel publier |
 | `migrate` | `--init` | off - écriture de la configuration Alembic ou Aerich |
 | `migrate` | `--upgrade`, `-u` | off - appliquer les migrations au lieu d'en écrire une nouvelle |
 | `migrate` | `--message`, `-m` | vide - nom de la nouvelle révision |
@@ -78,7 +85,7 @@ L'enregistrement d'un fichier cassé n'arrête jamais le serveur. Un fichier `.p
   Fix it and save: the server keeps its last working version.
 ```
 
-Un fichier qui analyse mais échoue au chargement de l'application (une importation manquante, une erreur au niveau du module) est signalé de la même manière et `nx dev` attend votre prochaine sauvegarde ; rien n'est servi jusqu'à ce que l'application se charge à nouveau. Une sauvegarde valide lit `nexy » update <file>` pendant le rechargement du serveur. Les fichiers Markdown en dehors de `src/routes`, tels que `README.md`, ne sont pas des pages et ne déclenchent rien. `nx start` est plus strict : il se termine avec le code 1, et ne démarre rien, si un fichier de route ne peut pas se charger ou si `nx build` n'a pas encore construit le projet.
+Un fichier qui analyse mais échoue au chargement de l'application (une importation manquante, une erreur au niveau du module) est signalé de la même manière et `nx dev` attend votre prochaine sauvegarde ; rien n'est servi jusqu'à ce que l'application se charge à nouveau. Une sauvegarde valide indique `nexy » update <file>` pendant le rechargement du serveur. Les fichiers Markdown en dehors de `src/routes`, tels que `README.md`, ne sont pas des pages et ne déclenchent rien. `nx start` est plus strict : il se termine avec le code 1, et ne démarre rien, si un fichier de route ne peut pas se charger ou si `nx build` n'a pas encore construit le projet.
 
 ## Questions de `nx new`
 
@@ -107,7 +114,7 @@ La ligne de commande parle anglais, chinois, hindi, espagnol, portugais, frança
 2. les variables locales de votre shell (`LC_ALL`, `LC_MESSAGES`, `LANG`, puis `LANGUAGE`) ;
 3. la langue de votre système d'exploitation.
 
-Tout le reste est en anglais, tout comme tout message qu'une langue n'a pas encore. Seul ce que `nx` imprime est traduit : les erreurs du compilateur, les traces et les résultats des outils qu'il exécute restent tels quels. Les traductions n'ont pas encore été révisées par des locuteurs natifs : les corrections sont les bienvenues sous forme de pull request vers `nexy/modules/i18n/<language>.json`.
+Tout le reste est en anglais, tout comme tout message qu'une langue n'a pas encore. Seul ce que `nx` imprime est traduit : les erreurs du compilateur, les traces et les résultats des outils qu'il exécute restent tels quels. Les traductions n'ont pas encore été révisées par des locuteurs natifs : les corrections sont les bienvenues sous forme de pull request à `nexy/modules/i18n/<language>.json`.
 
 ## Construire un comportement
 

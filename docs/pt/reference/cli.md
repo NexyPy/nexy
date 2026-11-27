@@ -12,6 +12,7 @@ O binário é `nx` (também instalado como `nexy`). `uvx nexy new` cria um proje
 | `nx new` | `nx n` | estruturar um projeto |
 | `nx init` | `nx i` | adicione Nexy a um projeto existente |
 | `nx add` | - | adicione um componente de UI, um módulo de registro como `@acme/auth`, uma URL ou uma plataforma como `vercel` |
+| `nx publish` | - | validar um módulo e publicar uma versão no registro |
 | `nx migrate` | `nx m` | crie ou aplique migrações de banco de dados com Alembic ou Aerich |
 | `nx check` | `nx c` | verificação de tipo: mypy em Python, `tsc` em TypeScript |
 | `nx format` | `nx f` | formato Python (ruff), JS/TS (mais bonito), `.nexy` arquivos |
@@ -35,6 +36,10 @@ Se nenhuma rota de aplicação for encontrada, ele imprime `No routes found.`.
 
 Um argumento com namespace como `@acme/auth` ou `@acme/auth@1.2.0` instala uma versão do registro do módulo em vez de um componente de UI. Ele verifica a soma de verificação e a compatibilidade, grava apenas os arquivos declarados pelo módulo, instala suas dependências e aplica seus ganchos de configuração. A instalação está registrada em `.nexy/modules.json`. As migrações são executadas apenas com `--migrate`. Consulte [Instalar módulos](../guides/install-modules.md) para atualizações, pins e configurações de confiança.
 
+## `nx publish`
+
+Execute `nx publish` de um diretório de módulo com um válido `nx.toml`, um token de registro e cada arquivo declarado. O comando arquiva `nx.toml` e os arquivos declarados, publica-os no registro e imprime o nome, a versão e a soma de verificação SHA-256 do lançamento. Um par de nome e versão não pode ser publicado duas vezes. O token é lido de `NEXY_REGISTRY_TOKEN` ou `~/.config/nexy/registry-token` e nunca é impresso. Consulte [Publicar módulos](../guides/publish-modules.md) para obter o manifesto, simulações e opções de registro.
+
 ## Bandeiras
 
 | Comando | Bandeira | Padrão |
@@ -52,6 +57,8 @@ Um argumento com namespace como `@acme/auth` ou `@acme/auth@1.2.0` instala uma v
 | `add` | `--all`, `-a` | off - adicione todos os componentes do registro |
 | `add` | `--sha256` | nenhum – resumo esperado de um componente remoto; uma incompatibilidade aborta |
 | `add` | `--migrate` | off - executa as migrações que um módulo de registro declara |
+| `publish` | `--dry-run` | off: validar e arquivar sem fazer upload |
+| `publish` | `--registry` | `https://registry.nexypy.dev`: registro para publicar em |
 | `migrate` | `--init` | off - escreva a configuração Alembic ou Aerich |
 | `migrate` | `--upgrade`, `-u` | off - aplique as migrações em vez de escrever uma nova |
 | `migrate` | `--message`, `-m` | vazio - nome da nova revisão |
@@ -89,11 +96,11 @@ Um arquivo que analisa, mas falha quando o aplicativo é carregado (uma importa�
 | Alias de importação | `@` (`@/components/...` aponta para `src/`) ou outro prefixo como `~` ou `#app` |
 | Estilo | Tailwind CSS, UnoCSS, Vanilla CSS, Outro (sem ferramenta CSS, mesma folha de estilo simples do Vanilla) |
 | ORM | SQLModel, SQLAlchemy, Tortoise-ORM, sem banco de dados |
-| Banco de dados (com um ORM) | SQLite, PostgreSQL, Neon, MySQL / MariaDB, Outro (você digita a URL) |
+| Banco de dados (com um ORM) | SQLite, PostgreSQL, Neon, MySQL/MariaDB, Outro (você digita a URL) |
 
 O driver de banco de dados para o ORM escolhido é instalado com ele (`psycopg`, `pymysql`, `asyncpg` ou `aiomysql`), e a URL é gravada em `.env`.
 
-Antes de instalar os pacotes, `nx new` verifica a conexão. Sem ele, ele ignora as instalações e solicita que você execute `uv sync` e a instalação do seu gerenciador de pacotes mais tarde. Com um, ele imprime a latência e velocidade de download, e avisa quando a conexão está lenta (acima de 400 ms, ou abaixo de 100 KB/s). Cada linha de instalação nomeia a ferramenta e a pasta que ela preenche, por exemplo `pnpm install node_modules` ou `uv sync .venv`.
+Antes de instalar pacotes, `nx new` verifica a conexão. Sem ele, ele ignora as instalações e solicita que você execute `uv sync` e a instalação do seu gerenciador de pacotes mais tarde. Com um, ele imprime a latência e velocidade de download, e avisa quando a conexão está lenta (acima de 400 ms, ou abaixo de 100 KB/s). Cada linha de instalação nomeia a ferramenta e a pasta que ela preenche, por exemplo `pnpm install node_modules` ou `uv sync .venv`.
 
 ## O que `dev`, `build` e `start` criam
 

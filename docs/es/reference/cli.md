@@ -12,6 +12,7 @@ El binario es `nx` (también instalado como `nexy`). `uvx nexy new` crea un proy
 | `nx new` | `nx n` | armar un proyecto |
 | `nx init` | `nx i` | agregar Nexy a un proyecto existente |
 | `nx add` | - | agregue un componente de interfaz de usuario, un módulo de registro como `@acme/auth`, una URL o una plataforma como `vercel` |
+| `nx publish` | - | validar un módulo y publicar una versión en el registro |
 | `nx migrate` | `nx m` | crear o aplicar migraciones de bases de datos con Alembic o Aerich |
 | `nx check` | `nx c` | verificación de tipo: mypy en Python, `tsc` en TypeScript |
 | `nx format` | `nx f` | formato Python (ruff), JS/TS (más bonito), archivos `.nexy` |
@@ -33,7 +34,11 @@ Si no se encuentran rutas de aplicación, imprime `No routes found.`.
 
 ## `nx add` con un módulo
 
-Un argumento con espacio de nombres como `@acme/auth` o `@acme/auth@1.2.0` instala una versión del registro del módulo en lugar de un componente de la interfaz de usuario. Comprueba la suma de comprobación y la compatibilidad, escribe sólo los archivos que declara el módulo, instala sus dependencias y aplica sus ganchos de configuración. La instalación está registrada en `.nexy/modules.json`. Las migraciones se ejecutan únicamente con `--migrate`. Consulte [Instalar módulos](../guides/install-modules.md) para obtener actualizaciones, pines y configuraciones de confianza.
+Un argumento con espacio de nombres como `@acme/auth` o `@acme/auth@1.2.0` instala una versión del registro del módulo en lugar de un componente de la interfaz de usuario. Comprueba la suma de comprobación y la compatibilidad, escribe sólo los archivos que declara el módulo, instala sus dependencias y aplica sus ganchos de configuración. La instalación está registrada en `.nexy/modules.json`. Las migraciones se ejecutan solo con `--migrate`. Consulte [Instalar módulos](../guides/install-modules.md) para obtener actualizaciones, pines y configuraciones de confianza.
+
+## `nx publish`
+
+Ejecute `nx publish` desde un directorio de módulo con un `nx.toml` válido, un token de registro y todos los archivos declarados. El comando archiva `nx.toml` y los archivos declarados, los publica en el registro e imprime el nombre, la versión y la suma de comprobación SHA-256 de la versión. Un par de nombre y versión no se puede publicar dos veces. El token se lee desde `NEXY_REGISTRY_TOKEN` o `~/.config/nexy/registry-token` y nunca se imprime. Consulte [Publicar módulos](../guides/publish-modules.md) para conocer el manifiesto, los simulacros y las opciones de registro.
 
 ## Banderas
 
@@ -52,7 +57,9 @@ Un argumento con espacio de nombres como `@acme/auth` o `@acme/auth@1.2.0` insta
 | `add` | `--all`, `-a` | desactivado: agrega todos los componentes del registro |
 | `add` | `--sha256` | ninguno: resumen esperado de un componente remoto; un desajuste aborta |
 | `add` | `--migrate` | off: ejecuta las migraciones que declara un módulo de registro |
-| `migrate` | `--init` | desactivado: escribe la configuración Alembic o Aerich |
+| `publish` | `--dry-run` | desactivado: validar y archivar sin cargar |
+| `publish` | `--registry` | `https://registry.nexypy.dev`: registro donde publicar |
+| `migrate` | `--init` | desactivado: escriba la configuración Alembic o Aerich |
 | `migrate` | `--upgrade`, `-u` | desactivado: aplica las migraciones en lugar de escribir una nueva |
 | `migrate` | `--message`, `-m` | vacío: nombre de la nueva revisión |
 
@@ -82,7 +89,7 @@ Un archivo que se analiza pero falla cuando se carga la aplicación (una importa
 
 ## Preguntas de `nx new`
 
-`nx new` pregunta, en este orden: enrutador basado en archivos, tipo de proyecto (web o API), enrutamiento del lado del cliente, marco del cliente, cómo diseñar la aplicación, alias de importación, ORM, base de datos y URL de la base de datos. Cada opción tiene una breve descripción y la actual está resaltada. Las preguntas que no aplican se omiten (un proyecto API no tiene marco ni estilo; al elegir **Sin base de datos** ya que el ORM omite la base de datos y la URL). Moverse con las teclas de flecha (o `j`/`k`, o un número), confirmar con `enter`, volver a la pregunta anterior con la tecla de flecha izquierda o `esc`, salir con `ctrl+c`.
+`nx new` pregunta, en este orden: enrutador basado en archivos, tipo de proyecto (web o API), enrutamiento del lado del cliente, marco del cliente, cómo diseñar la aplicación, alias de importación, ORM, base de datos y URL de la base de datos. Cada opción tiene una breve descripción y la actual está resaltada. Las preguntas que no se aplican se omiten (un proyecto API no tiene marco ni estilo; al elegir **Sin base de datos**, el ORM omite la base de datos y la URL). Moverse con las teclas de flecha (o `j`/`k`, o un número), confirmar con `enter`, volver a la pregunta anterior con la tecla de flecha izquierda o `esc`, salir con `ctrl+c`.
 
 | Pregunta | Opciones |
 |---|---|

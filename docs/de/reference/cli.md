@@ -12,6 +12,7 @@ Die Binärdatei ist `nx` (auch als `nexy` installiert). `uvx nexy new` erstellt 
 | `nx new` | `nx n` | ein Projekt aufbauen |
 | `nx init` | `nx i` | Nexy zu einem bestehenden Projekt hinzufügen |
 | `nx add` | - | Fügen Sie eine UI-Komponente, ein Registrierungsmodul wie `@acme/auth`, eine URL oder eine Plattform wie `vercel` hinzu. |
+| `nx publish` | - | Validieren Sie ein Modul und veröffentlichen Sie eine Version in der Registrierung |
 | `nx migrate` | `nx m` | Erstellen oder Anwenden von Datenbankmigrationen mit Alembic oder Aerich |
 | `nx check` | `nx c` | Typprüfung: mypy auf Python, `tsc` auf TypeScript |
 | `nx format` | `nx f` | Formatieren Sie Python (Ruff), JS/TS (hübscher), `.nexy` Dateien |
@@ -35,6 +36,10 @@ Wenn keine Anwendungsrouten gefunden werden, wird `No routes found.` gedruckt.
 
 Ein Namespace-Argument wie `@acme/auth` oder `@acme/auth@1.2.0` installiert eine Version aus der Modulregistrierung anstelle einer UI-Komponente. Es überprüft die Prüfsumme und die Kompatibilität, schreibt nur die Dateien, die das Modul deklariert, installiert seine Abhängigkeiten und wendet seine Konfigurations-Hooks an. Die Installation ist in `.nexy/modules.json` aufgezeichnet. Migrationen laufen nur mit `--migrate`. Informationen zu Upgrades, Pins und Vertrauenseinstellungen finden Sie unter [Module installieren](../guides/install-modules.md).
 
+## `nx publish`
+
+Führen Sie `nx publish` aus einem Modulverzeichnis mit einem gültigen `nx.toml`, einem Registrierungstoken und jeder deklarierten Datei aus. Der Befehl archiviert `nx.toml` und die deklarierten Dateien, veröffentlicht sie in der Registrierung und gibt den Namen, die Version und die SHA-256-Prüfsumme der Version aus. Ein Namens- und Versionspaar kann nicht zweimal veröffentlicht werden. Das Token wird von `NEXY_REGISTRY_TOKEN` oder `~/.config/nexy/registry-token` gelesen und nie gedruckt. Informationen zu Manifest, Probeläufen und Registrierungsoptionen finden Sie unter [Module veröffentlichen](../guides/publish-modules.md).
+
 ## Flaggen
 
 | Befehl | Flagge | Standard |
@@ -52,17 +57,19 @@ Ein Namespace-Argument wie `@acme/auth` oder `@acme/auth@1.2.0` installiert eine
 | `add` | `--all`, `-a` | off – Fügen Sie alle Komponenten der Registrierung hinzu |
 | `add` | `--sha256` | keine – erwarteter Digest einer Remote-Komponente; eine Nichtübereinstimmung bricht ab |
 | `add` | `--migrate` | off – Führen Sie die Migrationen aus, die ein Registrierungsmodul deklariert |
+| `publish` | `--dry-run` | aus: validieren und archivieren ohne Hochladen |
+| `publish` | `--registry` | `https://registry.nexypy.dev`: Registrierung, in der veröffentlicht werden soll |
 | `migrate` | `--init` | off - Schreiben Sie das Alembic- oder Aerich-Setup |
 | `migrate` | `--upgrade`, `-u` | off – Wenden Sie die Migrationen an, anstatt eine neue zu schreiben |
 | `migrate` | `--message`, `-m` | leer – Name der neuen Revision |
 
 ## Ausgabe
 
-Bei langen Schritten (Pakete installieren, kompilieren, bündeln) wird ein Kreisel mit der verstrichenen Zeit und der letzten Zeile angezeigt, die der Befehl ausgegeben hat. Lassen Sie dann eine Zeile stehen, wie es uv tut: `Synced .venv with uv in 1.4s`. Eine Gruppe von Schritten (die Installationen von `nx new`) zeigt auch einen Fortschrittsbalken und die Anzahl der abgeschlossenen Schritte an, `2/5`. Ein fehlgeschlagener Schritt ist eine `error:`-Zeile mit ihrer Ursache, `cause: exit 1 after 2.1s`, gefolgt von den letzten Zeilen der Befehlsausgabe, anstatt sie auszublenden. Etwas, das Sie sich ansehen sollten, lautet `warning: ...` und was als nächstes zu tun ist `hint: ...`. Die Entwicklungsprotokolle lauten `GET » /about 200 in 12ms` für Anfragen und `vite » ...` für Vite.
+Bei langen Schritten (Pakete installieren, kompilieren, bündeln) wird ein Spinner mit der verstrichenen Zeit und der letzten Zeile angezeigt, die der Befehl ausgegeben hat. Lassen Sie dann eine Zeile stehen, wie es uv tut: `Synced .venv with uv in 1.4s`. Eine Gruppe von Schritten (die Installationen von `nx new`) zeigt auch einen Fortschrittsbalken und die Anzahl der abgeschlossenen Schritte an, `2/5`. Ein fehlgeschlagener Schritt ist eine `error:`-Zeile mit ihrer Ursache, `cause: exit 1 after 2.1s`, gefolgt von den letzten Zeilen der Befehlsausgabe, anstatt sie auszublenden. Etwas, das Sie sich ansehen sollten, lautet `warning: ...` und was als nächstes zu tun ist `hint: ...`. Die Entwicklungsprotokolle lauten `GET » /about 200 in 12ms` für Anfragen und `vite » ...` für Vite.
 
 ## Fehler beim Ausführen von `nx dev`
 
-Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Datei mit einem Syntaxfehler wird mit ihrer Datei und Zeile gemeldet und der Server stellt weiterhin die letzte funktionierende Version bereit, bis Sie den Fehler beheben:
+Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Datei mit einem Syntaxfehler wird mit ihrer Datei und Zeile gemeldet, und der Server stellt weiterhin die letzte funktionierende Version bereit, bis Sie den Fehler beheben:
 
 ```text
   nexy » error  src/routes/users.py:3
@@ -78,7 +85,7 @@ Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Da
   Fix it and save: the server keeps its last working version.
 ```
 
-Eine Datei, die analysiert wird, aber beim Laden der Anwendung fehlschlägt (ein fehlender Import, ein Fehler auf Modulebene), wird auf die gleiche Weise gemeldet und `nx dev` wartet auf Ihre nächste Speicherung; Es wird nichts bereitgestellt, bis die Anwendung erneut geladen wird. Ein gültiger Speicher lautet `nexy » update <file>`, während der Server neu lädt. Markdown-Dateien außerhalb von `src/routes`, wie etwa `README.md`, sind keine Seiten und lösen nichts aus. `nx start` ist strenger: Es wird mit Code 1 beendet und startet nichts, wenn eine Routendatei nicht geladen werden kann oder wenn `nx build` das Projekt noch nicht erstellt hat.
+Eine Datei, die analysiert wird, aber beim Laden der Anwendung fehlschlägt (ein fehlender Import, ein Fehler auf Modulebene), wird auf die gleiche Weise gemeldet und `nx dev` wartet auf Ihre nächste Speicherung; Es wird nichts bereitgestellt, bis die Anwendung erneut geladen wird. Eine gültige Speicherung lautet `nexy » update <file>`, während der Server neu lädt. Markdown-Dateien außerhalb von `src/routes`, wie etwa `README.md`, sind keine Seiten und lösen nichts aus. `nx start` ist strenger: Es wird mit Code 1 beendet und startet nichts, wenn eine Routendatei nicht geladen werden kann oder wenn `nx build` das Projekt noch nicht erstellt hat.
 
 ## Fragen von `nx new`
 
@@ -91,7 +98,7 @@ Eine Datei, die analysiert wird, aber beim Laden der Anwendung fehlschlägt (ein
 | ORM | SQLModel, SQLAlchemy, Tortoise-ORM, Keine Datenbank |
 | Datenbank (mit einem ORM) | SQLite, PostgreSQL, Neon, MySQL / MariaDB, Andere (Sie geben die URL ein) |
 
-Der Datenbanktreiber für das gewählte ORM wird mit installiert (`psycopg`, `pymysql`, `asyncpg` oder `aiomysql`) und die URL wird nach `.env` geschrieben.
+Der Datenbanktreiber für das ausgewählte ORM wird mit installiert (`psycopg`, `pymysql`, `asyncpg` oder `aiomysql`) und die URL wird nach `.env` geschrieben.
 
 Vor der Installation von Paketen prüft `nx new` die Verbindung. Ohne eine werden die Installationen übersprungen und Sie werden aufgefordert, `uv sync` und die Installation Ihres Paketmanagers später auszuführen. Bei einem davon druckt es die Latenz und Download-Geschwindigkeit aus und warnt, wenn die Verbindung langsam ist (über 400 ms oder unter 100 KB/s). Jede Installationszeile benennt das Tool und den Ordner, den es füllt, zum Beispiel `pnpm install node_modules` oder `uv sync .venv`.
 
