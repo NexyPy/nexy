@@ -79,7 +79,7 @@ def _write_files(root: Path, files: dict[str, bytes]) -> tuple[tuple[str, ...], 
     for name, content in files.items():
         path = root / name
         if path.exists():
-            warning(t("add.module.conflict", "Skipping: {path} already exists.").format(path=name))
+            warning(t("add.exists", "Skipping: {path} already exists.").format(path=name))
             skipped.append(name)
             continue
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -138,6 +138,24 @@ def _verified_signer(
         raise InstallError(str(problem)) from problem
 
 
+def _already_installed(ledger: dict[str, dict[str, str]], name: str, selected: str) -> bool:
+    """Say whether this exact version is already recorded in the project."""
+    if ledger.get(name, {}).get("version") != selected:
+        return False
+    message = t("add.module.already", "{name}@{version} is already installed.")
+    console.print(message.format(name=name, version=selected))
+    return True
+
+
+def _report_install(name: str, selected: str, signer: str | None) -> None:
+    """Print the install line and, when there is one, the identity of the signer."""
+    console.print(
+        t("add.module.installed", "Installed {name}@{version}").format(name=name, version=selected)
+    )
+    if signer:
+        console.print(t("add.module.signed", "Verified by {signer}").format(signer=signer))
+
+
 class ModuleInstaller:
     """Resolve, check and install one registry module into a Nexy project."""
 
@@ -167,12 +185,7 @@ class ModuleInstaller:
         """Install the pinned version, or the newest release, once."""
         selected = self._selected_version(reference)
         ledger = _ledger(self.root)
-        if ledger.get(reference.name, {}).get("version") == selected:
-            console.print(
-                t("add.module.already", "{name}@{version} is already installed.").format(
-                    name=reference.name, version=selected
-                )
-            )
+        if _already_installed(ledger, reference.name, selected):
             return InstallResult(reference.name, selected, None, True, (), ())
         release = self.client.release(reference.name, selected)
         archive = self._archive(release, reference)
@@ -185,13 +198,7 @@ class ModuleInstaller:
             _run_migrations(self.runner, manifest, self.root)
         ledger[reference.name] = {"version": selected, "checksum": release.checksum}
         _save_ledger(self.root, ledger)
-        console.print(
-            t("add.module.installed", "Installed {name}@{version}").format(
-                name=reference.name, version=selected
-            )
-        )
-        if signer:
-            console.print(t("add.module.signed", "Verified by {signer}").format(signer=signer))
+        _report_install(reference.name, selected, signer)
         return InstallResult(reference.name, selected, signer, False, written, skipped)
 
     def _selected_version(self, reference: ModuleReference) -> str:
