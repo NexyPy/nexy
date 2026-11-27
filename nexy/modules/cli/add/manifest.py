@@ -46,14 +46,7 @@ def parse_manifest(text: str) -> ModuleManifest:
 
 
 def _manifest_of(data: Mapping[str, Any]) -> ModuleManifest:
-    name, version = str(data.get("name", "")), str(data.get("version", ""))
-    if not _NAME.fullmatch(name):
-        raise ManifestError("name must be @scope/name")
-    if not _VERSION.fullmatch(version):
-        raise ManifestError("version must be three numbers separated by dots")
-    kind = str(data.get("kind", ""))
-    if kind not in ("source", "package"):
-        raise ManifestError("kind must be source or package")
+    name, version, kind = _identity(data)
     compatibility = _table(data, "compatibility")
     dependencies = _table(data, "dependencies")
     files, package = _payload(_table(data, "source"), kind)
@@ -70,6 +63,19 @@ def _manifest_of(data: Mapping[str, Any]) -> ModuleManifest:
         config=_config(_table(data, "config")),
         migrations=_migrations(data.get("migrations", [])),
     )
+
+
+def _identity(data: Mapping[str, Any]) -> tuple[str, str, str]:
+    """The validated name, version and kind at the root of the manifest."""
+    name, version = str(data.get("name", "")), str(data.get("version", ""))
+    if not _NAME.fullmatch(name):
+        raise ManifestError("name must be @scope/name")
+    if not _VERSION.fullmatch(version):
+        raise ManifestError("version must be three numbers separated by dots")
+    kind = str(data.get("kind", ""))
+    if kind not in ("source", "package"):
+        raise ManifestError("kind must be source or package")
+    return name, version, kind
 
 
 def _table(data: Mapping[str, Any], key: str) -> Mapping[str, Any]:
