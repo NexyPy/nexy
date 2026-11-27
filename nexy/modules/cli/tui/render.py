@@ -50,10 +50,10 @@ def footer(glyphs: Glyphs, *, back: bool, move: bool = True) -> Fragments:
     """The keys that work, dimmed under the options."""
     keys = []
     if move:
-        keys.append(f"↑↓ {t('tui.keys.move', 'move')}")
+        keys.append(f"up/down {t('tui.keys.move', 'move')}")
     keys.append(f"enter {t('tui.keys.choose', 'choose')}")
     if back:
-        keys.append(f"← {t('tui.keys.back', 'back')}")
+        keys.append(f"left {t('tui.keys.back', 'back')}")
     keys.append(f"ctrl+c {t('tui.keys.quit', 'quit')}")
     separator = f" {glyphs.separator} "
     return [("class:gutter", f"{glyphs.gutter}  "), ("class:keys", separator.join(keys) + "\n")]
