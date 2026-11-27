@@ -47,7 +47,7 @@ Berapa lama waktu yang dibutuhkan proyek dengan satu halaman `.nexy`, rata-rata 
 | Halaman pertama | 554 ms | sama, ditambah permintaan pertama ke `/` dan HTML-nya |
 | Kompilasi ulang halaman | 1,8 ms | kompilasi halaman kembali setelah dilakukan edit, dalam proses yang sudah berjalan |
 
-Diukur pada AMD Ryzen 5 4500U, Linux, 6 CPU, Python 3.13.15. Kompilasi ulang adalah apa yang `nx dev` lakukan untuk sisi Python perubahan; memuat ulang browser juga membayar grafik modul Vite dan render browser itu sendiri, jadi ini bukan waktu memuat ulang.
+Diukur pada AMD Ryzen 5 4500U, Linux, 6 CPU, Python 3.13.15. Kompilasi ulang adalah apa yang `nx dev` lakukan untuk sisi Python perubahan; muat ulang di bawah menambahkan pengamat, pesan HMR, dan browser.
 
 Ukur mesin Anda sendiri dengan skrip yang menulis tabel:
 
@@ -56,6 +56,25 @@ python scripts/measure_speed.py --runs 5
 ```
 
 Alur kerja `Speed` menjalankannya pada setiap dorongan ke `main` dan menulis tabel yang sama dalam ringkasan proses, pada runner Ubuntu yang dihosting GitHub.
+
+### Muat ulang setelah disimpan
+
+Berapa lama waktu yang dibutuhkan `nx dev` untuk menampilkan pengeditan, mulai dari penulisan file hingga teks baru di browser, rata-rata 5 pengeditan:
+
+| Ukur | median | Apa yang dicakupnya |
+|---|---|---|
+| Muat ulang halaman `.nexy` | 98 ms | pengamat, kompilasi, pesan HMR, lalu halaman mengambil isi barunya |
+| Muat ulang halaman `.tsx` | 43 ms | Pengamat Vite dan React Fast Refresh, dalam proyek klien (`useCSR = True`) |
+
+Diukur pada CPU Intel Core i5-10300H, Windows 11, 8, Python 3.13.2, Node 22.23.5. Setiap pengeditan diatur waktunya di tab yang memuat halaman satu kali. Muat ulang `.nexy` mencakup waktu 50 mdtk yang ditunggu pengamat hingga penyimpanan selesai.
+
+Ukur mesin Anda sendiri dengan rangkaian browser, yang memerlukan Chromium, Node, dan pnpm:
+
+```bash
+python -m pytest tests/e2e/test_reload_budget.py -m e2e -s
+```
+
+Tes gagal bila median lebih dari 1 detik.
 
 ## Permintaan per detik
 
@@ -93,7 +112,7 @@ Angka-angka di bawah ini diukur dengan rute file. Ukur pengontrol dengan cara ya
 
 Membaca tabel:
 
-- Lapisan Nexy sendiri (konteks jalur, middleware) menghabiskan biaya sekitar sepertiga dari throughput rute kosong FastAPI .
+- Lapisan Nexy sendiri (konteks jalur, middleware) menghabiskan biaya sekitar sepertiga dari throughput yang kosong FastAPI rute.
 - Halaman yang dirender di server membutuhkan CPU sekitar 2 ms, tersebar di sekitar 16 rendering template (satu per komponen). Halaman dengan komponen lebih sedikit secara proporsional lebih murah.
 - Skala throughput dengan pekerja. Di Linux, `nx start` sudah memulai satu per CPU.
 
@@ -101,7 +120,7 @@ Membaca tabel:
 
 1. Tempatkan Nginx, Caddy atau keunggulan platform Anda: TLS, HTTP/2, Brotli, dan caching jangka panjang untuk aset `/__nexy__/client/` adalah kelebihannya. Lihat [Menerapkan](README.md).
 2. Gunakan [ISR](../rendering/isr.md) untuk halaman yang berubah kurang dari sekali dalam satu menit.
-3. Hidrasi secara malas dengan [pulau](../rendering/islands.md) sehingga muatan pertama dikirimkan lebih sedikit JavaScript.
+3. Hidrasi dengan malas di [pulau](../rendering/islands.md) sehingga muatan pertama dikirimkan lebih sedikit JavaScript.
 4. Jaga agar jumlah komponen `.nexy` per halaman masuk akal: masing-masing komponen merupakan render template terpisah.
 5. Ukur rute Anda sendiri. Generator beban lokal yang menjaga koneksi tetap hidup sudah cukup untuk membandingkan dua versi halaman.
 
@@ -128,5 +147,5 @@ server {
 ## Langkah selanjutnya
 
 - [Menyebarkan](README.md)
-- [Perenderan](../rendering/README.md)
+- [Merender](../rendering/README.md)
 - [Konfigurasi](../reference/config.md)

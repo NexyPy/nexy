@@ -47,7 +47,7 @@ ISR 是一种文件页面模式：控制器返回的视图在每个请求上呈�
 | 第一页 | 554 毫秒 | 相同，加上对 `/` 的第一个请求及其 HTML |
 | 重新编译页面 | 1.8毫秒 | 编辑后在已运行的进程中再次编译页面 |
 
-在 AMD Ryzen 5 4500U、Linux、6 个 CPU、Python 3.13.15 上测量。重新编译是 `nx dev` 对更改的 Python 方面所做的事情；浏览器重新加载还需要支付 Vite 的模块图和浏览器自己的渲染费用，因此这不是重新加载时间。
+在 AMD Ryzen 5 4500U、Linux、6 个 CPU、Python 3.13.15 上测量。重新编译是 `nx dev` 对更改的 Python 方面所做的事情；下面的重新加载添加了观察者、HMR 消息和浏览器。
 
 用写表的脚本测量一下你自己的机器：
 
@@ -56,6 +56,25 @@ python scripts/measure_speed.py --runs 5
 ```
 
 `Speed` 工作流程在每次推送到 `main` 时运行它，并在 GitHub 托管的 Ubuntu 运行器上的运行摘要中写入相同的表。
+
+### 保存后重新加载
+
+`nx dev` 显示编辑所需的时间（从将文件写入浏览器中的新文本），中位数为 5 次编辑：
+
+| 测量 | 中位数 | 它涵盖什么 |
+|---|---|---|
+| 重新加载 `.nexy` 页面 | 98毫秒 | 观察者、编译、HMR 消息，然后页面获取新的主体 |
+| 重新加载 `.tsx` 页面 | 43 毫秒 | Vite 的观察者和 React 快速刷新，在客户端项目 (`useCSR = True`) |
+
+在 Intel Core i5-10300H、Windows 11、8 个 CPU、Python 3.13.2、节点 22.23.5 上测量。每次编辑都会在已加载页面一次的选项卡中进行计时。 `.nexy` 重新加载包括观察者等待保存完成的 50 毫秒。
+
+使用浏览器套件测量您自己的机器，需要 Chromium、Node 和 pnpm：
+
+```bash
+python -m pytest tests/e2e/test_reload_budget.py -m e2e -s
+```
+
+当中值超过 1 秒时测试失败。
 
 ## 每秒请求数
 
@@ -100,12 +119,12 @@ class PingController:
 ## 实用建议
 
 1. 将 Nginx、Caddy 或您平台的优势放在前面：TLS、HTTP/2、Brotli 和 `/__nexy__/client/` 资产的长期缓存是它们的优势。请参阅[部署](README.md)。
-2. 对于每分钟更改次数少于一次的页面，请使用 [ISR](../rendering/isr.md)。
+2. 对于每分钟更改一次的页面使用 [ISR](../rendering/isr.md)。
 3. 使用[岛屿](../rendering/islands.md) 懒惰地水合，因此第一批货物运输较少 JavaScript。
 4. 保持每页的 `.nexy` 组件数量合理：每个组件都是一个单独的模板渲染。
 5. 测量自己的路线。保持连接活动的本地负载生成器足以比较页面的两个版本。
 
-Nginx 的建议 1：散列的客户端包缓存一年，其余的交给 Nexy。
+Nginx 的建议 1：散列客户端包缓存一年，其余的交给 Nexy。
 
 ```nginx filename="/etc/nginx/conf.d/my-app.conf"
 server {

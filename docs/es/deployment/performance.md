@@ -47,7 +47,7 @@ Cuánto tiempo lleva un proyecto con una `.nexy` página, mediana de 5 ejecucion
 | Primera página | 554 ms | lo mismo, más la primera solicitud a `/` y su HTML |
 | Recompilar una página | 1,8 ms | compilar la página nuevamente después de una edición, en un proceso que ya se ejecuta |
 
-Medido en un AMD Ryzen 5 4500U, Linux, 6 CPU, Python 3.13.15. Recompilar es lo que hace `nx dev` para el lado Python de un cambio; una recarga del navegador también paga por el gráfico del módulo de Vite y el propio renderizado del navegador, por lo que no es un tiempo de recarga.
+Medido en un AMD Ryzen 5 4500U, Linux, 6 CPU, Python 3.13.15. Recompilar es lo que hace `nx dev` para el lado Python de un cambio; la recarga a continuación agrega el observador, el mensaje HMR y el navegador.
 
 Mide tu propia máquina con el script que escribió la tabla:
 
@@ -57,9 +57,28 @@ python scripts/measure_speed.py --runs 5
 
 El flujo de trabajo `Speed` lo ejecuta en cada envío a `main` y escribe la misma tabla en el resumen de la ejecución, en un ejecutor Ubuntu alojado en GitHub.
 
+### Recargar después de guardar
+
+Cuánto tiempo tarda `nx dev` en mostrar una edición, desde que se escribe el archivo hasta el nuevo texto en el navegador, mediana de 5 ediciones:
+
+| Medida | mediana | lo que cubre |
+|---|---|---|
+| Recargar una página `.nexy` | 98 ms | el observador, la compilación, el mensaje HMR, luego la página recupera su nuevo cuerpo |
+| Recargar una página `.tsx` | 43 ms | Vigilante de Vite y React Actualización rápida, en un proyecto de cliente (`useCSR = True`) |
+
+Medido en un Intel Core i5-10300H, Windows 11, 8 CPU, Python 3.13.2, Nodo 22.23.5. Cada edición se cronometra en una pestaña que ha cargado la página una vez. La recarga `.nexy` incluye los 50 ms que el observador espera hasta que se establezca un guardado.
+
+Mida su propia máquina con el paquete de navegador, que necesita Chromium, Node y pnpm:
+
+```bash
+python -m pytest tests/e2e/test_reload_budget.py -m e2e -s
+```
+
+La prueba falla cuando una mediana es superior a 1 segundo.
+
 ## Solicitudes por segundo
 
-Una ejecución local, un trabajador Uvicorn, Windows, Python 3.13, conexiones de mantenimiento de actividad desde un generador de carga Python en la misma máquina. Trate las cifras como una base para comparar los cambios, no como un punto de referencia con respecto a otros marcos.
+Una ejecución local, un Uvicorn trabajador, Windows, Python 3.13, conexiones de mantenimiento de actividad desde un Python generador de carga en la misma máquina. Trate las cifras como una base para comparar los cambios, no como un punto de referencia con respecto a otros marcos.
 
 La ruta Nexy JSON de la tabla es este archivo:
 
@@ -101,7 +120,7 @@ Leyendo la tabla:
 
 1. Coloque Nginx, Caddy o la ventaja de su plataforma al frente: TLS, HTTP/2, Brotli y el almacenamiento en caché de larga duración para `/__nexy__/client/` activos son sus puntos fuertes. Consulte [Implementar](README.md).
 2. Utilice [ISR](../rendering/isr.md) para páginas que cambian menos de una vez por minuto.
-3. Hidrátate perezosamente con [islas](../rendering/islands.md) para que la primera carga envíe menos JavaScript.
+3. Hidrátate lentamente con [islas](../rendering/islands.md) para que la primera carga envíe menos JavaScript.
 4. Mantenga un número razonable de `.nexy` componentes por página: cada uno es una plantilla de representación independiente.
 5. Mide tus propias rutas. Un generador de carga local que mantenga vivas las conexiones es suficiente para comparar dos versiones de una página.
 
