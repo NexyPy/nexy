@@ -178,6 +178,7 @@ Contrôleurs et modules.
 | [Débogage](guides/debugging.md) | Arrêtez-vous dans le code de votre serveur avec `breakpoint()` ou VS Code |
 | [Agents de codage](guides/ai-agents.md) | Donnez à Claude Code, Codex et OpenCode les règles de votre projet |
 | [Installer des modules](guides/install-modules.md) | Installer, mettre à niveau et épingler les modules à partir du registre |
+| [Publier des modules](guides/publish-modules.md) | Valider, créer et télécharger une version de module |
 | [Dépannage](guides/troubleshooting.md) | Résolvez les premiers problèmes rencontrés par les gens |
 
 ## Bases de données
@@ -187,7 +188,7 @@ Contrôleurs et modules.
 |---|---|
 | [SQLite](databases/sqlite.md) | Utiliser un seul fichier, pas de serveur : moteur, pragmas, migrations et tests |
 | [PostgreSQL](databases/postgresql.md) | Connectez-vous avec psycopg, utilisez JSONB, les tableaux, la recherche et les upserts |
-| [Néon](databases/neon.md) | Utiliser sans serveur PostgreSQL : hôte mutualisé, suspension automatique et branches |
+| [Néon](databases/neon.md) | Utiliser sans serveur PostgreSQL : hôte poolé, suspension automatique et branches |
 | [MySQL et MariaDB](databases/mysql-mariadb.md) | Connectez-vous avec pymysql, utilisez utf8mb4, upserts et recherche en texte intégral |
 
 ## Venant de
@@ -209,8 +210,8 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 ### JavaScript backends {fbr}
 | Pages | Ce que tu feras |
 |---|---|
-| [Depuis Express](coming-from/express.md) | Traduire les routes, les middlewares et les `req`/`res` en Python gestionnaires |
-| [Depuis Fastify](coming-from/fastify.md) | Transformez les schémas, plugins et hooks en modèles, dossiers et fichiers |
+| [Depuis Express](coming-from/express.md) | Traduire les routes, les middlewares et les `req`/`res` en gestionnaires Python |
+| [De Fastify](coming-from/fastify.md) | Transformez les schémas, plugins et hooks en modèles, dossiers et fichiers |
 | [D'Élysée](coming-from/elysia.md) | Mapper les schémas `t`, les gardes et l'Eden aux Pydantic et aux actions typées |
 | [De Hono](coming-from/hono.md) | Mapper les routes, le middleware et le client `hc` vers Nexy |
 
@@ -222,7 +223,7 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 | [Depuis Nuxt](coming-from/nuxt.md) | Conservez vos Vue pages et déplacez `server/` vers Python |
 | [De SvelteKit](coming-from/sveltekit.md) | Conservez vos Svelte pages et déplacez les charges, actions et hooks vers Python |
 | [De Astro](coming-from/astro.md) | Écrivez Astro pages sous forme de `.nexy` pages, avec les mêmes îlots |
-| [Depuis Laravel](coming-from/laravel.md) | Cartographier les itinéraires, les contrôleurs, Blade, Eloquent et les files d'attente vers Nexy |
+| [De Laravel](coming-from/laravel.md) | Cartographier les itinéraires, les contrôleurs, Blade, Eloquent et les files d'attente vers Nexy |
 | [De Ruby sur Rails](coming-from/rails.md) | Cartographier les itinéraires, les contrôleurs, l'ERB, l'Active Record et les tâches vers Nexy |
 
 ### Frameworks de contrôleurs {modular}

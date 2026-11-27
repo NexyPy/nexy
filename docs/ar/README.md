@@ -178,6 +178,7 @@
 | [التصحيح](guides/debugging.md) | توقف في رمز الخادم الخاص بك باستخدام `breakpoint()` أو VS Code |
 | [وكلاء الترميز](guides/ai-agents.md) | أعط Claude Code، Codex و OpenCode قواعد مشروعك |
 | [تثبيت الوحدات](guides/install-modules.md) | تثبيت الوحدات وترقيتها وتثبيتها من السجل |
+| [نشر الوحدات](guides/publish-modules.md) | التحقق من صحة إصدار وحدة واحدة وإنشائها وتحميلها |
 | [استكشاف الأخطاء وإصلاحها](guides/troubleshooting.md) | إصلاح المشاكل الأولى التي يواجهها الناس |
 
 ## قواعد البيانات
@@ -211,7 +212,7 @@
 |---|---|
 | [من اكسبرس](coming-from/express.md) | ترجمة المسارات والبرامج الوسيطة و `req`/`res` إلى معالجات Python |
 | [من فاستيفاي](coming-from/fastify.md) | تحويل المخططات والمكونات الإضافية والخطافات إلى نماذج ومجلدات وملفات |
-| [من إليسيا](coming-from/elysia.md) | خريطة `t` المخططات والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
+| [من إليسيا](coming-from/elysia.md) | قم بتعيين مخططات `t` والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
 | [من هونو](coming-from/hono.md) | قم بتعيين المسارات والبرامج الوسيطة والعميل `hc` إلى Nexy |
 
 ### أطر عمل Fullstack {fbr}
@@ -223,7 +224,7 @@
 | [من سفيلتكيت](coming-from/sveltekit.md) | احتفظ بصفحاتك Svelte وانقل التحميلات والإجراءات والربطات إلى Python |
 | [من Astro](coming-from/astro.md) | اكتب Astro صفحة على شكل `.nexy` صفحة، بنفس الجزر |
 | [من لارافيل](coming-from/laravel.md) | قم بتعيين المسارات ووحدات التحكم وBlade وEloquent وقوائم الانتظار إلى Nexy |
-| [من روبي أون ريلز](coming-from/rails.md) | خريطة المسارات ووحدات التحكم وERB وActive Record والوظائف إلى Nexy |
+| [من روبي أون ريلز](coming-from/rails.md) | قم بتعيين المسارات ووحدات التحكم وERB وActive Record والوظائف إلى Nexy |
 
 ### أطر التحكم {modular}
 | الصفحة | ماذا ستفعل |

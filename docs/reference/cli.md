@@ -14,6 +14,7 @@ example `uv run nexy dev`: that is where your own packages are.
 | `nx new` | `nx n` | scaffold a project |
 | `nx init` | `nx i` | add Nexy to an existing project |
 | `nx add` | - | add a UI component, a registry module such as `@acme/auth`, a URL, or a platform such as `vercel` |
+| `nx publish` | - | validate a module and publish one release to the registry |
 | `nx migrate` | `nx m` | create or apply database migrations with Alembic or Aerich |
 | `nx check` | `nx c` | type-check: mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (prettier), `.nexy` files |
@@ -37,6 +38,10 @@ If no application routes are found, it prints `No routes found.`.
 
 A namespaced argument such as `@acme/auth` or `@acme/auth@1.2.0` installs a release from the module registry instead of a UI component. It checks the checksum and compatibility, writes only the files the module declares, installs its dependencies and applies its config hooks. The install is recorded in `.nexy/modules.json`. Migrations run only with `--migrate`. See [Install modules](../guides/install-modules.md) for upgrades, pins and trust settings.
 
+## `nx publish`
+
+Run `nx publish` from a module directory with a valid `nx.toml`, a registry token, and every declared file. The command archives `nx.toml` and the declared files, posts them to the registry, and prints the name, version and SHA-256 checksum of the release. A name and version pair cannot be published twice. The token is read from `NEXY_REGISTRY_TOKEN` or `~/.config/nexy/registry-token` and is never printed. See [Publish modules](../guides/publish-modules.md) for the manifest, dry runs and registry options.
+
 ## Flags
 
 | Command | Flag | Default |
@@ -54,6 +59,8 @@ A namespaced argument such as `@acme/auth` or `@acme/auth@1.2.0` installs a rele
 | `add` | `--all`, `-a` | off - add every component of the registry |
 | `add` | `--sha256` | none - expected digest of a remote component; a mismatch aborts |
 | `add` | `--migrate` | off - run the migrations a registry module declares |
+| `publish` | `--dry-run` | off: validate and archive without uploading |
+| `publish` | `--registry` | `https://registry.nexypy.dev`: registry to publish to |
 | `migrate` | `--init` | off - write the Alembic or Aerich setup |
 | `migrate` | `--upgrade`, `-u` | off - apply the migrations instead of writing a new one |
 | `migrate` | `--message`, `-m` | empty - name of the new revision |

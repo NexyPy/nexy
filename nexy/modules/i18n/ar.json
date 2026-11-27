@@ -246,6 +246,15 @@
     "no_orm": "لم يتم العثور على ORM مدعوم. ثبّت أحدها: sqlmodel أو tortoise-orm أو sqlalchemy",
     "tool_missing": "خطأ: لم يتم العثور على {tool} في PATH. ثبّته ثم حاول مرة أخرى."
   },
+  "publish": {
+    "dry_run": "تشغيل تجريبي: {name}@{version} ({size} بايت, sha256 {checksum})",
+    "help_dry_run": "التحقق من الإصدار وبناؤه دون رفعه",
+    "help_path": "مسار دليل الوحدة",
+    "help_registry": "عنوان URL للسجل المراد النشر فيه",
+    "no_token": "لا يوجد رمز سجل. عيّن NEXY_REGISTRY_TOKEN أو سجّل الدخول.",
+    "published": "تم نشر {name}@{version} إلى {registry} (sha256:{checksum})",
+    "undeclared": "استيراد نسبي غير معلن: {name}"
+  },
   "routes": {
     "title": "المسارات",
     "methods": "الطرق",

@@ -12,6 +12,7 @@
 | `nx new` | `nx n` | 搭建一个项目 |
 | `nx init` | `nx i` | 将 Nexy 添加到现有项目 |
 | `nx add` | - | 添加 UI 组件、注册表模块（例如 `@acme/auth`）、URL 或平台（例如 `vercel`） |
+| `nx publish` | - | 验证模块并向注册表发布一个版本 |
 | `nx migrate` | `nx m` | 使用 Alembic 或 Aerich 创建或应用数据库迁移 |
 | `nx check` | `nx c` | 类型检查：mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | 格式 Python（ruff）、JS/TS（更漂亮）、`.nexy` 文件 |
@@ -29,11 +30,15 @@
 nx routes
 ```
 
-如果未找到应用程序路径，则会打印 `No routes found.`。
+如果没有找到应用程序路径，则打印 `No routes found.`。
 
 ## `nx add` 带有模块
 
 命名空间参数（例如 `@acme/auth` 或 `@acme/auth@1.2.0`）从模块注册表安装版本而不是 UI 组件。它检查校验和和兼容性，仅写入模块声明的文件，安装其依赖项并应用其配置挂钩。安装记录在 `.nexy/modules.json`中。迁移仅使用 `--migrate` 运行。有关升级、引脚和信任设置，请参阅[安装模块](../guides/install-modules.md)。
+
+## `nx publish`
+
+使用有效的 `nx.toml`、注册表令牌和每个声明的文件从模块目录运行 `nx publish`。该命令归档 `nx.toml` 和声明的文件，将它们发布到注册表，并打印版本的名称、版本和 SHA-256 校验和。名称和版本对不能发布两次。令牌是从 `NEXY_REGISTRY_TOKEN` 或 `~/.config/nexy/registry-token` 读取的，并且永远不会打印。有关清单、试运行和注册表选项，请参阅[发布模块](../guides/publish-modules.md)。
 
 ## 旗帜
 
@@ -52,6 +57,8 @@ nx routes
 | `add` | `--all`，`-a` | off - 添加注册表的每个组件 |
 | `add` | `--sha256` | none - 远程组件的预期摘要；不匹配中止 |
 | `add` | `--migrate` | off - 运行注册表模块声明的迁移 |
+| `publish` | `--dry-run` | off：验证并存档而不上传 |
+| `publish` | `--registry` | `https://registry.nexypy.dev`：要发布到的注册表 |
 | `migrate` | `--init` | off - 写入 Alembic 或 Aerich 设置 |
 | `migrate` | `--upgrade`，`-u` | off - 应用迁移而不是编写新迁移 |
 | `migrate` | `--message`，`-m` | 空 - 新修订的名称 |
@@ -62,7 +69,7 @@ nx routes
 
 ## `nx dev` 运行时出错
 
-保存损坏的文件永远不会停止服务器。报告带有语法错误的 `.py` 文件及其文件和行，并且服务器将继续提供最后一个工作版本，直到您修复它：
+保存损坏的文件永远不会停止服务器。报告具有语法错误的 `.py` 文件及其文件和行，并且服务器将继续提供最后一个工作版本，直到您修复它：
 
 ```text
   nexy » error  src/routes/users.py:3
@@ -91,7 +98,7 @@ nx routes
 | ORM | SQLModel，SQLAlchemy，Tortoise-ORM，无数据库 |
 | 数据库（带有 ORM） | SQLite、PostgreSQL、Neon、MySQL / MariaDB、其他（您输入 URL） |
 
-所选 ORM 的数据库驱动程序随其安装（`psycopg`、`pymysql`、`asyncpg` 或 `aiomysql`），并且 URL 写入 `.env`。
+所选 ORM 的数据库驱动程序随其一起安装（`psycopg`、`pymysql`、`asyncpg` 或 `aiomysql`），并且 URL 写入 `.env`。
 
 在安装软件包之前，`nx new` 检查连接。如果没有，它会跳过安装并告诉您稍后运行 `uv sync` 和包管理器的安装。使用其中之一时，它会打印延迟和下载速度，并在连接速度较慢（超过 400 毫秒或低于 100 KB/s）时发出警告。每个安装行都会命名该工具及其填充的文件夹，例如 `pnpm install node_modules` 或 `uv sync .venv`。
 
@@ -111,7 +118,7 @@ nx routes
 
 ## 建立行为
 
-`nx build` 编译路由，然后在 `useVite` 开启时捆绑客户端。
+`nx build` 编译路由，然后在 `useVite` 打开时捆绑客户端。
 
 > [!NOTE]
 > 没有 `--static` 标志。静态托管是一种部署选择，而不是构建模式 - 请参阅[部署](../deployment/README.md)。

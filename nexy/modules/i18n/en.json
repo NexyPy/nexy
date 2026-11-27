@@ -246,6 +246,15 @@
     "no_orm": "No supported ORM found. Install one: sqlmodel, tortoise-orm, sqlalchemy",
     "tool_missing": "Error: {tool} not found on PATH. Install it and try again."
   },
+  "publish": {
+    "dry_run": "Dry run: {name}@{version} ({size} bytes, sha256 {checksum})",
+    "help_dry_run": "Validate and build the release without uploading",
+    "help_path": "Path to the module directory",
+    "help_registry": "Registry URL to publish to",
+    "no_token": "No registry token. Set NEXY_REGISTRY_TOKEN or log in.",
+    "published": "Published {name}@{version} to {registry} (sha256:{checksum})",
+    "undeclared": "Undeclared relative import: {name}"
+  },
   "routes": {
     "title": "Routes",
     "methods": "Methods",

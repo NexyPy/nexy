@@ -1,7 +1,7 @@
 {
  "provider": "google",
  "pages": {
-  "README.md": "b319ac6dbc211e02dfceeee8b8a2825d8109b2cbb47129ef7a3b67405b4875ac",
+  "README.md": "2a56e69e3362703d0627b377ec8b51566521f0e1d417d9be5917f376702c457b",
   "deployment/README.md": "c003f3eeb9c1096ffb7cf033336d892f6341a411d8730f66008efb914bba5f39",
   "deployment/performance.md": "6757e7fe1b55d92997efb18740833d709418bccb15d40fc43b7782a45f1822fd",
   "getting-started/coming-from-other-frameworks.md": "cf0a48d0e310b23f8031c761ee449168cdf12e4d035f0df30b6d3e80841d869a",
@@ -22,7 +22,7 @@
   "guides/recipes.md": "922848a3ef71f76c8a95c97b72976a9eca875143116bfe699b87ead3ef7de0cb",
   "guides/testing.md": "97c4ba553cb1db943c79e9fcc348e640c927366b3081002c8bb12500a95b9791",
   "guides/troubleshooting.md": "b06d8e4208a7662ca7994a7c38a2ad40faffaea57fc10b7cad03594aa7414e01",
-  "reference/cli.md": "f810cc6ac26477050d4aeb5c71f7fb96886aa94327c1cd62ca1d4cfd08d9c70d",
+  "reference/cli.md": "7b93798aaf6f118a195b410ff688b19585f6ddda83f0234ac35d1d4b51edee5c",
   "reference/config.md": "9b7338dc321d5bec12183dd56e90eddaf70ad8dded9dc36654e189c32fd43bf7",
   "reference/exceptions.md": "c08cd69458738fa1f2a97d47df879a31e33c5927ecd810a4abcf9e1e4de3c0e2",
   "reference/file-conventions.md": "aa6d2a9080dbe0e8555e1b0900194b45c1a85cf455a49ae239788f53b90f528e",
@@ -99,6 +99,7 @@
   "tutorial/search-the-notes.md": "79d8c1bb6d6b512aa93f2824013ca3c9a473639aba865201731e2929c1e5d6b9",
   "routing/fbr/navigation/page-transitions.md": "85a3a26af2aca11819aa9aa2d198bcfde3f6a54e79c7aa21fdd79c8565beab3f",
   "deployment/vercel.md": "ad23ef835a01be7b0fc96465d2f33d890806bf794f2e72a415c65494315ea3ca",
-  "guides/install-modules.md": "8766ad5c3452eda28c3bd897087facca1996c45ecaa5af3fea6d02963f11f735"
+  "guides/install-modules.md": "8766ad5c3452eda28c3bd897087facca1996c45ecaa5af3fea6d02963f11f735",
+  "guides/publish-modules.md": "d6211777e807f8b57a29e786cc3354da0a1a6c89ac71d795186ca4d87e79dd10"
  }
 }

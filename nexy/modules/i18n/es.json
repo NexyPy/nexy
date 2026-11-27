@@ -246,6 +246,15 @@
     "no_orm": "No hay ningún ORM compatible. Instale uno: sqlmodel, tortoise-orm, sqlalchemy",
     "tool_missing": "Error: {tool} no está en el PATH. Instálelo e inténtelo de nuevo."
   },
+  "publish": {
+    "dry_run": "Simulacion: {name}@{version} ({size} bytes, sha256 {checksum})",
+    "help_dry_run": "Validar y construir la version sin subirla",
+    "help_path": "Ruta al directorio del modulo",
+    "help_registry": "URL del registro donde publicar",
+    "no_token": "No hay token de registro. Configure NEXY_REGISTRY_TOKEN o inicie sesion.",
+    "published": "Publicado {name}@{version} en {registry} (sha256:{checksum})",
+    "undeclared": "Importacion relativa no declarada: {name}"
+  },
   "routes": {
     "title": "Rutas",
     "methods": "Métodos",
