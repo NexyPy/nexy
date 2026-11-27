@@ -10,8 +10,9 @@ from nexy.modules.cli.add.manifest import ManifestError, parse_manifest
 
 
 def manifest(body: str = "") -> str:
-    return textwrap.dedent(
-        f"""
+    return (
+        textwrap.dedent(
+            """
         name = "@acme/auth"
         version = "1.2.0"
         kind = "source"
@@ -36,7 +37,9 @@ def manifest(body: str = "") -> str:
         [config.package_json]
         "devDependencies.vitest" = "^3"
         """
-    ) + body
+        )
+        + body
+    )
 
 
 def test_parse_manifest_reads_a_source_module():
@@ -104,7 +107,9 @@ def test_parse_manifest_refuses_an_unsafe_config_key(bad):
 
 def test_parse_manifest_refuses_a_shell_migration():
     with pytest.raises(ManifestError, match="migration"):
-        parse_manifest(manifest().replace('argv = ["alembic", "upgrade", "head"]', 'argv = "alembic"'))
+        parse_manifest(
+            manifest().replace('argv = ["alembic", "upgrade", "head"]', 'argv = "alembic"')
+        )
 
 
 def test_parse_manifest_refuses_an_unknown_module_kind():
@@ -131,7 +136,7 @@ def test_parse_manifest_refuses_bad_toml():
         ('files = ["src/auth.py"]', 'files = ""', "files must be a list"),
         ('files = ["src/auth.py"]', 'files = [""]', "relative path"),
         ('files = ["src/auth.py"]', "files = []", "at least one file"),
-        ('[config.nexyconfig]', "[config.unknown]", "unknown config section"),
+        ("[config.nexyconfig]", "[config.unknown]", "unknown config section"),
         (
             '[config.nexyconfig]\nuseSiteUrl = "https://example.com"',
             '[config]\nnexyconfig = "x"',
@@ -143,8 +148,16 @@ def test_parse_manifest_refuses_bad_toml():
             "scalar or a list",
         ),
         ('"devDependencies.vitest"', '"../bad"', "config key"),
-        ('[[migrations]]\nargv = ["alembic", "upgrade", "head"]', 'migrations = "alembic"', "migrations must be a list"),
-        ('[[migrations]]\nargv = ["alembic", "upgrade", "head"]', 'migrations = ["alembic"]', "migration must be a table"),
+        (
+            '[[migrations]]\nargv = ["alembic", "upgrade", "head"]',
+            'migrations = "alembic"',
+            "migrations must be a list",
+        ),
+        (
+            '[[migrations]]\nargv = ["alembic", "upgrade", "head"]',
+            'migrations = ["alembic"]',
+            "migration must be a table",
+        ),
         ('argv = ["alembic", "upgrade", "head"]', 'argv = ""', "migration must be a list"),
     ],
 )
@@ -154,7 +167,9 @@ def test_parse_manifest_refuses_an_invalid_shape(old, new, message):
 
 
 def test_parse_manifest_ignores_a_section_that_is_not_a_table():
-    text = manifest().replace('[compatibility]\nnexy = ">=2.0.0"\npython = ">=3.12"', 'compatibility = "x"')
+    text = manifest().replace(
+        '[compatibility]\nnexy = ">=2.0.0"\npython = ">=3.12"', 'compatibility = "x"'
+    )
     assert parse_manifest(text).nexy_version == ""
 
 
