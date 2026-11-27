@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import io
 import json
 import tarfile
@@ -75,13 +76,13 @@ class FakeClient:
         )
         self.versions_data = versions
 
-    def versions(self, name: str) -> tuple[str, ...]:
+    def versions(self, _name: str) -> tuple[str, ...]:
         return self.versions_data
 
-    def release(self, name: str, version: str) -> Release:
+    def release(self, _name: str, _version: str) -> Release:
         return self.release_data
 
-    def download(self, name: str, version: str) -> bytes:
+    def download(self, _name: str, _version: str) -> bytes:
         return self.archive
 
 
@@ -97,7 +98,7 @@ class Verifier:
     def __init__(self, signer: str | None):
         self.signer = signer
 
-    def verify(self, archive: bytes, signature: str | None) -> str | None:
+    def verify(self, _archive: bytes, _signature: str | None) -> str | None:
         return self.signer
 
 
@@ -112,7 +113,7 @@ def build(tmp_path, monkeypatch, client, **options):
         nexy_version="2.11.2",
         python_version="3.13.0",
         runner=runner,
-        install_node=lambda deps, root: nodes.append(deps),
+        install_node=lambda deps, _root: nodes.append(deps),
         **options,
     )
     return installer, runner, nodes
@@ -184,10 +185,8 @@ def test_installer_writes_nothing_after_a_checksum_mismatch(tmp_path, monkeypatc
     raw = make_archive(MANIFEST, {"src/auth.py": b"x"})
     release = Release("@acme/auth", "1.2.0", "wrong", ">=2.0.0", ">=3.12", None)
     installer, _, _ = build(tmp_path, monkeypatch, FakeClient(raw, release))
-    try:
+    with contextlib.suppress(InstallError):
         installer.install(ModuleReference("@acme/auth", "1.2.0"))
-    except InstallError:
-        pass
     assert not Path("src/auth.py").exists()
 
 
@@ -207,10 +206,8 @@ def test_installer_writes_nothing_after_a_signature_mismatch(tmp_path, monkeypat
     installer, _, _ = build(
         tmp_path, monkeypatch, FakeClient(raw, release), verifier=Verifier(None)
     )
-    try:
+    with contextlib.suppress(InstallError):
         installer.install(ModuleReference("@acme/auth", "1.2.0"))
-    except InstallError:
-        pass
     assert not Path("src/auth.py").exists()
 
 
@@ -366,6 +363,8 @@ def test_installer_raises_when_the_default_task_runner_fails(monkeypatch):
 
 def test_installer_uses_the_detected_node_package_manager(monkeypatch):
     calls: list[list[str]] = []
-    monkeypatch.setattr(installer_module, "install_packages", lambda deps, root: calls.append(deps))
+    monkeypatch.setattr(
+        installer_module, "install_packages", lambda deps, _root: calls.append(deps)
+    )
     installer_module._install_node(["zod"], Path("."))
     assert calls == [["zod"]]
