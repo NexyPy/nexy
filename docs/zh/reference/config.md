@@ -31,6 +31,13 @@ class NexyConfig(NexyConfigModel):
 | `useImageWidths` | `[320, 640, 960, 1280]` | 像素宽度 `nx build` 为局部图像生成；转换需要 `Pillow`，如果没有它，图像将保留其原始 URL。请参阅[图片](../routing/fbr/navigation/linking-and-navigating.md#image) |
 | `useISRCache` | `None` | ISR 存储：`None` 或 `"memory"` 用于一个进程，`"file"` 用于一台主机，`"redis"` 用于多个工作进程，带有 `type` 和选项的映射，或者带有 `get`、`set` 和 `invalidate` 的对象。参见[ISR](../rendering/isr.md#choose-a-store) |
 
+## 模块
+
+| 领域 | 默认 | 含义 |
+|---|---|---|
+| `useModuleRegistry` | `"https://registry.nexypy.dev"` | 安装 `@scope/name` 时读取基本 URL `nx add`；仅 https，本地注册表带有环回 http |
+| `useRequireSignedModules` | `False` | 拒绝未经验证签名的发布；请参阅[安装模块](../guides/install-modules.md#set-the-registry-and-its-trust-rules) |
+
 ## 数据库
 
 | 领域 | 默认 | 含义 |

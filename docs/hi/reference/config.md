@@ -31,6 +31,13 @@ class NexyConfig(NexyConfigModel):
 | `useImageWidths` | `[320, 640, 960, 1280]` | पिक्सेल चौड़ाई `nx build` स्थानीय छवियों के लिए उत्पन्न होती है; रूपांतरण के लिए `Pillow` की आवश्यकता होती है, और इसके बिना छवियां अपना मूल यूआरएल बनाए रखती हैं। देखें [छवि](../routing/fbr/navigation/linking-and-navigating.md#image) |
 | `useISRCache` | `None` | आईएसआर स्टोर: `None` या `"memory"` एक प्रक्रिया के लिए, `"file"` एक होस्ट के लिए, `"redis"` कई श्रमिकों के लिए, `type` और विकल्पों के साथ एक मैपिंग, या `get`, `set` और `invalidate` के साथ एक ऑब्जेक्ट। देखें [आईएसआर](../rendering/isr.md#choose-a-store) |
 
+## मॉड्यूल
+
+| मैदान | डिफ़ॉल्ट | मतलब |
+|---|---|---|
+| `useModuleRegistry` | `"https://registry.nexypy.dev"` | आधार URL `nx add` स्थापित करते समय पढ़ता है `@scope/name`; केवल https, स्थानीय रजिस्ट्री के लिए लूपबैक http के साथ |
+| `useRequireSignedModules` | `False` | सत्यापित हस्ताक्षर के बिना रिहाई से इंकार करना; देखें [मॉड्यूल स्थापित करें](../guides/install-modules.md#set-the-registry-and-its-trust-rules) |
+
 ## डेटाबेस
 
 | मैदान | डिफ़ॉल्ट | मतलब |
@@ -55,7 +62,7 @@ class NexyConfig(NexyConfigModel):
 | `useWatchExtensions` | `None` | डेव सर्वर अतिरिक्त एक्सटेंशन देखता है |
 | `useWatchExcludePatterns` | `None` | ग्लोब पैटर्न को डेव सर्वर अनदेखा कर देता है |
 
-> **जानकर अच्छा लगा**: `NexyConfigModel` घोषणा करता है `useVite = False`; रनटाइम `Config` डिफ़ॉल्ट `True` है।
+> **जानकर अच्छा लगा**: `NexyConfigModel` घोषित करता है `useVite = False`; रनटाइम `Config` डिफ़ॉल्ट `True` है।
 
 ## आरक्षित फ़ाइल नाम
 
@@ -74,14 +81,14 @@ class NexyConfig(NexyConfigModel):
 
 | मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
-| `useDocs` | `"dev"` | जहां स्केलर संदर्भ पृष्ठ और `/openapi.json` परोसा जाता है: `"dev"` केवल `nx dev` पर, `True` उत्पादन में भी (स्कीमा हर मार्ग और सर्वर कार्रवाई को सूचीबद्ध करता है), `False` कहीं नहीं |
+| `useDocs` | `"dev"` | जहां स्केलर संदर्भ पृष्ठ और `/openapi.json` परोसे जाते हैं: `"dev"` केवल `nx dev` पर, `True` उत्पादन में भी (स्कीमा हर मार्ग और सर्वर कार्रवाई को सूचीबद्ध करता है), `False` कहीं नहीं |
 | `useDocsUrl` | `"/docs"` | एपीआई संदर्भ पृष्ठ का पथ |
 | `useRedocsUrl` | `"/redocs"` | घोषित किया गया है लेकिन कोई रूट तय नहीं किया गया है |
 | `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` `NexyConfigModel` में) |
 
 ### परियोजना के एक पृष्ठ के लिए निःशुल्क `/docs`
 
-एपीआई संदर्भ किसी भी मार्ग से पहले `/docs` उत्तर देता है, इसलिए `src/routes/docs.nexy` या `src/routes/docs/[[...slug]].nexy` वहां कभी नहीं परोसा जाता है। `nx dev` और `nx start` स्टार्टअप पर ऐसे पेज को नाम दें। `useDocsUrl` के साथ संदर्भ को स्थानांतरित करें:
+एपीआई संदर्भ किसी भी मार्ग से पहले `/docs` का उत्तर देता है, इसलिए `src/routes/docs.nexy` या `src/routes/docs/[[...slug]].nexy` वहां कभी नहीं परोसा जाता है। `nx dev` और `nx start` स्टार्टअप पर ऐसे पेज को नाम दें। `useDocsUrl` के साथ संदर्भ को स्थानांतरित करें:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -104,7 +111,7 @@ class NexyConfig(NexyConfigModel):
 | `useSession` | `None` | `SessionMiddleware` के लिए क्वार्ग्स |
 | `useAuth` | `None` | प्रमाणीकरण मिडलवेयर कॉन्फ़िगरेशन |
 | `useHTTPSRedirect` | `False` | HTTP को HTTPS पर रीडायरेक्ट करें |
-| `useRateLimit` | `None` | अनुरोध जो एक ग्राहक का पता प्रति विंडो भेज सकता है, जैसे कि `{"requests": 60, "per": 60}`; एक और `429` है जिसमें `Retry-After` है, और `"paths": ["/api/"]` केवल उन उपसर्गों को सीमित करता है। प्रत्येक कार्यकर्ता अपने आप पर भरोसा करता है। देखें [दर सीमित करना](../guides/middleware-and-security.md#rate-limiting) |
+| `useRateLimit` | `None` | अनुरोध जो एक ग्राहक का पता प्रति विंडो भेज सकता है, जैसे कि `{"requests": 60, "per": 60}`; एक और `429` के साथ `Retry-After` है, और `"paths": ["/api/"]` केवल उन उपसर्गों को सीमित करता है। प्रत्येक कार्यकर्ता अपने आप पर भरोसा करता है। देखें [दर सीमित करना](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 
@@ -138,7 +145,7 @@ class NexyConfig(NexyConfigModel):
 
 ## घोषित, अभी पढ़ा नहीं
 
-ये फ़ील्ड `NexyConfigModel` में मौजूद हैं लेकिन कोई भी कोड इनका उपभोग नहीं करता है। उन्हें सेट करने से कोई प्रभाव नहीं पड़ता:
+ये फ़ील्ड `NexyConfigModel` में मौजूद हैं लेकिन कोई भी कोड उनका उपभोग नहीं करता है। उन्हें सेट करने से कोई प्रभाव नहीं पड़ता:
 
 `useViteDevUrl`, `useRTL`।
 
