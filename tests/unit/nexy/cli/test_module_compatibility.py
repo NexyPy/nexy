@@ -17,6 +17,7 @@ from nexy.modules.cli.add.compatibility import is_compatible
         ("==2.11.2", "2.11.2", True),
         ("!=2.11.2", "2.11.2", False),
         (">=2.0.0,<3.0.0", "2.11.2", True),
+        (">=3.12", "3.13.0", True),
         ("2.11.2", "2.11.2", True),
         ("", "2.11.2", True),
         ("latest", "2.11.2", False),

@@ -6,7 +6,7 @@ import operator
 import re
 from collections.abc import Callable
 
-_COMPARATOR = re.compile(r"(>=|<=|==|!=|>|<)?\s*([0-9]+\.[0-9]+\.[0-9]+)")
+_COMPARATOR = re.compile(r"(>=|<=|==|!=|>|<)?\s*([0-9]+(?:\.[0-9]+){1,2})")
 _OPERATORS: dict[str, Callable[[tuple[int, ...], tuple[int, ...]], bool]] = {
     ">=": operator.ge,
     "<=": operator.le,
@@ -18,7 +18,8 @@ _OPERATORS: dict[str, Callable[[tuple[int, ...], tuple[int, ...]], bool]] = {
 
 
 def _numbers(value: str) -> tuple[int, ...]:
-    return tuple(int(part) for part in value.split("."))
+    parts = [int(part) for part in value.split(".")]
+    return (*parts, *([0] * (3 - len(parts))))
 
 
 def _holds(current: tuple[int, ...], comparison: str) -> bool:
