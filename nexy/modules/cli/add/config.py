@@ -10,12 +10,13 @@ from typing import Any
 
 from nexy.helpers.fs.path import PathUtil
 
-_NEW_CONFIG = "from nexy.core.models import NexyConfigModel\n\n\nclass NexyConfig(NexyConfigModel):\n    pass\n"
+_NEW_CONFIG = (
+    "from nexy.core.models import NexyConfigModel\n\n\n"
+    "class NexyConfig(NexyConfigModel):\n    pass\n"
+)
 
 
-def apply_config_hooks(
-    hooks: Mapping[str, Mapping[str, Any]], root: Path = Path(".")
-) -> list[str]:
+def apply_config_hooks(hooks: Mapping[str, Mapping[str, Any]], root: Path = Path(".")) -> list[str]:
     """Write each declared setting and return one line per change for the terminal."""
     changes: list[str] = []
     if "nexyconfig" in hooks:
