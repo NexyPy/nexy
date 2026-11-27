@@ -78,9 +78,18 @@ def test_package_reports_a_missing_declared_file(tmp_path):
 
 
 def test_package_refuses_a_symlinked_declared_file(tmp_path):
+    root = project(tmp_path / "module")
+    (tmp_path / "outside.py").write_text("secret = 1\n", encoding="utf-8")
+    (root / "src/auth.py").unlink()
+    (root / "src/auth.py").symlink_to(tmp_path / "outside.py")
+    with pytest.raises(PackageError, match="src/auth.py is not a regular file"):
+        package(root)
+
+
+def test_package_refuses_a_dangling_symlink(tmp_path):
     root = project(tmp_path)
     (root / "src/auth.py").unlink()
-    (root / "src/auth.py").symlink_to("/etc/passwd")
+    (root / "src/auth.py").symlink_to(root / "src/gone.py")
     with pytest.raises(PackageError, match="src/auth.py is not a regular file"):
         package(root)
 

@@ -46,9 +46,11 @@ def _manifest(root: Path) -> tuple[Path, str]:
 
 def _declared(root: Path, name: str) -> Path:
     path = root / name
+    if path.is_symlink():
+        raise PackageError(f"{name} is not a regular file")
     if not path.exists():
         raise PackageError(f"{name} is missing")
-    if path.is_symlink() or not path.is_file() or not path.resolve().is_relative_to(root.resolve()):
+    if not path.is_file() or not path.resolve().is_relative_to(root.resolve()):
         raise PackageError(f"{name} is not a regular file")
     return path
 
