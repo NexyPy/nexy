@@ -59,7 +59,9 @@ def test_apply_config_hooks_writes_a_number(tmp_path, monkeypatch):
 
 def test_apply_config_hooks_sets_a_nested_json_value(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    Path("package.json").write_text(json.dumps({"name": "app", "devDependencies": {"vitest": "^2"}}))
+    Path("package.json").write_text(
+        json.dumps({"name": "app", "devDependencies": {"vitest": "^2"}})
+    )
     apply_config_hooks({"package_json": {"devDependencies.vitest": "^3"}})
     assert json.loads(Path("package.json").read_text())["devDependencies"]["vitest"] == "^3"
 
