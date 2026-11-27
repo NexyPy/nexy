@@ -34,7 +34,7 @@ class Installer:
 def fake_installer(monkeypatch):
     installer = Installer()
     monkeypatch.setattr(add, "RegistryModuleClient", lambda url: f"client:{url}")
-    monkeypatch.setattr(add, "ModuleInstaller", lambda client: installer)
+    monkeypatch.setattr(add, "ModuleInstaller", lambda _client: installer)
     return installer
 
 
@@ -63,14 +63,14 @@ def test_add_reads_the_module_registry_from_the_project_config(nexy_project, mon
     nexy_project('useModuleRegistry = "https://registry.example.com"')
     urls: list[str] = []
     monkeypatch.setattr(add, "RegistryModuleClient", lambda url: urls.append(url))
-    monkeypatch.setattr(add, "ModuleInstaller", lambda client: Installer())
+    monkeypatch.setattr(add, "ModuleInstaller", lambda _client: Installer())
     run_add("@acme/auth")
     assert urls == ["https://registry.example.com"]
 
 
 def test_add_refuses_a_malformed_module_reference(nexy_project, monkeypatch):
     nexy_project()
-    installer = fake_installer(monkeypatch)
+    fake_installer(monkeypatch)
     result = run_add("@Acme/auth")
     assert "error: invalid module reference: @Acme/auth" in result.stdout
 
@@ -79,7 +79,7 @@ def test_add_reports_an_install_error(nexy_project, monkeypatch):
     nexy_project()
     installer = fake_installer(monkeypatch)
 
-    def fail(_reference, migrate=False):
+    def fail(_reference, **_options):
         raise InstallError("archive checksum mismatch")
 
     installer.install = fail
