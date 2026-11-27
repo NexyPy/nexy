@@ -11,8 +11,8 @@ import pytest
 from nexy.modules.cli.add.client import checksum_of
 from nexy.modules.cli.publish.client import (
     PublishClient,
-    PublishError,
     PublishedRelease,
+    PublishError,
     VersionExistsError,
 )
 
@@ -139,9 +139,7 @@ def test_publish_never_echoes_the_token_in_an_error():
 
 def test_publish_reports_an_error_without_a_token():
     with pytest.raises(PublishError, match="bad manifest"):
-        client(handler({"detail": "bad manifest"}, status=400), token="").publish(
-            MANIFEST, ARCHIVE
-        )
+        client(handler({"detail": "bad manifest"}, status=400), token="").publish(MANIFEST, ARCHIVE)
 
 
 def test_publish_reports_a_malformed_error():

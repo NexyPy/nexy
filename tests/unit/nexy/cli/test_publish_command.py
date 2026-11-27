@@ -1,4 +1,4 @@
-"`nx publish` validates a module, then sends it with a registry token."""
+"`nx publish` validates a module, then sends it with a registry token."
 
 from __future__ import annotations
 
@@ -10,12 +10,12 @@ from typer.testing import CliRunner
 
 from nexy.modules.cli import CLI
 from nexy.modules.cli.add.manifest import ManifestError
-from nexy.modules.cli.publish.client import PublishError, PublishedRelease
+from nexy.modules.cli.publish.client import PublishedRelease, PublishError
 from nexy.modules.cli.publish.packager import PackageError
 
 publish = importlib.import_module("nexy.modules.cli.commands.publish")
 
-MANIFEST = "name = \"@acme/auth\"\nversion = \"1.2.0\"\n"
+MANIFEST = 'name = "@acme/auth"\nversion = "1.2.0"\n'
 ARCHIVE = b"the-package-bytes"
 TOKEN = "registry-secret"
 
@@ -33,7 +33,7 @@ class Publisher:
         self.calls: list[tuple[str, bytes, str, str]] = []
         self.failure = failure
 
-    def __call__(self, registry: str, token: str):
+    def __call__(self, _registry: str, _token: str):
         return self
 
     def publish(self, manifest: str, archive: bytes) -> PublishedRelease:
@@ -77,7 +77,7 @@ def test_publish_uses_the_registry_option(tmp_path, monkeypatch):
     registries: list[str] = []
 
     class Client(Publisher):
-        def __call__(self, registry: str, token: str):
+        def __call__(self, registry: str, _token: str):
             registries.append(registry)
             return self
 
@@ -90,7 +90,7 @@ def test_publish_sends_the_resolved_token(tmp_path, monkeypatch):
     tokens: list[str] = []
 
     class Client(Publisher):
-        def __call__(self, registry: str, token: str):
+        def __call__(self, _registry: str, token: str):
             tokens.append(token)
             return self
 
@@ -125,17 +125,19 @@ def test_publish_reports_a_missing_token(tmp_path, monkeypatch):
 
 
 def test_publish_reports_a_package_error(tmp_path, monkeypatch):
-    monkeypatch.setattr(publish, "package", lambda _root: (_ for _ in ()).throw(
-        PackageError("nx.toml is missing")
-    ))
+    monkeypatch.setattr(
+        publish, "package", lambda _root: (_ for _ in ()).throw(PackageError("nx.toml is missing"))
+    )
     result = run(tmp_path)
     assert "error: nx.toml is missing" in result.stdout
 
 
 def test_publish_reports_an_invalid_manifest(tmp_path, monkeypatch):
-    monkeypatch.setattr(publish, "package", lambda _root: (_ for _ in ()).throw(
-        ManifestError("name must be @scope/name")
-    ))
+    monkeypatch.setattr(
+        publish,
+        "package",
+        lambda _root: (_ for _ in ()).throw(ManifestError("name must be @scope/name")),
+    )
     result = run(tmp_path)
     assert "error: name must be @scope/name" in result.stdout
 
