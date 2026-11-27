@@ -11,7 +11,7 @@
 | `nx build` | `nx b` | 生产构建 |
 | `nx new` | `nx n` | 搭建一个项目 |
 | `nx init` | `nx i` | 将 Nexy 添加到现有项目 |
-| `nx add` | - | 从注册表或 URL 或部署平台（例如 `vercel`）添加 UI 组件 |
+| `nx add` | - | 添加 UI 组件、注册表模块（例如 `@acme/auth`）、URL 或平台（例如 `vercel`） |
 | `nx migrate` | `nx m` | 使用 Alembic 或 Aerich 创建或应用数据库迁移 |
 | `nx check` | `nx c` | 类型检查：mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | 格式 Python（ruff）、JS/TS（更漂亮）、`.nexy` 文件 |
@@ -31,6 +31,10 @@ nx routes
 
 如果未找到应用程序路径，则会打印 `No routes found.`。
 
+## `nx add` 带有模块
+
+命名空间参数（例如 `@acme/auth` 或 `@acme/auth@1.2.0`）从模块注册表安装版本而不是 UI 组件。它检查校验和和兼容性，仅写入模块声明的文件，安装其依赖项并应用其配置挂钩。安装记录在 `.nexy/modules.json`中。迁移仅使用 `--migrate` 运行。有关升级、引脚和信任设置，请参阅[安装模块](../guides/install-modules.md)。
+
 ## 旗帜
 
 | 命令 | 旗帜 | 默认 |
@@ -47,13 +51,14 @@ nx routes
 | `add` | `--ui`，`--url` | off - 当注册表名称或 URL 不明确时强制使用该名称或 URL |
 | `add` | `--all`，`-a` | off - 添加注册表的每个组件 |
 | `add` | `--sha256` | none - 远程组件的预期摘要；不匹配中止 |
+| `add` | `--migrate` | off - 运行注册表模块声明的迁移 |
 | `migrate` | `--init` | off - 写入 Alembic 或 Aerich 设置 |
 | `migrate` | `--upgrade`，`-u` | off - 应用迁移而不是编写新迁移 |
 | `migrate` | `--message`，`-m` | 空 - 新修订的名称 |
 
 ## 输出
 
-长步骤（安装包、编译、捆绑）会显示一个旋转器，其中包含经过的时间和命令打印的最后一行，然后留下一行，如 uv 所做的那样：`Synced .venv with uv in 1.4s`。一组步骤（`nx new` 的安装）还显示进度条和已完成步骤的数量 `2/5`。失败的步骤是 `error:` 行及其原因 `cause: exit 1 after 2.1s`，后跟命令输出的最后几行，而不是隐藏它。需要注意的是 `warning: ...`，以及接下来要做什么 `hint: ...`。开发日志对于请求读取 `GET » /about 200 in 12ms`，对于 Vite 读取 `vite » ...`。
+长步骤（安装包、编译、捆绑）会显示一个旋转器，其中包含经过的时间和命令打印的最后一行，然后留下一行，如 uv 所做的那样：`Synced .venv with uv in 1.4s`。一组步骤（`nx new` 的安装）还显示进度条和已完成的步骤数 `2/5`。失败的步骤是 `error:` 行及其原因 `cause: exit 1 after 2.1s`，后跟命令输出的最后几行，而不是隐藏它。需要注意的内容是 `warning: ...`，以及接下来要做什么 `hint: ...`。开发日志对于请求读取 `GET » /about 200 in 12ms`，对于 Vite 读取 `vite » ...`。
 
 ## `nx dev` 运行时出错
 
@@ -73,11 +78,11 @@ nx routes
   Fix it and save: the server keeps its last working version.
 ```
 
-当应用程序加载时解析但失败的文件（缺少导入、模块级别的错误）会以相同的方式报告，并且 `nx dev` 等待您的下一次保存；在应用程序再次加载之前不会提供任何服务。当服务器重新加载时，有效的保存读取 `nexy » update <file>`。 `src/routes` 之外的 Markdown 文件（例如 `README.md`）不是页面，不会触发任何内容。 `nx start` 更严格：如果无法加载路由文件或 `nx build` 尚未构建项目，它会以代码 1 退出，并且不启动任何内容。
+当应用程序加载时解析但失败的文件（缺少导入、模块级别的错误）会以相同的方式报告，并且 `nx dev` 等待您的下一次保存；在应用程序再次加载之前不会提供任何服务。当服务器重新加载时，有效的保存读取 `nexy » update <file>`。 `src/routes` 之外的 Markdown 文件，例如 `README.md`，不是页面，不会触发任何内容。 `nx start` 更严格：如果无法加载路由文件或 `nx build` 尚未构建项目，它会以代码 1 退出，并且不启动任何内容。
 
 ## `nx new` 的问题
 
-`nx new` 按此顺序询问：基于文件的路由器、项目类型（Web 或 API）、客户端路由、客户端框架、如何设置应用程序样式、导入别名、ORM、数据库和数据库 URL。每个选项都有一个简短的描述，并且当前选项会突出显示。不适用的问题将被跳过（API 项目没有框架或样式；选择 **无数据库**，因为 ORM 会跳过数据库和 URL）。使用箭头键（或 `j`/`k`或数字）移动，使用 `enter`确认，使用 `←` 或 `esc`返回上一个问题，使用 `ctrl+c`退出。
+`nx new` 按此顺序询问：基于文件的路由器、项目类型（Web 或 API）、客户端路由、客户端框架、如何设置应用程序样式、导入别名、ORM、数据库和数据库 URL。每个选项都有一个简短的描述，并且当前选项会突出显示。不适用的问题将被跳过（API 项目没有框架或样式；选择 **无数据库**，因为 ORM 会跳过数据库和 URL）。使用箭头键（或 `j`/`k`或数字）移动，使用 `enter`确认，使用左箭头键或 `esc`返回上一个问题，使用 `ctrl+c`退出。
 
 | 问题 | 选择 |
 |---|---|
@@ -90,7 +95,7 @@ nx routes
 
 在安装软件包之前，`nx new` 检查连接。如果没有，它会跳过安装并告诉您稍后运行 `uv sync` 和包管理器的安装。使用其中之一时，它会打印延迟和下载速度，并在连接速度较慢（超过 400 毫秒或低于 100 KB/s）时发出警告。每个安装行都会命名该工具及其填充的文件夹，例如 `pnpm install node_modules` 或 `uv sync .venv`。
 
-## `dev`、`build` 和 `start` 创建什么
+## `dev`、`build` 和 `start` 创建了什么
 
 在运行之前，这三个命令会在 `src/` 及其下的每个包含 `.py` 或 `.nexy` 文件的文件夹中创建一个空的 `__init__.py`，因此诸如 `src/routes/users.py` 之类的路由在所有这些路径中都会以相同的方式导入。现有文件永远不会被触及，并且当您添加文件夹时 `nx dev` 会再次执行相同的操作。 Python 字节码转到 `__nexy__/__pycache__`，因此源旁边不会出现 `__pycache__` 文件夹。
 
@@ -102,11 +107,11 @@ nx routes
 2. shell 的语言环境变量（`LC_ALL`、`LC_MESSAGES`、`LANG`，然后是 `LANGUAGE`）；
 3. 您的操作系统的语言。
 
-其他任何东西都是英语，任何一种语言还没有的信息也是英语。仅翻译 `nx` 打印的内容：编译器错误、回溯及其运行的工具的输出保持原样。这些翻译尚未经过母语人士的审核：欢迎更正，作为对 `nexy/modules/i18n/<language>.json` 的拉取请求。
+其他任何东西都是英语，任何一种语言还没有的信息也是英语。仅翻译 `nx` 打印的内容：编译器错误、回溯及其运行的工具的输出保持原样。这些翻译尚未经过母语人士的审核：欢迎更正，作为 `nexy/modules/i18n/<language>.json` 的拉取请求。
 
 ## 建立行为
 
-`nx build` 编译路由，然后在 `useVite` 打开时捆绑客户端。
+`nx build` 编译路由，然后在 `useVite` 开启时捆绑客户端。
 
 > [!NOTE]
 > 没有 `--static` 标志。静态托管是一种部署选择，而不是构建模式 - 请参阅[部署](../deployment/README.md)。
