@@ -11,7 +11,7 @@ import { pathToFileURL } from "node:url";
 // `build-failed` is a build whose bundle was never written: Vite still closes it.
 const scenario = process.argv[2];
 const baseScenario = scenario === "base" || scenario === "base-prod";
-const command = ["serve", "warmup", "log", "base"].includes(scenario) ? "serve" : "build";
+const command = ["serve", "warmup", "log", "base", "preamble"].includes(scenario) ? "serve" : "build";
 const SOURCES = new URL("../../nexy/modules/frontend/", import.meta.url);
 const ran = [];
 globalThis.__nexyRan = ran;
@@ -55,6 +55,7 @@ console.info = (...args) => infos.push(plain(args));
 let error = null;
 let warmup = null;
 let config = null;
+let preamble = null;
 try {
   const { default: nexy } = await import(pathToFileURL(path.join(nexyDir, "vite.ts")).href);
   if (scenario === "log") {
@@ -72,6 +73,11 @@ try {
     config = await plugin.config?.({ mode }, { command, mode });
     warmup = config?.server?.warmup?.clientFiles ?? null;
     plugin.configResolved?.({ command, mode, build: {} });
+    if (scenario === "preamble" || scenario === "preamble-prod") {
+      const id = "virtual:nexy-react-preamble";
+      const resolved = plugin.resolveId?.(id);
+      preamble = { resolved, code: plugin.load?.(resolved) };
+    }
     if (scenario === "build") plugin.writeBundle?.();
     plugin.closeBundle?.();
   }
@@ -87,5 +93,6 @@ try {
 const report = baseScenario ? { base: config?.base, error }
   : scenario === "warmup" ? { warmup, error }
   : scenario === "log" ? { infos, error }
+  : preamble ? { preamble, error }
   : { logged, ran, error };
 process.stdout.write("@@" + JSON.stringify(report) + "@@");
