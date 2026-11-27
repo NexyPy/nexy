@@ -2,12 +2,12 @@
 
 **Un framework Python pour les applications Web fullstack.**
 
-Nexy place vos pages et votre API dans un seul projet Python, servi par un seul serveur. La version 2.2 est construite sur FastAPI : chaque route API est une route FastAPI, répertoriée dans un schéma OpenAPI que Scalar affiche dans `/docs`.
+Nexy place vos pages et votre API dans un seul projet Python, servi par un seul serveur. La version 2.2 est construite sur FastAPI : chaque route API est une route FastAPI, répertoriée dans un schéma OpenAPI que Scalar affiche dans `/docs`.
 
 - **Python en premier.** Les pages, les points de terminaison, les formulaires et les actions sont Python, et une page n'a pas besoin de JavaScript.
 - **Un frontend quand vous en voulez un.** React, Vue, Svelte, Solid ou Preact, pour un composant ou pour l'ensemble du site.
-- **Un fichier, une URL.** Un fichier sous `src/routes/` est une route : `.nexy` est une page, `.py` est un point de terminaison d'API.
-- **De la place pour grandir.** Commencez avec un seul fichier ; déplacez-vous vers des modules ou branchez un routeur FastAPI existant, lorsque le projet se développe.
+- **Un fichier, une URL.** Un fichier sous `src/routes/` est une route : `.nexy` est une page, `.py` est un point de terminaison d'API.
+- **De la place pour grandir.** Commencez avec un seul fichier ; déplacez-vous vers des modules ou branchez un routeur FastAPI existant, lorsque le projet se développe.
 
 Nouveau ici ? Lisez [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md), puis le [Démarrage rapide](getting-started/quick-start.md).
 
@@ -24,14 +24,14 @@ Nouveau ici ? Lisez [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md), pui
 ### Comprendre le modèle
 | Pages | Ce que tu feras |
 |---|---|
-| [Concepts de base](getting-started/core-concepts.md) | Obtenez le modèle mental : route, page, vue, composant, gestionnaire, point de terminaison |
+| [Concepts de base](getting-started/core-concepts.md) | Obtenez le modèle mental : route, page, vue, composant, gestionnaire, point de terminaison |
 | [Structure du projet](getting-started/project-structure.md) | Savoir à quoi servent chaque dossier et fichier d'un projet |
 | [Choisissez un routeur](routing/README.md) | Choisissez le routeur basé sur des fichiers, modulaire ou personnalisé |
 | [Choisissez un format d'affichage](views/README.md) | Choisissez `.nexy`, Markdown ou un framework client pour une page |
 
 ## Tutoriel
 
-### Unité 1 : les bases
+### Unité 1 : les bases
 | Pages | Ce que vous construirez |
 |---|---|
 | [1. Créez le projet](tutorial/create-the-project.md) | Créez le projet de notes et exécutez-le dans le navigateur |
@@ -39,7 +39,7 @@ Nouveau ici ? Lisez [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md), pui
 | [3. Des routes dynamiques et une API](tutorial/dynamic-routes.md) | Donnez à chaque note une URL et diffusez les notes au format JSON |
 | [4. Composants](tutorial/components.md) | Transformez chaque note en un composant `.nexy` réutilisable |
 
-### Unité 2 : données
+### Unité 2 : données
 | Pages | Ce que vous construirez |
 |---|---|
 | [5. Stockez les notes dans SQLite](tutorial/store-the-notes.md) | Ajoutez un modèle, une migration et une graine, et lisez les notes de la base de données |
@@ -86,7 +86,7 @@ Nouveau ici ? Lisez [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md), pui
 | [Dépendances et gardiens](routing/fbr/dependencies/README.md) | Exécutez `dependencies.py` avant un gestionnaire et héritez-en |
 | [Fichiers middleware](routing/fbr/middleware/README.md) | Envelopper les requêtes avec `middleware.py`, hérité par répertoire |
 | [Pages d'erreur](routing/fbr/errors/README.md) | Répondez avec les erreurs `notfound.nexy`, `errors.nexy` et JSON |
-| [Pages d'erreur par dossier](routing/fbr/errors/folder-pages.md) | Cas limite : erreurs provenant des sous-dossiers |
+| [Pages d'erreur par dossier](routing/fbr/errors/folder-pages.md) | Cas limite : erreurs provenant des sous-dossiers |
 
 ### Routeur modulaire {modular}
 Contrôleurs et modules.
@@ -108,7 +108,7 @@ Contrôleurs et modules.
 | Pages | Ce qu'il définit |
 |---|---|
 | [Actions et navigation](views/frontend/actions-and-navigation.md) | Appeler une action tapée, lier des pages, lire l'URL |
-| [Récupérer des données dans un composant](views/frontend/fetch-data.md) | `useFetch` : lire le JSON depuis une route, le partager, l'actualiser |
+| [Récupérer des données dans un composant](views/frontend/fetch-data.md) | `useFetch` : lire le JSON depuis une route, le partager, l'actualiser |
 
 ### Vues Nexy
 | Pages | Ce que tu feras |
@@ -119,7 +119,7 @@ Contrôleurs et modules.
 ### Pages et mises en page dans des fichiers {fbr,custom}
 | Pages | Ce qu'il définit |
 |---|---|
-| [Pages frontales](views/frontend/pages.md) | Un fichier, une route : props, rendu, métadonnées |
+| [Pages frontales](views/frontend/pages.md) | Un fichier, une route : props, rendu, métadonnées |
 | [Dispositions frontales](views/frontend/layouts.md) | Le shell du document, l'imbrication et ce qu'une mise en page ne peut pas faire |
 | [layout.nexy](views/nexy/layouts.md) | Écrire la disposition en mode serveur |
 | [Markdown et MDX](views/nexy/markdown.md) | Rédiger des pages de contenu |
@@ -177,6 +177,7 @@ Contrôleurs et modules.
 | [Barre d'outils de développement](guides/devtools.md) | Utilisez la barre d'outils de `nexy dev` et désactivez-la |
 | [Débogage](guides/debugging.md) | Arrêtez-vous dans le code de votre serveur avec `breakpoint()` ou VS Code |
 | [Agents de codage](guides/ai-agents.md) | Donnez à Claude Code, Codex et OpenCode les règles de votre projet |
+| [Installer des modules](guides/install-modules.md) | Installer, mettre à niveau et épingler les modules à partir du registre |
 | [Dépannage](guides/troubleshooting.md) | Résolvez les premiers problèmes rencontrés par les gens |
 
 ## Bases de données
@@ -184,9 +185,9 @@ Contrôleurs et modules.
 ### Bases de données SQL
 | Pages | Ce que tu feras |
 |---|---|
-| [SQLite](databases/sqlite.md) | Utiliser un seul fichier, pas de serveur : moteur, pragmas, migrations et tests |
+| [SQLite](databases/sqlite.md) | Utiliser un seul fichier, pas de serveur : moteur, pragmas, migrations et tests |
 | [PostgreSQL](databases/postgresql.md) | Connectez-vous avec psycopg, utilisez JSONB, les tableaux, la recherche et les upserts |
-| [Néon](databases/neon.md) | Utiliser sans serveur PostgreSQL : hôte mutualisé, suspension automatique et branches |
+| [Néon](databases/neon.md) | Utiliser sans serveur PostgreSQL : hôte mutualisé, suspension automatique et branches |
 | [MySQL et MariaDB](databases/mysql-mariadb.md) | Connectez-vous avec pymysql, utilisez utf8mb4, upserts et recherche en texte intégral |
 
 ## Venant de
@@ -209,7 +210,7 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 | Pages | Ce que tu feras |
 |---|---|
 | [Depuis Express](coming-from/express.md) | Traduire les routes, les middlewares et les `req`/`res` en Python gestionnaires |
-| [De Fastify](coming-from/fastify.md) | Transformez les schémas, plugins et hooks en modèles, dossiers et fichiers |
+| [Depuis Fastify](coming-from/fastify.md) | Transformez les schémas, plugins et hooks en modèles, dossiers et fichiers |
 | [D'Élysée](coming-from/elysia.md) | Mapper les schémas `t`, les gardes et l'Eden aux Pydantic et aux actions typées |
 | [De Hono](coming-from/hono.md) | Mapper les routes, le middleware et le client `hc` vers Nexy |
 

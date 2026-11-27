@@ -145,15 +145,15 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### فائل کے صفحات کے طریقوں {fbr,custom}
 | صفحہ | جو آپ فیصلہ کریں گے۔ |
 |---|---|
-| [آئی ایس آر ](rendering/isr.md) | stale-while-revalidate کے ساتھ صفحات کیش کریں۔ |
+| [آئی ایس آر](rendering/isr.md) | stale-while-revalidate کے ساتھ صفحات کیش کریں۔ |
 | [CSR](rendering/csr.md) | کلائنٹ سائیڈ روٹنگ |
 
-## گائیڈز
+## رہنما
 
 ### فارم اور ڈیٹا
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [اعمال](guides/actions.md) | فارم یا ٹائپ شدہ TypeScript فنکشن سے Python فنکشن کو کال کریں۔ |
+| [اعمال](guides/actions.md) | کسی فارم یا ٹائپ شدہ TypeScript فنکشن سے Python فنکشن کو کال کریں۔ |
 | [ڈیٹا بیس](guides/databases.md) | ایک ORM کا انتخاب کریں اور ہجرتیں چلائیں۔ |
 
 ### سیکیورٹی اور تعیناتی۔
@@ -176,7 +176,8 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 |---|---|
 | [دیو ٹول بار](guides/devtools.md) | `nexy dev` کا ٹول بار استعمال کریں، اور اسے آف کریں۔ |
 | [ڈیبگنگ](guides/debugging.md) | اپنے سرور کوڈ میں `breakpoint()` یا VS کوڈ کے ساتھ رکیں۔ |
-| [کوڈنگ ایجنٹس](guides/ai-agents.md) | اپنے پروجیکٹ کے قوانین Claude Code، Codex اور OpenCode کو بتائیں |
+| [کوڈنگ ایجنٹ](guides/ai-agents.md) | اپنے پروجیکٹ کے قوانین Claude Code، Codex اور OpenCode کو بتائیں |
+| [ماڈیولز انسٹال کریں](guides/install-modules.md) | رجسٹری سے ماڈیولز انسٹال، اپ گریڈ اور پن کریں۔ |
 | [خرابیوں کا سراغ لگانا](guides/troubleshooting.md) | لوگوں کے پہلے مسائل کو حل کریں۔ |
 
 ## ڈیٹا بیس
@@ -203,7 +204,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 |---|---|
 | [سے FastAPI](coming-from/fastapi.md) | اپنا FastAPI کوڈ رکھیں: صرف `@app.get` فائل بن جاتی ہے۔ |
 | [منجانب Flask](coming-from/flask.md) | نظارے، بلیو پرنٹس، ٹیمپلیٹس اور فارمز کو Nexy روٹس میں تبدیل کریں۔ |
-| [سے Django](coming-from/django.md) | نقشہ کے نظارے، ٹیمپلیٹس، ماڈل، فارم اور ترتیبات Nexy پر |
+| [منجانب Django](coming-from/django.md) | نقشہ کے نظارے، ٹیمپلیٹس، ماڈل، فارم اور ترتیبات Nexy پر |
 
 ### JavaScript پسدید {fbr}
 | صفحہ | آپ کیا کریں گے |
@@ -217,17 +218,17 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | صفحہ | آپ کیا کریں گے |
 |---|---|
 | [سے Next.js](coming-from/nextjs.md) | اپنے React صفحات رکھیں اور سرور کوڈ کو Python پر منتقل کریں۔ |
-| [سے Remix](coming-from/remix.md) | لوڈرز اور ایکشن کو Python ہینڈلرز اور ایکشنز میں تبدیل کریں۔ |
+| [سے Remix](coming-from/remix.md) | لوڈرز اور اعمال کو Python ہینڈلرز اور ایکشنز میں تبدیل کریں۔ |
 | [Nuxt ](coming-from/nuxt.md) سے | اپنے Vue صفحات کو رکھیں اور `server/` کو Python پر منتقل کریں۔ |
-| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات کو رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
-| [منجانب Astro](coming-from/astro.md) | اسی جزیرے کے ساتھ Astro صفحات کو `.nexy` صفحات کے طور پر لکھیں |
-| [لاراویل سے ](coming-from/laravel.md) | نقشے کے راستوں، کنٹرولرز، بلیڈ، فصاحت اور Nexy کے لیے قطاریں۔ |
+| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
+| [سے Astro](coming-from/astro.md) | اسی جزیرے کے ساتھ Astro صفحات کو `.nexy` صفحات کے طور پر لکھیں |
+| [لاراویل سے ](coming-from/laravel.md) | نقشے کے راستے، کنٹرولرز، بلیڈ، فصاحت اور Nexy کے لیے قطاریں۔ |
 | [روبی آن ریلز سے ](coming-from/rails.md) | نقشے کے راستے، کنٹرولرز، ERB، ایکٹو ریکارڈ اور Nexy کے لیے نوکریاں |
 
 ### کنٹرولر فریم ورک {modular}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [سے NestJS](coming-from/nestjs.md) | کنٹرولرز، ماڈیولز، پرووائیڈرز اور گارڈز کو ماڈیولر راؤٹر میں منتقل کریں۔ |
+| [سے NestJS](coming-from/nestjs.md) | کنٹرولرز، ماڈیولز، فراہم کنندگان اور گارڈز کو ماڈیولر راؤٹر میں منتقل کریں۔ |
 | [اسپرنگ بوٹ سے ](coming-from/spring-boot.md) | کنٹرولرز، سروسز اور فلٹرز کو ماڈیولر روٹر میں منتقل کریں۔ |
 
 ## حوالہ
@@ -247,12 +248,12 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### فائل کنونشنز {fbr,custom}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [فائل کنونشنز](reference/file-conventions.md) | محفوظ فائلیں اور روٹنگ کے اصول |
+| [فائل کنونشنز ](reference/file-conventions.md) | محفوظ فائلیں اور روٹنگ کے اصول |
 
 ### کنونشنز اور تصورات
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [لغت ](reference/glossary.md) | الفاظ جو یہ دستاویزات استعمال کرتے ہیں۔ |
+| [لغت](reference/glossary.md) | الفاظ جو یہ دستاویزات استعمال کرتے ہیں۔ |
 | [سیکورٹی](reference/security.md) | ورژن فرش، قواعد Nexy کی پیروی کرتا ہے، آڈٹ |
 
 ## لے آؤٹ

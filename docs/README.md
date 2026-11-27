@@ -183,6 +183,7 @@ Controllers and modules.
 | [Dev toolbar](guides/devtools.md) | Use the toolbar of `nexy dev`, and turn it off |
 | [Debugging](guides/debugging.md) | Stop in your server code with `breakpoint()` or VS Code |
 | [Coding agents](guides/ai-agents.md) | Give Claude Code, Codex and OpenCode the rules of your project |
+| [Install modules](guides/install-modules.md) | Install, upgrade and pin modules from the registry |
 | [Troubleshooting](guides/troubleshooting.md) | Fix the first problems people hit |
 
 ## Databases
