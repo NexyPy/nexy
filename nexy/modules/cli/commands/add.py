@@ -2,7 +2,7 @@ import hashlib
 import urllib.error
 import urllib.request
 from pathlib import Path
-from urllib.parse import urlsplit
+from typing import cast
 
 import typer
 from rich.markup import escape
@@ -14,6 +14,10 @@ from nexy.helpers.common.messages import error, warning
 from nexy.helpers.common.tasks import waiting
 from nexy.helpers.fs.path import PathUtil
 from nexy.helpers.imports.component import framework_from_extension, wrap_component_script
+from nexy.modules.cli.add.client import RegistryModuleClient
+from nexy.modules.cli.add.installer import InstallError, ModuleInstaller
+from nexy.modules.cli.add.reference import ModuleReference, parse_reference
+from nexy.modules.cli.add.urls import is_allowed_url
 from nexy.modules.cli.deployment import GITIGNORE_LINES, PLATFORM_FILES
 from nexy.modules.cli.init.dependencies import install_packages
 from nexy.modules.cli.init.registry import COMPONENT_REGISTRY
@@ -24,28 +28,20 @@ _ADD_HELP_UI = t("add.help_ui", "Force treatment as UI components")
 _ADD_HELP_URL = t("add.help_url", "Force treatment as URLs")
 _ADD_HELP_SHA = t("add.help_sha", "Expected SHA-256 of a remote component (aborts on mismatch)")
 _ADD_HELP_ALL = t("add.help_all", "Add all available components from registry")
+_ADD_HELP_MIGRATE = t("add.help_migrate", "Run declared migrations after the install")
 
 Resolved = tuple[str, str, str, set[str]]
 
 
 _MAX_REMOTE_BYTES = 1_000_000
 _REMOTE_TIMEOUT = 15
-_LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
-
-
-def _is_allowed_url(url: str) -> bool:
-    """https only; plain http is tolerated for loopback development servers."""
-    parts = urlsplit(url)
-    if parts.scheme == "https":
-        return bool(parts.hostname)
-    return parts.scheme == "http" and parts.hostname in _LOCAL_HOSTS
 
 
 class _SafeRedirect(urllib.request.HTTPRedirectHandler):
     """Refuse redirects that would leave https (or loopback http)."""
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):  # type: ignore[no-untyped-def]
-        if not _is_allowed_url(newurl):
+        if not is_allowed_url(newurl):
             raise urllib.error.URLError(f"redirect to a disallowed URL: {newurl}")
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
@@ -80,7 +76,7 @@ def fetch_remote_component(url: str, expected_sha256: str | None = None) -> str 
     only (http for loopback), a timeout, a 1 MB cap, and an optional SHA-256
     pin. The digest of what was fetched is always printed so it can be pinned.
     """
-    if not _is_allowed_url(url):
+    if not is_allowed_url(url):
         error(t("add.https_only", "Only https:// URLs are supported."))
         return None
     try:
@@ -120,7 +116,10 @@ def add(
     url: bool = typer.Option(False, "--url", help=_ADD_HELP_URL),
     all: bool = typer.Option(False, "--all", "-a", help=_ADD_HELP_ALL),
     sha256: str = typer.Option(None, "--sha256", help=_ADD_HELP_SHA),
+    migrate: bool = typer.Option(False, "--migrate", help=_ADD_HELP_MIGRATE),
 ) -> None:
+    if _add_module_arguments(components, ui, url, all, sha256, migrate):
+        return
     if components and components[0].lower() in PLATFORM_FILES:
         if ui or url or all or sha256:
             error(t("add.usage_text", "nexy add [COMPONENT_NAME or URL]..."))
@@ -135,6 +134,49 @@ def add(
     needed = _add_components(components, url, sha256)
     if needed:
         install_packages(list(needed))
+
+
+def _add_module_arguments(
+    components: list[str] | None,
+    ui: bool,
+    url: bool,
+    all: bool,
+    sha256: str | None,
+    migrate: bool,
+) -> bool:
+    """Install namespaced modules; say whether the arguments named modules."""
+    if not components or not any(item.startswith("@") for item in components):
+        return False
+    if ui or url or all or sha256:
+        error(t("add.usage_text", "nexy add [COMPONENT_NAME or URL]..."))
+        return True
+    _add_modules(components, migrate)
+    return True
+
+
+def _add_modules(components: list[str], migrate: bool) -> None:
+    """Install each module, reporting a bad reference or a failed install."""
+    if any(not item.startswith("@") for item in components):
+        error(t("add.usage_text", "nexy add [COMPONENT_NAME or URL]..."))
+        return
+    try:
+        references = [cast(ModuleReference, parse_reference(item)) for item in components]
+    except ValueError as problem:
+        error(str(problem))
+        return
+    installer = _module_installer()
+    for reference in references:
+        try:
+            installer.install(reference, migrate=migrate)
+        except InstallError as problem:
+            error(str(problem))
+            return
+
+
+def _module_installer() -> ModuleInstaller:
+    """Build an installer for the registry of the current project."""
+    client = RegistryModuleClient(Config().useModuleRegistry)
+    return ModuleInstaller(client)
 
 
 def _add_platform(names: list[str]) -> None:
