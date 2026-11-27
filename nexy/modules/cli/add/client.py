@@ -46,7 +46,9 @@ def checksum_of(archive: bytes) -> str:
 class RegistryModuleClient:
     """Reads releases from a registry over the documented HTTP contract."""
 
-    def __init__(self, base_url: str = DEFAULT_BASE_URL, client: httpx.Client | None = None) -> None:
+    def __init__(
+        self, base_url: str = DEFAULT_BASE_URL, client: httpx.Client | None = None
+    ) -> None:
         if not is_allowed_url(base_url):
             raise ValueError(f"invalid registry URL: {base_url}")
         self.base_url = base_url
