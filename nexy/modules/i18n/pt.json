@@ -16,7 +16,14 @@
     "not_found": "O componente '{name}' não foi encontrado no registro.",
     "usage": "Uso:",
     "usage_text": "nexy add [NOME_DO_COMPONENTE ou URL]...",
-    "write_failed": "Falha ao gravar {path}"
+    "write_failed": "Falha ao gravar {path}",
+    "help_migrate": "Executar as migrações declaradas após a instalação",
+    "module": {
+      "already": "{name}@{version} já está instalado.",
+      "installed": "{name}@{version} instalado",
+      "no_releases": "Nenhuma versão encontrada para {name}",
+      "signed": "Verificado por {signer}"
+    }
   },
   "build": {
     "building_client": "Pacote do cliente gerado",

@@ -11,7 +11,7 @@ Binernya adalah `nx` (juga dipasang sebagai `nexy`). `uvx nexy new` membuat proy
 | `nx build` | `nx b` | membangun produksi |
 | `nx new` | `nx n` | perancah sebuah proyek |
 | `nx init` | `nx i` | tambahkan Nexy ke proyek yang sudah ada |
-| `nx add` | - | tambahkan komponen UI dari registri atau URL, atau platform penerapan seperti `vercel` |
+| `nx add` | - | tambahkan komponen UI, modul registri seperti `@acme/auth`, URL, atau platform seperti `vercel` |
 | `nx migrate` | `nx m` | membuat atau menerapkan migrasi database dengan Alembic atau Aerich |
 | `nx check` | `nx c` | ketik-periksa: mypy di Python, `tsc` di TypeScript |
 | `nx format` | `nx f` | format file Python (ruff), JS/TS (lebih cantik), `.nexy` |
@@ -31,6 +31,10 @@ nx routes
 
 Jika tidak ada rute aplikasi yang ditemukan, ia akan mencetak `No routes found.`.
 
+## `nx add` dengan modul
+
+Argumen dengan namespace seperti `@acme/auth` atau `@acme/auth@1.2.0` menginstal rilis dari registri modul, bukan komponen UI. Ia memeriksa checksum dan kompatibilitas, hanya menulis file yang dideklarasikan oleh modul, menginstal dependensinya dan menerapkan kait konfigurasinya. Penginstalan dicatat di `.nexy/modules.json`. Migrasi hanya berjalan dengan `--migrate`. Lihat [Instal modul](../guides/install-modules.md) untuk peningkatan, pin, dan pengaturan kepercayaan.
+
 ## Bendera
 
 | Perintah | Bendera | Bawaan |
@@ -41,12 +45,13 @@ Jika tidak ada rute aplikasi yang ditemukan, ia akan mencetak `No routes found.`
 | `build` | `--check` | off - menjalankan ruff dan mypy setelah build |
 | `format` | `--check` | mati - laporkan alih-alih menulis ulang |
 | `test` | `--client` | off - jalankan juga vitest alih-alih pytest saja |
-| `test` | `--no-server` | aktif - lewati pytest bila Anda hanya menginginkan pengujian klien |
+| `test` | `--no-server` | aktif - lewati pytest bila Anda hanya ingin pengujian klien |
 | `new` | `--template`, `-t` | tidak ada - mengkloning templat terdaftar tanpa diminta |
 | `new` | `--no-agents` | agen aktif - lewati `AGENTS.md` dan keterampilan agen |
 | `add` | `--ui`, `--url` | off - memaksakan nama registri atau URL jika tidak jelas |
 | `add` | `--all`, `-a` | off - tambahkan setiap komponen registri |
 | `add` | `--sha256` | none - intisari yang diharapkan dari komponen jarak jauh; ketidakcocokan dibatalkan |
+| `add` | `--migrate` | mati - jalankan migrasi yang dideklarasikan oleh modul registri |
 | `migrate` | `--init` | mati - tulis pengaturan Alembic atau Aerich |
 | `migrate` | `--upgrade`, `-u` | mati - terapkan migrasi alih-alih menulis yang baru |
 | `migrate` | `--message`, `-m` | kosong - nama revisi baru |
@@ -77,13 +82,13 @@ File yang diurai tetapi gagal ketika aplikasi dimuat (impor hilang, kesalahan pa
 
 ## Pertanyaan dari `nx new`
 
-`nx new` menanyakan, dalam urutan ini: router berbasis file, jenis proyek (web atau API), perutean sisi klien, kerangka klien, cara menata gaya aplikasi, alias impor, ORM, basis data, dan URL basis data. Setiap opsi memiliki deskripsi singkat dan opsi terkini disorot. Pertanyaan yang tidak berlaku akan dilewati (proyek API tidak memiliki kerangka kerja atau gaya; memilih **Tidak ada database** karena ORM melewatkan database dan URL). Bergerak dengan tombol panah (atau `j`/`k`, atau angka), konfirmasi dengan `enter`, kembali ke pertanyaan sebelumnya dengan `←` atau `esc`, keluar dengan `ctrl+c`.
+`nx new` menanyakan, dalam urutan ini: router berbasis file, jenis proyek (web atau API), perutean sisi klien, kerangka klien, cara menata gaya aplikasi, alias impor, ORM, basis data, dan URL basis data. Setiap opsi memiliki deskripsi singkat dan opsi terkini disorot. Pertanyaan yang tidak berlaku akan dilewati (proyek API tidak memiliki kerangka kerja atau gaya; memilih **Tidak ada database** karena ORM melewatkan database dan URL). Bergerak dengan tombol panah (atau `j`/`k`, atau angka), konfirmasi dengan `enter`, kembali ke pertanyaan sebelumnya dengan tombol panah kiri atau `esc`, keluar dengan `ctrl+c`.
 
 | Pertanyaan | Pilihan |
 |---|---|
 | Impor alias | `@` (`@/components/...` menunjuk ke `src/`), atau awalan lain seperti `~` atau `#app` |
 | Gaya | Tailwind CSS, UnoCSS, Vanilla CSS, Lainnya (tanpa alat CSS, stylesheet biasa sama seperti Vanilla) |
-| ORM | SQLModel, SQLAlchemy, Kura-kura-ORM, Tidak ada database |
+| ORM | SQLModel, SQLAlchemy, Tortoise-ORM, Tidak ada database |
 | Basis Data (dengan ORM) | SQLite, PostgreSQL, Neon, MySQL / MariaDB, Lainnya (Anda mengetikkan URL) |
 
 Driver database untuk ORM yang dipilih diinstal dengannya (`psycopg`, `pymysql`, `asyncpg` atau `aiomysql`), dan URL ditulis ke `.env`.
@@ -92,7 +97,7 @@ Sebelum menginstal paket, `nx new` memeriksa koneksi. Tanpa satu pun, ia akan me
 
 ## Apa yang `dev`, `build` dan `start` ciptakan
 
-Sebelum dijalankan, ketiga perintah tersebut membuat `__init__.py` kosong di `src/` dan di setiap folder di bawahnya yang menyimpan file `.py` atau `.nexy`, sehingga rute seperti `src/routes/users.py` mengimpor dengan cara yang sama ke semuanya. File yang sudah ada tidak pernah disentuh, dan `nx dev` melakukan hal yang sama lagi saat Anda menambahkan folder. Python bytecode masuk ke `__nexy__/__pycache__`, jadi tidak ada folder `__pycache__` yang muncul di sebelah sumber Anda.
+Sebelum dijalankan, ketiga perintah tersebut membuat `__init__.py` kosong di `src/` dan di setiap folder di bawahnya yang menyimpan file `.py` atau `.nexy`, sehingga rute seperti `src/routes/users.py` mengimpor dengan cara yang sama ke semuanya. File yang ada tidak pernah disentuh, dan `nx dev` melakukan hal yang sama lagi saat Anda menambahkan folder. Python bytecode masuk ke `__nexy__/__pycache__`, jadi tidak ada folder `__pycache__` yang muncul di sebelah sumber Anda.
 
 ## Bahasa
 
@@ -102,7 +107,7 @@ Baris perintah berbicara bahasa Inggris, Cina, Hindi, Spanyol, Portugis, Prancis
 2. variabel lokal shell Anda (`LC_ALL`, `LC_MESSAGES`, `LANG`, lalu `LANGUAGE`);
 3. bahasa sistem operasi Anda.
 
-Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimiliki bahasa tersebut. Hanya apa yang `nx` cetak yang diterjemahkan: kesalahan kompiler, penelusuran balik, dan keluaran alat yang dijalankannya tetap sebagaimana adanya. Terjemahannya belum ditinjau oleh penutur asli: koreksi dipersilakan sebagai permintaan penarikan ke `nexy/modules/i18n/<language>.json`.
+Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimiliki bahasa tersebut. Hanya apa yang `nx` cetak yang diterjemahkan: kesalahan kompiler, penelusuran balik, dan keluaran alat yang dijalankannya tetap sebagaimana adanya. Terjemahannya belum ditinjau oleh penutur asli: koreksi dipersilahkan sebagai permintaan penarikan ke `nexy/modules/i18n/<language>.json`.
 
 ## Membangun perilaku
 

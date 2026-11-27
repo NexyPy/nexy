@@ -31,11 +31,18 @@ class NexyConfig(NexyConfigModel):
 | `useImageWidths` | `[320, 640, 960, 1280]` | স্থানীয় ছবির জন্য পিক্সেল প্রস্থ `nx build` তৈরি করে; রূপান্তরের প্রয়োজন `Pillow`, এবং এটি ছাড়া ছবিগুলি তাদের আসল URL রাখে। দেখুন [চিত্র](../routing/fbr/navigation/linking-and-navigating.md#image) |
 | `useISRCache` | `None` | আইএসআর স্টোর: `None` বা `"memory"` একটি প্রক্রিয়ার জন্য, `"file"` একটি হোস্টের জন্য, `"redis"` একাধিক কর্মীদের জন্য, `type` এবং বিকল্পগুলির সাথে একটি ম্যাপিং, বা `get`, `set` এবং `invalidate` সহ একটি বস্তু। [ISR](../rendering/isr.md#choose-a-store) দেখুন |
 
+## মডিউল
+
+| মাঠ | ডিফল্ট | অর্থ |
+|---|---|---|
+| `useModuleRegistry` | `"https://registry.nexypy.dev"` | বেস ইউআরএল `nx add` ইন্সটল করার সময় পড়ে `@scope/name`; শুধুমাত্র https, একটি স্থানীয় রেজিস্ট্রির জন্য লুপব্যাক http সহ |
+| `useRequireSignedModules` | `False` | একটি যাচাইকৃত স্বাক্ষর ছাড়া মুক্তি প্রত্যাখ্যান; দেখুন [মডিউল ইনস্টল করুন](../guides/install-modules.md#set-the-registry-and-its-trust-rules) |
+
 ## ডাটাবেস
 
 | মাঠ | ডিফল্ট | অর্থ |
 |---|---|---|
-| `useORM` | `None` | প্রকল্পের ORM: `"SQLModel"`, `"SQLAlchemy"` বা `"Tortoise-ORM"`। `nx new` এটি লেখেন, এবং `nx migrate` এটি থেকে Alembic বা Aerich বেছে নেন; এটি ছাড়া, `nx migrate` প্রথম ORM ইনস্টল করা লাগে। [ডেটাবেস](../guides/databases.md#migrations) দেখুন |
+| `useORM` | `None` | প্রকল্পের ORM: `"SQLModel"`, `"SQLAlchemy"` বা `"Tortoise-ORM"`। `nx new` এটি লেখেন, এবং `nx migrate` এটি থেকে Alembic বা Aerich বেছে নেন; এটি ছাড়া, `nx migrate` প্রথম ওআরএম ইনস্টল করা লাগে। [ডেটাবেস](../guides/databases.md#migrations) দেখুন |
 
 ## রুট
 
@@ -50,7 +57,7 @@ class NexyConfig(NexyConfigModel):
 | মাঠ | ডিফল্ট | অর্থ |
 |---|---|---|
 | `useFF` | `None` | ক্লায়েন্ট ফ্রেমওয়ার্ক কারখানা: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
-| `useVite` | `True` | Vite দিয়ে ক্লায়েন্ট বান্ডিল তৈরি এবং পরিবেশন করা |
+| `useVite` | `True` | Vite এর সাথে ক্লায়েন্ট বান্ডিল তৈরি এবং পরিবেশন করা |
 | `useMarkdownExtensions` | `[]` | `.md`/`.mdx` রেন্ডারিংয়ের জন্য অতিরিক্ত এক্সটেনশন |
 | `useWatchExtensions` | `None` | অতিরিক্ত এক্সটেনশন dev সার্ভার ঘড়ি |
 | `useWatchExcludePatterns` | `None` | গ্লোব প্যাটার্ন যা ডেভ সার্ভার উপেক্ষা করে |
@@ -59,7 +66,7 @@ class NexyConfig(NexyConfigModel):
 
 ## সংরক্ষিত ফাইলের নাম
 
-প্রতিটি ক্ষেত্র একটি সংরক্ষিত ভূমিকায় এক্সটেনশন যোগ করে। `useLayoutExtensions = ["md"]` `layout.md` সংরক্ষিত করে তোলে, ঠিক `layout.nexy` এর মতো।
+প্রতিটি ক্ষেত্র একটি সংরক্ষিত ভূমিকায় এক্সটেনশন যোগ করে। `useLayoutExtensions = ["md"]` সংরক্ষিত করে তোলে `layout.md`, ঠিক `layout.nexy` এর মতো।
 
 | মাঠ | এ এক্সটেনশন যোগ করে |
 |---|---|
@@ -77,11 +84,11 @@ class NexyConfig(NexyConfigModel):
 | `useDocs` | `"dev"` | যেখানে স্কেলার রেফারেন্স পৃষ্ঠা এবং `/openapi.json` পরিবেশন করা হয়: `"dev"` শুধুমাত্র `nx dev` এ, `True` উৎপাদনেও (স্কিমা প্রতিটি রুট এবং সার্ভারের ক্রিয়াকে তালিকাভুক্ত করে), `False` কোথাও নেই |
 | `useDocsUrl` | `"/docs"` | API রেফারেন্স পৃষ্ঠার পথ |
 | `useRedocsUrl` | `"/redocs"` | ঘোষিত কিন্তু কোন রুট মাউন্ট করা হয় না |
-| `useTitle` | `"Nexy App"` | OpenAPI শিরোনাম এবং পৃষ্ঠার শিরোনাম (`"Nexy"` `NexyConfigModel`] |
+| `useTitle` | `"Nexy App"` | OpenAPI শিরোনাম এবং পৃষ্ঠার শিরোনাম (`"Nexy"` `NexyConfigModel`]) |
 
 ### প্রকল্পের একটি পৃষ্ঠার জন্য বিনামূল্যে `/docs`
 
-API রেফারেন্স যেকোন রুটের আগে `/docs` উত্তর দেয়, তাই `src/routes/docs.nexy` বা `src/routes/docs/[[...slug]].nexy` সেখানে কখনই পরিবেশন করা হয় না। `nx dev` এবং `nx start` শুরুতে এমন একটি পৃষ্ঠার নাম দিন। এর সাথে রেফারেন্স সরান `useDocsUrl`:
+এপিআই রেফারেন্স কোন রুটের আগে `/docs` উত্তর দেয়, তাই `src/routes/docs.nexy` বা `src/routes/docs/[[...slug]].nexy` সেখানে কখনই পরিবেশন করা হয় না। `nx dev` এবং `nx start` শুরুতে এমন একটি পৃষ্ঠার নাম দিন। এর সাথে রেফারেন্স সরান `useDocsUrl`:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -104,7 +111,7 @@ class NexyConfig(NexyConfigModel):
 | `useSession` | `None` | জন্য kwargs `SessionMiddleware` |
 | `useAuth` | `None` | প্রমাণীকরণ মিডলওয়্যার কনফিগারেশন |
 | `useHTTPSRedirect` | `False` | HTTPS-এ HTTP রিডাইরেক্ট করুন |
-| `useRateLimit` | `None` | অনুরোধগুলি একটি ক্লায়েন্ট ঠিকানা প্রতি উইন্ডোতে পাঠাতে পারে, যেমন `{"requests": 60, "per": 60}`; আরও একটি হল `429` সহ `Retry-After`, এবং `"paths": ["/api/"]` শুধুমাত্র সেই উপসর্গগুলিকে সীমাবদ্ধ করে। প্রতিটি কর্মী তার নিজের উপর গণনা করে। দেখুন [দর সীমিত করা](../guides/middleware-and-security.md#rate-limiting) |
+| `useRateLimit` | `None` | অনুরোধগুলি একটি ক্লায়েন্ট ঠিকানা প্রতি উইন্ডোতে পাঠাতে পারে, যেমন `{"requests": 60, "per": 60}`; আরও একটি হল `429` সহ `Retry-After`, এবং `"paths": ["/api/"]` শুধুমাত্র সেই উপসর্গগুলিকে সীমাবদ্ধ করে। প্রতিটি কর্মী তার নিজের উপর গণনা করে। [দর সীমিতকরণ](../guides/middleware-and-security.md#rate-limiting) দেখুন |
 
 ## Markdown
 

@@ -177,6 +177,7 @@ Controladores e módulos.
 | [Barra de ferramentas de desenvolvimento](guides/devtools.md) | Use a barra de ferramentas de `nexy dev` e desligue-a |
 | [Depuração](guides/debugging.md) | Pare no código do seu servidor com `breakpoint()` ou VS Code |
 | [Agentes de codificação](guides/ai-agents.md) | Dê Claude Code, Codex e OpenCode as regras do seu projeto |
+| [Instalar módulos](guides/install-modules.md) | Instale, atualize e fixe módulos do registro |
 | [Solução de problemas](guides/troubleshooting.md) | Corrija os primeiros problemas que as pessoas enfrentam |
 
 ## Bancos de dados
@@ -216,7 +217,7 @@ As mesmas tarefas, escritas no framework que você conhece e depois no Nexy.
 ### Estruturas Fullstack {fbr}
 | Página | O que você fará |
 |---|---|
-| [De Next.js](coming-from/nextjs.md) | Mantenha suas páginas React e mova o código do servidor para Python |
+| [De Next.js](coming-from/nextjs.md) | Mantenha suas React páginas e mova o código do servidor para Python |
 | [De Remix](coming-from/remix.md) | Transforme carregadores e ações em Python manipuladores e ações |
 | [De Nuxt](coming-from/nuxt.md) | Mantenha suas Vue páginas e mova `server/` para Python |
 | [Do SvelteKit](coming-from/sveltekit.md) | Mantenha suas Svelte páginas e mova cargas, ações e ganchos para Python |
@@ -228,7 +229,7 @@ As mesmas tarefas, escritas no framework que você conhece e depois no Nexy.
 | Página | O que você fará |
 |---|---|
 | [De NestJS](coming-from/nestjs.md) | Mova controladores, módulos, provedores e proteções para o roteador modular |
-| [Do Spring Boot](coming-from/spring-boot.md) | Mova controladores, serviços e filtros para o roteador modular |
+| [Da inicialização do Spring](coming-from/spring-boot.md) | Mova controladores, serviços e filtros para o roteador modular |
 
 ## Referência
 

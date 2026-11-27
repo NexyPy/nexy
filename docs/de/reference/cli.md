@@ -11,11 +11,11 @@ Die Binärdatei ist `nx` (auch als `nexy` installiert). `uvx nexy new` erstellt 
 | `nx build` | `nx b` | Produktionsaufbau |
 | `nx new` | `nx n` | ein Projekt aufbauen |
 | `nx init` | `nx i` | Nexy zu einem bestehenden Projekt hinzufügen |
-| `nx add` | - | Fügen Sie eine UI-Komponente aus der Registrierung oder einer URL oder einer Bereitstellungsplattform wie `vercel` hinzu. |
-| `nx migrate` | `nx m` | Datenbankmigrationen mit Alembic oder Aerich erstellen oder anwenden |
+| `nx add` | - | Fügen Sie eine UI-Komponente, ein Registrierungsmodul wie `@acme/auth`, eine URL oder eine Plattform wie `vercel` hinzu. |
+| `nx migrate` | `nx m` | Erstellen oder Anwenden von Datenbankmigrationen mit Alembic oder Aerich |
 | `nx check` | `nx c` | Typprüfung: mypy auf Python, `tsc` auf TypeScript |
 | `nx format` | `nx f` | Formatieren Sie Python (Ruff), JS/TS (hübscher), `.nexy` Dateien |
-| `nx test` | - | führe pytest aus; `--client` fügt vitest hinzu |
+| `nx test` | - | lauf pytest; `--client` fügt vitest hinzu |
 | `nx routes` | - | Listen Sie Anwendungsrouten, HTTP-Methoden, Pfade und Quelldateien auf |
 | `nx skills` | - | Fügen Sie die Fähigkeiten `AGENTS.md` und `CLAUDE.md` für Codierungsagenten hinzu oder aktualisieren Sie sie |
 
@@ -31,6 +31,10 @@ nx routes
 
 Wenn keine Anwendungsrouten gefunden werden, wird `No routes found.` gedruckt.
 
+## `nx add` mit einem Modul
+
+Ein Namespace-Argument wie `@acme/auth` oder `@acme/auth@1.2.0` installiert eine Version aus der Modulregistrierung anstelle einer UI-Komponente. Es überprüft die Prüfsumme und die Kompatibilität, schreibt nur die Dateien, die das Modul deklariert, installiert seine Abhängigkeiten und wendet seine Konfigurations-Hooks an. Die Installation ist in `.nexy/modules.json` aufgezeichnet. Migrationen laufen nur mit `--migrate`. Informationen zu Upgrades, Pins und Vertrauenseinstellungen finden Sie unter [Module installieren](../guides/install-modules.md).
+
 ## Flaggen
 
 | Befehl | Flagge | Standard |
@@ -41,23 +45,24 @@ Wenn keine Anwendungsrouten gefunden werden, wird `No routes found.` gedruckt.
 | `build` | `--check` | off – führt ruff und mypy nach dem Build aus |
 | `format` | `--check` | aus – melden statt umschreiben |
 | `test` | `--client` | off - Führen Sie auch vitest anstelle von pytest allein aus |
-| `test` | `--no-server` | on – Überspringen Sie pytest, wenn Sie nur Client-Tests wünschen |
+| `test` | `--no-server` | on – Überspringen Sie pytest, wenn Sie nur Clienttests wünschen |
 | `new` | `--template`, `-t` | none – Klonen Sie eine registrierte Vorlage ohne Eingabeaufforderungen |
-| `new` | `--no-agents` | Agenten ein – überspringen Sie `AGENTS.md` und die Agentenfähigkeiten |
+| `new` | `--no-agents` | Agenten ein – überspringen `AGENTS.md` und die Agentenfähigkeiten |
 | `add` | `--ui`, `--url` | off – erzwingt einen Registrierungsnamen oder eine URL, wenn diese nicht eindeutig ist |
 | `add` | `--all`, `-a` | off – Fügen Sie alle Komponenten der Registrierung hinzu |
 | `add` | `--sha256` | keine – erwarteter Digest einer Remote-Komponente; eine Nichtübereinstimmung bricht ab |
+| `add` | `--migrate` | off – Führen Sie die Migrationen aus, die ein Registrierungsmodul deklariert |
 | `migrate` | `--init` | off - Schreiben Sie das Alembic- oder Aerich-Setup |
 | `migrate` | `--upgrade`, `-u` | off – Wenden Sie die Migrationen an, anstatt eine neue zu schreiben |
 | `migrate` | `--message`, `-m` | leer – Name der neuen Revision |
 
 ## Ausgabe
 
-Bei langen Schritten (Pakete installieren, kompilieren, bündeln) wird ein Spinner mit der verstrichenen Zeit und der letzten Zeile angezeigt, die der Befehl ausgegeben hat. Lassen Sie dann eine Zeile stehen, wie es uv tut: `Synced .venv with uv in 1.4s`. Eine Gruppe von Schritten (die Installationen von `nx new`) zeigt auch einen Fortschrittsbalken und die Anzahl der abgeschlossenen Schritte an, `2/5`. Ein fehlgeschlagener Schritt ist eine `error:`-Zeile mit ihrer Ursache, `cause: exit 1 after 2.1s`, gefolgt von den letzten Zeilen der Befehlsausgabe, anstatt sie auszublenden. Etwas, das Sie sich ansehen sollten, lautet `warning: ...` und was als nächstes zu tun ist `hint: ...`. Entwicklungsprotokolle lauten `GET » /about 200 in 12ms` für Anfragen und `vite » ...` für Vite.
+Bei langen Schritten (Pakete installieren, kompilieren, bündeln) wird ein Kreisel mit der verstrichenen Zeit und der letzten Zeile angezeigt, die der Befehl ausgegeben hat. Lassen Sie dann eine Zeile stehen, wie es uv tut: `Synced .venv with uv in 1.4s`. Eine Gruppe von Schritten (die Installationen von `nx new`) zeigt auch einen Fortschrittsbalken und die Anzahl der abgeschlossenen Schritte an, `2/5`. Ein fehlgeschlagener Schritt ist eine `error:`-Zeile mit ihrer Ursache, `cause: exit 1 after 2.1s`, gefolgt von den letzten Zeilen der Befehlsausgabe, anstatt sie auszublenden. Etwas, das Sie sich ansehen sollten, lautet `warning: ...` und was als nächstes zu tun ist `hint: ...`. Die Entwicklungsprotokolle lauten `GET » /about 200 in 12ms` für Anfragen und `vite » ...` für Vite.
 
 ## Fehler beim Ausführen von `nx dev`
 
-Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Datei mit einem Syntaxfehler wird mit ihrer Datei und Zeile gemeldet, und der Server stellt weiterhin die letzte funktionierende Version bereit, bis Sie den Fehler beheben:
+Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Datei mit einem Syntaxfehler wird mit ihrer Datei und Zeile gemeldet und der Server stellt weiterhin die letzte funktionierende Version bereit, bis Sie den Fehler beheben:
 
 ```text
   nexy » error  src/routes/users.py:3
@@ -77,7 +82,7 @@ Eine Datei, die analysiert wird, aber beim Laden der Anwendung fehlschlägt (ein
 
 ## Fragen von `nx new`
 
-`nx new` fragt in dieser Reihenfolge: dateibasierter Router, Projekttyp (Web oder API), clientseitiges Routing, Client-Framework, wie die App gestaltet werden soll, Importalias, ORM, Datenbank und Datenbank-URL. Jede Option verfügt über eine kurze Beschreibung und die aktuelle Option ist hervorgehoben. Fragen, die nicht zutreffen, werden übersprungen (ein API-Projekt hat kein Framework oder Stil; wählen Sie **Keine Datenbank**, da der ORM die Datenbank und die URL überspringt). Bewegen Sie sich mit den Pfeiltasten (oder `j`/`k` oder einer Zahl), bestätigen Sie mit `enter`, gehen Sie mit `←` oder `esc` zur vorherigen Frage zurück, beenden Sie mit `ctrl+c`.
+`nx new` fragt in dieser Reihenfolge: dateibasierter Router, Projekttyp (Web oder API), clientseitiges Routing, Client-Framework, wie die App gestaltet werden soll, Importalias, ORM, Datenbank und Datenbank-URL. Jede Option verfügt über eine kurze Beschreibung und die aktuelle Option ist hervorgehoben. Fragen, die nicht zutreffen, werden übersprungen (ein API-Projekt hat kein Framework oder Stil; wählen Sie **Keine Datenbank**, da der ORM die Datenbank und die URL überspringt). Bewegen Sie sich mit den Pfeiltasten (oder `j`/`k` oder einer Zahl), bestätigen Sie mit `enter`, gehen Sie mit der linken Pfeiltaste oder `esc` zur vorherigen Frage zurück, beenden Sie mit `ctrl+c`.
 
 | Frage | Auswahlmöglichkeiten |
 |---|---|
@@ -92,7 +97,7 @@ Vor der Installation von Paketen prüft `nx new` die Verbindung. Ohne eine werde
 
 ## Was `dev`, `build` und `start` erschaffen
 
-Bevor sie ausgeführt werden, erstellen die drei Befehle ein leeres `__init__.py` in `src/` und in jedem Ordner darunter, der eine `.py`- oder `.nexy`-Datei enthält, sodass eine Route wie `src/routes/users.py` in allen auf die gleiche Weise importiert. Vorhandene Dateien werden nie berührt und `nx dev` macht dasselbe noch einmal, wenn Sie einen Ordner hinzufügen. Python-Bytecode geht an `__nexy__/__pycache__`, daher erscheint kein `__pycache__`-Ordner neben Ihren Quellen.
+Bevor sie ausgeführt werden, erstellen die drei Befehle ein leeres `__init__.py` in `src/` und in jedem Ordner darunter, der eine `.py`- oder `.nexy`-Datei enthält, sodass eine Route wie `src/routes/users.py` in allen auf die gleiche Weise importiert. Vorhandene Dateien werden nie berührt und `nx dev` macht dasselbe noch einmal, wenn Sie einen Ordner hinzufügen. Der Bytecode Python geht an `__nexy__/__pycache__`, sodass neben Ihren Quellen kein Ordner `__pycache__` angezeigt wird.
 
 ## Sprache
 

@@ -31,6 +31,13 @@ class NexyConfig(NexyConfigModel):
 | `useImageWidths` | `[320, 640, 960, 1280]` | ширина пикселей `nx build` генерируется для локальных изображений; для преобразования требуется `Pillow`, и без него изображения сохранят свой исходный URL-адрес. См. [Изображение](../routing/fbr/navigation/linking-and-navigating.md#image) |
 | `useISRCache` | `None` | Хранилище ISR: `None` или `"memory"` для одного процесса, `"file"` для одного хоста, `"redis"` для нескольких воркеров, сопоставление с `type` и опциями или объект с `get`, `set` и `invalidate`. См. [ISR](../rendering/isr.md#choose-a-store) |
 
+## Модули
+
+| Поле | По умолчанию | Значение |
+|---|---|---|
+| `useModuleRegistry` | `"https://registry.nexypy.dev"` | базовый URL `nx add` считывается при установке `@scope/name`; только https, с обратной связью http для локального реестра |
+| `useRequireSignedModules` | `False` | отказать в выпуске без заверенной подписи; см. [Установить модули](../guides/install-modules.md#set-the-registry-and-its-trust-rules) |
+
 ## База данных
 
 | Поле | По умолчанию | Значение |
@@ -81,7 +88,7 @@ class NexyConfig(NexyConfigModel):
 
 ### Бесплатно `/docs` на страницу проекта
 
-Ссылка API отвечает на `/docs` перед любым маршрутом, поэтому `src/routes/docs.nexy` или `src/routes/docs/[[...slug]].nexy` там никогда не обслуживаются. `nx dev` и `nx start` называют такую ​​страницу при запуске. Переместите ссылку с помощью `useDocsUrl`:
+Ссылка API отвечает на `/docs` перед любым маршрутом, поэтому `src/routes/docs.nexy` или `src/routes/docs/[[...slug]].nexy` там никогда не обслуживаются. `nx dev` и `nx start` называют такую страницу при запуске. Переместите ссылку с помощью `useDocsUrl`:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -91,7 +98,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-Или отключите его с помощью `useDocs = False`, что также перестанет обслуживать `/openapi.json`. Пока ссылка включена, держите маршруты проекта подальше от этого пути.
+Или отключите его с помощью `useDocs = False`, что также прекратит обслуживание `/openapi.json`. Пока ссылка включена, держите маршруты проекта подальше от этого пути.
 
 ## Промежуточное ПО
 
@@ -104,7 +111,7 @@ class NexyConfig(NexyConfigModel):
 | `useSession` | `None` | кварги для `SessionMiddleware` |
 | `useAuth` | `None` | конфигурация промежуточного программного обеспечения аутентификации |
 | `useHTTPSRedirect` | `False` | перенаправить HTTP на HTTPS |
-| `useRateLimit` | `None` | запросы, которые один клиентский адрес может отправлять для каждого окна, например `{"requests": 60, "per": 60}`; еще один — `429` с `Retry-After`, а `"paths": ["/api/"]` ограничивает только эти префиксы. Каждый работник рассчитывает на свое. См. [Ограничение скорости](../guides/middleware-and-security.md#rate-limiting) |
+| `useRateLimit` | `None` | запросы, которые один клиентский адрес может отправлять для каждого окна, например `{"requests": 60, "per": 60}`; еще один — это `429` с `Retry-After`, а `"paths": ["/api/"]` ограничивает только эти префиксы. Каждый работник рассчитывает на свое. См. [Ограничение скорости](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 

@@ -16,7 +16,14 @@
     "not_found": "在注册表中找不到组件“{name}”。",
     "usage": "用法：",
     "usage_text": "nexy add [组件名称 或 URL]...",
-    "write_failed": "无法写入 {path}"
+    "write_failed": "无法写入 {path}",
+    "help_migrate": "安装后运行已声明的迁移",
+    "module": {
+      "already": "{name}@{version} 已安装。",
+      "installed": "已安装 {name}@{version}",
+      "no_releases": "找不到 {name} 的任何版本",
+      "signed": "由 {signer} 验证"
+    }
   },
   "build": {
     "building_client": "客户端包已构建",

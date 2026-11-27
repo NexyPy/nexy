@@ -177,6 +177,7 @@ Controller und Module.
 | [Dev-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
 | [Debuggen](guides/debugging.md) | Stoppen Sie in Ihrem Servercode mit `breakpoint()` oder VS Code |
 | [Kodiermittel](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
+| [Module installieren](guides/install-modules.md) | Installieren, aktualisieren und pinnen Sie Module aus der Registrierung |
 | [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die Menschen stoßen |
 
 ## Datenbanken
@@ -219,7 +220,7 @@ Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in 
 | [Von Next.js](coming-from/nextjs.md) | Behalten Sie Ihre React-Seiten und verschieben Sie den Servercode nach Python |
 | [Von Remix](coming-from/remix.md) | Verwandeln Sie Loader und Aktionen in Python Handler und Aktionen |
 | [Von Nuxt](coming-from/nuxt.md) | Behalten Sie Ihre Vue Seiten und verschieben Sie `server/` nach Python |
-| [Von SvelteKit](coming-from/sveltekit.md) | Behalten Sie Ihre Svelte-Seiten und verschieben Sie Lasten, Aktionen und Hooks nach Python |
+| [Von SvelteKit](coming-from/sveltekit.md) | Behalten Sie Ihre Svelte Seiten und verschieben Sie Lasten, Aktionen und Hooks nach Python |
 | [Von Astro](coming-from/astro.md) | Schreiben Sie Astro Seiten als `.nexy` Seiten mit denselben Inseln |
 | [Von Laravel](coming-from/laravel.md) | Ordnen Sie Routen, Controller, Blade, Eloquent und Warteschlangen Nexy zu |
 | [Von Ruby on Rails](coming-from/rails.md) | Ordnen Sie Routen, Controller, ERB, Active Record und Jobs Nexy zu |
@@ -236,7 +237,7 @@ Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in 
 | Seite | Was darin aufgeführt ist |
 |---|---|
 | [CLI](reference/cli.md) | Befehle, Flags, Eingabeaufforderungen und Exit-Codes |
-| [Konfiguration](reference/config.md) | Jedes `nexyconfig.py` Feld und seine Standardeinstellung |
+| [Konfiguration](reference/config.md) | Jedes `nexyconfig.py`-Feld und seine Standardeinstellung |
 
 ### Python API und Fehler
 | Seite | Was darin aufgeführt ist |

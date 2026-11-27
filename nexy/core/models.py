@@ -204,3 +204,6 @@ class NexyConfigModel:
     # The public origin of the site, such as "https://example.com": the sitemap writes its URLs
     # with it, and /sitemap.xml and /robots.txt are served only once it is set.
     useSiteUrl: str | None = None
+    # Where `nx add` reads module releases from, and whether an unsigned release is refused.
+    useModuleRegistry: str = "https://registry.nexypy.dev"
+    useRequireSignedModules: bool = False

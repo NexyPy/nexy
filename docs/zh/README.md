@@ -177,6 +177,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | [开发工具栏](guides/devtools.md) | 使用 `nexy dev`的工具栏，然后将其关闭 |
 | [调试](guides/debugging.md) | 使用 `breakpoint()` 或 VS Code 停止服务器代码 |
 | [编码剂](guides/ai-agents.md) | 给出 Claude Code、Codex 和 OpenCode 您项目的规则 |
+| [安装模块](guides/install-modules.md) | 从注册表安装、升级和固定模块 |
 | [故障排除](guides/troubleshooting.md) | 解决人们遇到的第一个问题 |
 
 ## 数据库

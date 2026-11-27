@@ -31,6 +31,13 @@ class NexyConfig(NexyConfigModel):
 | `useImageWidths` | `[320, 640, 960, 1280]` | Pixelbreiten `nx build` werden für lokale Bilder generiert; Die Konvertierung erfordert `Pillow`, und ohne sie behalten Bilder ihre ursprüngliche URL. Siehe [Bild](../routing/fbr/navigation/linking-and-navigating.md#image) |
 | `useISRCache` | `None` | ISR-Speicher: `None` oder `"memory"` für einen Prozess, `"file"` für einen Host, `"redis"` für mehrere Worker, eine Zuordnung mit `type` und Optionen oder ein Objekt mit `get`, `set` und `invalidate`. Siehe [ISR](../rendering/isr.md#choose-a-store) |
 
+## Module
+
+| Feld | Standard | Bedeutung |
+|---|---|---|
+| `useModuleRegistry` | `"https://registry.nexypy.dev"` | Basis-URL `nx add` wird bei der Installation von `@scope/name` gelesen; Nur https, mit Loopback-http für eine lokale Registrierung |
+| `useRequireSignedModules` | `False` | eine Freigabe ohne beglaubigte Unterschrift verweigern; siehe [Module installieren](../guides/install-modules.md#set-the-registry-and-its-trust-rules) |
+
 ## Datenbank
 
 | Feld | Standard | Bedeutung |
@@ -50,7 +57,7 @@ class NexyConfig(NexyConfigModel):
 | Feld | Standard | Bedeutung |
 |---|---|---|
 | `useFF` | `None` | Client-Framework-Fabrik: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
-| `useVite` | `True` | Erstellen und Bereitstellen von Client-Bundles mit Vite |
+| `useVite` | `True` | Erstellen und Bereitstellen von Kundenpaketen mit Vite |
 | `useMarkdownExtensions` | `[]` | Zusätzliche Erweiterungen für das Rendern von `.md`/`.mdx`. |
 | `useWatchExtensions` | `None` | Zusätzliche Erweiterungen, die der Entwicklungsserver überwacht |
 | `useWatchExcludePatterns` | `None` | Glob-Muster, die der Entwicklungsserver ignoriert |
@@ -104,7 +111,7 @@ Oder schalten Sie es mit `useDocs = False` aus, wodurch auch die Bereitstellung 
 | `useSession` | `None` | Kwargs für `SessionMiddleware` |
 | `useAuth` | `None` | Authentifizierungs-Middleware-Konfiguration |
 | `useHTTPSRedirect` | `False` | HTTP auf HTTPS umleiten |
-| `useRateLimit` | `None` | die Anfragen, die eine Client-Adresse pro Fenster senden kann, z. B. `{"requests": 60, "per": 60}`; Eine weitere ist ein `429` mit `Retry-After`, und `"paths": ["/api/"]` beschränkt nur diese Präfixe. Jeder Arbeiter zählt für sich. Siehe [Ratenbegrenzung](../guides/middleware-and-security.md#rate-limiting) |
+| `useRateLimit` | `None` | die Anfragen, die eine Client-Adresse pro Fenster senden kann, z. B. `{"requests": 60, "per": 60}`; eine weitere ist ein `429` mit `Retry-After`, und `"paths": ["/api/"]` beschränkt nur diese Präfixe. Jeder Arbeiter zählt für sich. Siehe [Ratenbegrenzung](../guides/middleware-and-security.md#rate-limiting) |
 
 ## Markdown
 
@@ -138,7 +145,7 @@ Die oben genannten Standardwerte werden aus `nexy/core/config.py` gelesen.
 
 ## Deklariert, noch nicht gelesen
 
-Diese Felder sind in `NexyConfigModel` vorhanden, werden aber von keinem Code genutzt. Das Festlegen hat keine Auswirkung:
+Diese Felder sind in `NexyConfigModel` vorhanden, aber kein Code nutzt sie. Das Festlegen hat keine Auswirkung:
 
 `useViteDevUrl`, `useRTL`.
 

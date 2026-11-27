@@ -21,6 +21,11 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             self.send_header("Location", "ftp://example.com/x.tsx")
             self.end_headers()
             return
+        elif self.path == "/redirect-ok":
+            self.send_response(302)
+            self.send_header("Location", f"http://127.0.0.1:{self.server.server_port}/button.tsx")
+            self.end_headers()
+            return
         else:
             payload = BODY
         self.send_response(200)
@@ -63,3 +68,6 @@ class TestFetch:
 
     def test_redirect_out_of_policy_is_rejected(self, base_url):
         assert fetch_remote_component(base_url + "/redirect") is None
+
+    def test_redirect_inside_policy_is_followed(self, base_url):
+        assert fetch_remote_component(base_url + "/redirect-ok") == BODY.decode()

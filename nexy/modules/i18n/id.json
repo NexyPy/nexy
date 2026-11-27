@@ -16,7 +16,14 @@
     "not_found": "Komponen '{name}' tidak ditemukan di registri.",
     "usage": "Penggunaan:",
     "usage_text": "nexy add [NAMA_KOMPONEN atau URL]...",
-    "write_failed": "Gagal menulis {path}"
+    "write_failed": "Gagal menulis {path}",
+    "help_migrate": "Jalankan migrasi yang dinyatakan setelah pemasangan",
+    "module": {
+      "already": "{name}@{version} sudah terpasang.",
+      "installed": "{name}@{version} terpasang",
+      "no_releases": "Tidak ada rilis yang ditemukan untuk {name}",
+      "signed": "Diverifikasi oleh {signer}"
+    }
   },
   "build": {
     "building_client": "Bundel klien selesai dibuat",

@@ -1,21 +1,21 @@
 # CLI
 
-Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` crée un projet (`uvx` est livré avec uv). Exécutez toutes les autres commandes dans l'environnement virtuel du projet, ou via `uv run`, par exemple `uv run nexy dev` : c'est là que se trouvent vos propres packages.
+Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` crée un projet (`uvx` est livré avec uv). Exécutez toutes les autres commandes dans l'environnement virtuel du projet, ou via `uv run`, par exemple `uv run nexy dev` : c'est là que se trouvent vos propres packages.
 
 ## Commandes
 
 | Commande | Alias | Ce que ça fait |
 |---|---|---|
-| `nx dev` | `nx d` | serveur de développement : compiler lors du changement, Vite, HMR |
+| `nx dev` | `nx d` | serveur de développement : compiler lors du changement, Vite, HMR |
 | `nx start` | `nx s` | serveur de production sur la sortie compilée |
 | `nx build` | `nx b` | construction de production |
 | `nx new` | `nx n` | échafauder un projet |
 | `nx init` | `nx i` | ajouter Nexy à un projet existant |
-| `nx add` | - | ajoutez un composant d'interface utilisateur à partir du registre ou d'une URL, ou d'une plate-forme de déploiement telle que `vercel` |
+| `nx add` | - | ajoutez un composant d'interface utilisateur, un module de registre tel que `@acme/auth`, une URL ou une plate-forme telle que `vercel` |
 | `nx migrate` | `nx m` | créer ou appliquer des migrations de bases de données avec Alembic ou Aerich |
-| `nx check` | `nx c` | type-check : mypy sur Python, `tsc` sur TypeScript |
+| `nx check` | `nx c` | vérification de type : mypy sur Python, `tsc` sur TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (plus joli), `.nexy` fichiers |
-| `nx test` | - | exécuter pytest ; `--client` ajoute vitest |
+| `nx test` | - | exécutez pytest ; `--client` ajoute vitest |
 | `nx routes` | - | répertorier les routes d'application, les méthodes HTTP, les chemins et les fichiers sources |
 | `nx skills` | - | ajouter ou rafraîchir les compétences, `AGENTS.md` et `CLAUDE.md` pour les agents de codage |
 
@@ -23,13 +23,17 @@ Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` cr
 
 Répertorie les routes de l'application, leurs méthodes HTTP, leurs chemins et leurs fichiers source dans un tableau. Les itinéraires sont triés par chemin. La route favicon du framework est exclue.
 
-Exécutez-le dans l'environnement du projet :
+Exécutez-le dans l'environnement du projet :
 
 ```bash
 nx routes
 ```
 
 Si aucune route d'application n'est trouvée, il imprime `No routes found.`.
+
+## `nx add` avec un module
+
+Un argument avec espace de noms tel que `@acme/auth` ou `@acme/auth@1.2.0` installe une version à partir du registre du module au lieu d'un composant d'interface utilisateur. Il vérifie la somme de contrôle et la compatibilité, écrit uniquement les fichiers déclarés par le module, installe ses dépendances et applique ses hooks de configuration. L'installation est enregistrée dans `.nexy/modules.json`. Les migrations s'exécutent uniquement avec `--migrate`. Voir [Installer les modules](../guides/install-modules.md) pour les mises à niveau, les broches et les paramètres de confiance.
 
 ## Drapeaux
 
@@ -42,22 +46,23 @@ Si aucune route d'application n'est trouvée, il imprime `No routes found.`.
 | `format` | `--check` | off - rapport au lieu de réécrire |
 | `test` | `--client` | off - exécute également Vitest au lieu de pytest seul |
 | `test` | `--no-server` | on - ignorer pytest lorsque vous souhaitez uniquement des tests clients |
-| `new` | `--template`, `-t` | aucun - clone un modèle enregistré sans invite |
+| `new` | `--template`, `-t` | aucun - cloner un modèle enregistré sans invite |
 | `new` | `--no-agents` | agents activés - ignorer `AGENTS.md` et les compétences de l'agent |
 | `add` | `--ui`, `--url` | off - force un nom de registre ou une URL lorsqu'il est ambigu |
 | `add` | `--all`, `-a` | off - ajoute tous les composants du registre |
-| `add` | `--sha256` | none - résumé attendu d'un composant distant ; un décalage est interrompu |
-| `migrate` | `--init` | off - écrit la configuration Alembic ou Aerich |
+| `add` | `--sha256` | none - résumé attendu d'un composant distant ; un décalage est interrompu |
+| `add` | `--migrate` | off - exécute les migrations déclarées par un module de registre |
+| `migrate` | `--init` | off - écriture de la configuration Alembic ou Aerich |
 | `migrate` | `--upgrade`, `-u` | off - appliquer les migrations au lieu d'en écrire une nouvelle |
 | `migrate` | `--message`, `-m` | vide - nom de la nouvelle révision |
 
 ## Sortie
 
-Les étapes longues (installation des packages, compilation, regroupement) affichent une icône avec le temps écoulé et la dernière ligne imprimée par la commande, puis laissent une ligne derrière, comme le fait uv : `Synced .venv with uv in 1.4s`. Un groupe d'étapes (les installations de `nx new`) affiche également une barre de progression et le nombre d'étapes terminées, `2/5`. Une étape défaillante est une ligne `error:` avec sa cause, `cause: exit 1 after 2.1s`, suivie des dernières lignes du résultat de la commande au lieu de la masquer. Quelque chose à regarder se lit `warning: ...`, et que faire ensuite `hint: ...`. Les journaux de développement lisent `GET » /about 200 in 12ms` pour les requêtes et `vite » ...` pour Vite.
+Les étapes longues (installation des packages, compilation, regroupement) affichent une icône avec le temps écoulé et la dernière ligne imprimée par la commande, puis laissent une ligne derrière, comme le fait uv : `Synced .venv with uv in 1.4s`. Un groupe d'étapes (les installations de `nx new`) affiche également une barre de progression et le nombre d'étapes terminées, `2/5`. Une étape défaillante est une ligne `error:` avec sa cause, `cause: exit 1 after 2.1s`, suivie des dernières lignes du résultat de la commande au lieu de la masquer. Quelque chose à regarder se lit `warning: ...`, et que faire ensuite `hint: ...`. Les journaux de développement lisent `GET » /about 200 in 12ms` pour les requêtes et `vite » ...` pour Vite.
 
 ## Erreurs lors de l'exécution de `nx dev`
 
-L'enregistrement d'un fichier cassé n'arrête jamais le serveur. Un fichier `.py` avec une erreur de syntaxe est signalé avec son fichier et sa ligne, et le serveur continue de servir la dernière version fonctionnelle jusqu'à ce que vous la corrigiez :
+L'enregistrement d'un fichier cassé n'arrête jamais le serveur. Un fichier `.py` avec une erreur de syntaxe est signalé avec son fichier et sa ligne, et le serveur continue de servir la dernière version fonctionnelle jusqu'à ce que vous la corrigiez :
 
 ```text
   nexy » error  src/routes/users.py:3
@@ -73,11 +78,11 @@ L'enregistrement d'un fichier cassé n'arrête jamais le serveur. Un fichier `.p
   Fix it and save: the server keeps its last working version.
 ```
 
-Un fichier qui analyse mais échoue au chargement de l'application (une importation manquante, une erreur au niveau du module) est signalé de la même manière et `nx dev` attend votre prochaine sauvegarde ; rien n'est servi jusqu'à ce que l'application se charge à nouveau. Une sauvegarde valide indique `nexy » update <file>` pendant le rechargement du serveur. Les fichiers Markdown en dehors de `src/routes`, tels que `README.md`, ne sont pas des pages et ne déclenchent rien. `nx start` est plus strict : il se termine avec le code 1, et ne démarre rien, si un fichier de route ne peut pas se charger ou si `nx build` n'a pas encore construit le projet.
+Un fichier qui analyse mais échoue au chargement de l'application (une importation manquante, une erreur au niveau du module) est signalé de la même manière et `nx dev` attend votre prochaine sauvegarde ; rien n'est servi jusqu'à ce que l'application se charge à nouveau. Une sauvegarde valide lit `nexy » update <file>` pendant le rechargement du serveur. Les fichiers Markdown en dehors de `src/routes`, tels que `README.md`, ne sont pas des pages et ne déclenchent rien. `nx start` est plus strict : il se termine avec le code 1, et ne démarre rien, si un fichier de route ne peut pas se charger ou si `nx build` n'a pas encore construit le projet.
 
 ## Questions de `nx new`
 
-`nx new` demande, dans cet ordre : le routeur basé sur les fichiers, le type de projet (web ou API), le routage côté client, le framework client, comment styliser l'application, l'alias d'importation, l'ORM, la base de données et l'URL de la base de données. Chaque option a une brève description et celle actuelle est mise en surbrillance. Les questions qui ne s'appliquent pas sont ignorées (un projet API n'a ni cadre ni style ; en choisissant **Aucune base de données** car l'ORM ignore la base de données et l'URL). Déplacez-vous avec les touches fléchées (ou `j`/`k`, ou un chiffre), confirmez avec `enter`, revenez à la question précédente avec `←` ou `esc`, quittez avec `ctrl+c`.
+`nx new` demande, dans cet ordre : le routeur basé sur les fichiers, le type de projet (web ou API), le routage côté client, le framework client, comment styliser l'application, l'alias d'importation, l'ORM, la base de données et l'URL de la base de données. Chaque option a une brève description et celle actuelle est mise en surbrillance. Les questions qui ne s'appliquent pas sont ignorées (un projet API n'a ni cadre ni style ; en choisissant **Aucune base de données** car l'ORM ignore la base de données et l'URL). Déplacez-vous avec les touches fléchées (ou `j`/`k`, ou un chiffre), confirmez avec `enter`, revenez à la question précédente avec la touche fléchée gauche ou `esc`, quittez avec `ctrl+c`.
 
 | Question | Choix |
 |---|---|
@@ -96,13 +101,13 @@ Avant de s'exécuter, les trois commandes créent un `__init__.py` vide dans `sr
 
 ## Langue
 
-La ligne de commande parle anglais, chinois, hindi, espagnol, portugais, français, allemand, japonais, russe, coréen, indonésien et arabe. Il utilise le premier d’entre eux qu’il prend en charge :
+La ligne de commande parle anglais, chinois, hindi, espagnol, portugais, français, allemand, japonais, russe, coréen, indonésien et arabe. Il utilise le premier d’entre eux qu’il prend en charge :
 
-1. la variable d'environnement `NEXY_LANG` (`NEXY_LANG=ja nx dev`) ;
+1. la variable d'environnement `NEXY_LANG` (`NEXY_LANG=ja nx dev`) ;
 2. les variables locales de votre shell (`LC_ALL`, `LC_MESSAGES`, `LANG`, puis `LANGUAGE`) ;
 3. la langue de votre système d'exploitation.
 
-Tout le reste est en anglais, tout comme tout message qu'une langue n'a pas encore. Seul ce que `nx` imprime est traduit : les erreurs du compilateur, les traces et les résultats des outils qu'il exécute restent tels quels. Les traductions n'ont pas encore été révisées par des locuteurs natifs : les corrections sont les bienvenues sous forme de pull request à `nexy/modules/i18n/<language>.json`.
+Tout le reste est en anglais, tout comme tout message qu'une langue n'a pas encore. Seul ce que `nx` imprime est traduit : les erreurs du compilateur, les traces et les résultats des outils qu'il exécute restent tels quels. Les traductions n'ont pas encore été révisées par des locuteurs natifs : les corrections sont les bienvenues sous forme de pull request vers `nexy/modules/i18n/<language>.json`.
 
 ## Construire un comportement
 
@@ -113,7 +118,7 @@ Tout le reste est en anglais, tout comme tout message qu'une langue n'a pas enco
 
 ## Travailler sur Nexy lui-même
 
-À l'intérieur de ce référentiel, les portes sont :
+À l'intérieur de ce référentiel, les portes sont :
 
 ```bash
 python scripts/verify.py             # lint, format, typecheck, tests
@@ -122,6 +127,6 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 
 ## Prochaines étapes
 
-- [Prise en main](../getting-started/quick-start.md) : premier projet
-- [Tests](../guides/testing.md) : ce que `nx test` exécute
-- [Déployer](../deployment/README.md) : `build` et `start` en production
+- [Prise en main](../getting-started/quick-start.md) : premier projet
+- [Tests](../guides/testing.md) : ce que `nx test` exécute
+- [Déployer](../deployment/README.md) : `build` et `start` en production
