@@ -38,7 +38,9 @@ def test_read_files_ignores_an_undeclared_file():
 
 
 def test_read_files_refuses_a_symlink():
-    raw = make_archive({"nx.toml": MANIFEST, "src/auth.py": b"x"}, symlink=("src/link.py", "/etc/passwd"))
+    raw = make_archive(
+        {"nx.toml": MANIFEST, "src/auth.py": b"x"}, symlink=("src/link.py", "/etc/passwd")
+    )
     with pytest.raises(ArchiveError, match="not a regular file"):
         read_files(raw, ("src/link.py",))
 
